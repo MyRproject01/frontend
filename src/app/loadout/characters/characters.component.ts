@@ -21,9 +21,10 @@ export class CharactersComponent implements OnInit {
   ngOnInit() {
     this.catalogService.getCharacters().subscribe({
       next: (data) => {
-        this.characters.set(data);
-        if (data.length > 0) {
-          this.selectedCharacter.set(data[0]);
+        const sortedData = [...data].sort((a, b) => b.id - a.id);
+        this.characters.set(sortedData);
+        if (sortedData.length > 0) {
+          this.selectedCharacter.set(sortedData[0]);
         }
         this.loading.set(false);
       },

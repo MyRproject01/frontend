@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PlayerService, PlayerStats } from '../../services/player.service';
 
@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 export class ProfileComponent implements OnInit {
   private playerService = inject(PlayerService);
   
-  username = localStorage.getItem('username') || 'OPERATOR';
+  username = signal(localStorage.getItem('username') || 'OPERATOR');
   highScore = 0;
   maxWave = 0;
 

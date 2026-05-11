@@ -185,9 +185,12 @@
 
 .panel-count {
   font-family: var(--font-inter);
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
+  font-size: 0.85rem;
+  font-weight: 500;
   color: var(--on-surface-variant);
+  background: rgba(24, 24, 27, 0.5);
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--zinc-800);
 }
 
 .roster-grid {
@@ -584,7 +587,7 @@
 /* Archive Data */
 .archive-text {
   font-family: var(--font-inter);
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   color: var(--on-surface-variant);
   line-height: 1.6;
   letter-spacing: 0.05em;

@@ -1,7 +1,9 @@
 <section class="panel roster-panel">
   <div class="panel-header">
     <span class="panel-title">ROSTER_SELECT //</span>
-    <span class="panel-count">{{ characters().length | number:'2.0-0' }}_UNITS_FOUND</span>
+    <div class="panel-count">
+      FOUND: <span class="text-cyan">{{ characters().length }}</span>
+    </div>
   </div>
 
   <div class="roster-grid">

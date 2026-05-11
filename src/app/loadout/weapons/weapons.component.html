@@ -1,132 +1,113 @@
 <section class="panel roster-panel">
   <div class="panel-header">
     <h2 class="panel-title">
-      <span class="title-accent"></span>
+      <span class="material-symbols-outlined title-icon">grid_view</span>
       WEAPON_ROSTER
     </h2>
-    <span class="panel-count">{{ weapons().length | number:'2.0-0' }}_UNITS_FOUND</span>
+    <div class="panel-count">
+      FOUND: <span class="text-cyan">{{ weapons().length }}</span>
+    </div>
   </div>
 
-  <div class="roster-grid">
-    @if (loading()) {
-    <div style="color: var(--cyan); font-family: 'Share Tech Mono', monospace; padding: 1rem;">LOADING...</div>
-    } @else {
-    @for (wpn of weapons(); track wpn.id) {
-    <div class="item-slot" [class.active-slot]="selectedWeapon()?.id === wpn.id"
-      [class.available-slot]="selectedWeapon()?.id !== wpn.id" (click)="selectWeapon(wpn)">
-      <div class="slot-id">WPN-{{ wpn.id | number:'3.0-0' }}</div>
-      <div class="slot-image" [class.grayscale]="selectedWeapon()?.id !== wpn.id"
-        [style.background-image]="'url(' + getImageUrl(wpn.name) + ')'">
+  <div class="roster-grid-wrapper">
+    <div class="roster-grid">
+      @if (loading()) {
+      <div style="color: var(--cyan); font-family: 'Share Tech Mono', monospace; padding: 1rem;">LOADING...</div>
+      } @else {
+      @for (wpn of weapons(); track wpn.id) {
+      <div class="item-slot" [class.active-slot]="selectedWeapon()?.id === wpn.id"
+        [class.available-slot]="selectedWeapon()?.id !== wpn.id" (click)="selectWeapon(wpn)">
+        <img class="slot-image" [class.grayscale]="selectedWeapon()?.id !== wpn.id" [src]="getImageUrl(wpn.name)"
+          [alt]="wpn.name" />
+        <div class="slot-badge" [class.active-badge]="selectedWeapon()?.id === wpn.id"
+          [class.text-cyan-dim]="selectedWeapon()?.id !== wpn.id" style="font-size: 0.5rem; text-align: center;">{{
+          wpn.name | uppercase | slice:0:10 }}</div>
       </div>
-      <div class="slot-name" [class.text-cyan]="selectedWeapon()?.id === wpn.id">{{ wpn.name | uppercase }}</div>
+      }
+      }
     </div>
-    }
-
-    <!-- Restricted Slots -->
-    <div class="item-slot restricted-slot">
-      <div class="restricted-bg"></div>
-      <span class="material-symbols-outlined lock-icon">lock</span>
-      <div class="slot-name text-dark">RESTRICTED</div>
-    </div>
-    <div class="item-slot restricted-slot"><span class="material-symbols-outlined lock-icon">lock</span></div>
-    <div class="item-slot restricted-slot"><span class="material-symbols-outlined lock-icon">lock</span></div>
-    }
-  </div>
-
-  <!-- Footer Status -->
-  <div class="roster-footer">
-    <p>&gt; ROSTER_BUFFER: 100%_CAPACITY</p>
-    <p>&gt; CACHE_SYNC: VALIDATED</p>
   </div>
 </section>
 
-<!-- Right Column: Weapon Data Stream -->
-<section class="panel data-stream-panel">
-  <div class="data-header">
-    <div class="weapon-title-container">
-      <h1 class="weapon-title">{{ selectedWeapon() ? (selectedWeapon()!.name | uppercase) : 'SELECT_WEAPON' }}</h1>
-      <div class="weapon-tags">
-        <span class="tag">CLASS: TACTICAL</span>
-        <span class="tag secondary">PRICE: {{ selectedWeapon()?.price }}</span>
+<!-- Right Column: Weapon Intel (matching enemies style) -->
+<section class="panel intel-panel">
+  <div class="corner-decoration"></div>
+
+  <div class="intel-content">
+    <!-- Header -->
+    <div class="intel-header">
+      <h1 class="intel-title">{{ selectedWeapon() ? (selectedWeapon()!.name | uppercase) : 'SELECT_WEAPON' }}</h1>
+      <div class="intel-divider">
+        <div class="intel-divider-progress" style="background: var(--cyan-bright);"></div>
       </div>
     </div>
-  </div>
 
-  <!-- Illustration Box -->
-  <div class="illustration-box">
-    <div class="radial-glow"></div>
-
-    <svg class="circuitry-bg" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0 40 L40 40 L60 60 L200 60" fill="none" stroke="#00dce6" stroke-width="1"></path>
-      <path d="M400 300 L380 320 L300 320" fill="none" stroke="#00dce6" stroke-width="1"></path>
-    </svg>
-
-    <div class="weapon-image-container"
-      [style.background-image]="selectedWeapon() ? 'url(' + getImageUrl(selectedWeapon()!.name) + ')' : 'none'">
+    <!-- Weapon Visualizer -->
+    <div class="visualizer-box">
+      <img class="visualizer-image" [src]="selectedWeapon() ? getImageUrl(selectedWeapon()!.name) : ''"
+        [alt]="selectedWeapon()?.name || 'weapon'" />
     </div>
 
-    <div class="corner corner-tl"></div>
-    <div class="corner corner-br"></div>
-  </div>
-
-  <div class="lore-section">
     <!-- Stats Grid -->
-    @if (animationState()) {
-    <div class="stats-grid">
-
-      <!-- DAMAGE -->
-      <div class="stat-bar-container">
-        <div class="stat-labels">
-          <span>DAMAGE</span>
-          <span class="stat-value red">{{ selectedWeapon()?.damage }}</span>
+    <div class="intel-details">
+      @if (animationState()) {
+      <div class="module">
+        <div class="module-header">
+          <span class="material-symbols-outlined module-icon">bar_chart</span>
+          COMBAT_SPECS
         </div>
-        <div class="seg-bar">
-          @for (seg of getStatSegments(selectedWeapon()?.damage, 50, 'red'); track selectedWeapon()?.id + '-' + $index)
-          {
-          <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
-          }
+        <div class="stats-grid">
+          <!-- DAMAGE -->
+          <div class="stat-bar-container">
+            <div class="stat-labels">
+              <span>DAMAGE</span>
+              <span class="stat-value red">{{ selectedWeapon()?.damage }}</span>
+            </div>
+            <div class="seg-bar">
+              @for (seg of getStatSegments(selectedWeapon()?.damage, 50, 'red'); track $index) {
+              <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+              }
+            </div>
+          </div>
+
+          <!-- ATTACK SPEED -->
+          <div class="stat-bar-container">
+            <div class="stat-labels">
+              <span>ATTACK SPEED</span>
+              <span class="stat-value yellow">{{ selectedWeapon()?.attackSpeed }}</span>
+            </div>
+            <div class="seg-bar">
+              @for (seg of getStatSegments(selectedWeapon()?.attackSpeed, 2, 'yellow'); track $index) {
+              <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+              }
+            </div>
+          </div>
+
+          <!-- RANGE -->
+          <div class="stat-bar-container">
+            <div class="stat-labels">
+              <span>RANGE</span>
+              <span class="stat-value blue">{{ selectedWeapon()?.range }}</span>
+            </div>
+            <div class="seg-bar">
+              @for (seg of getStatSegments(selectedWeapon()?.range, 10, 'blue'); track $index) {
+              <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+              }
+            </div>
+          </div>
         </div>
       </div>
+      }
 
-      <!-- ATTACK SPEED -->
-      <div class="stat-bar-container">
-        <div class="stat-labels">
-          <span>ATTACK SPEED</span>
-          <span class="stat-value yellow">{{ selectedWeapon()?.attackSpeed }}</span>
+      <!-- Archive Data -->
+      <div class="module">
+        <div class="module-header">
+          <span class="material-symbols-outlined module-icon">folder_open</span>
+          ARCHIVE_DATA
         </div>
-        <div class="seg-bar">
-          @for (seg of getStatSegments(selectedWeapon()?.attackSpeed, 2, 'yellow'); track selectedWeapon()?.id + '-' +
-          $index) {
-          <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
-          }
+        <div class="archive-text">
+          {{ selectedWeapon()?.description || 'No archive data available for this weapon.' }}
         </div>
-      </div>
-
-      <!-- RANGE -->
-      <div class="stat-bar-container">
-        <div class="stat-labels">
-          <span>RANGE</span>
-          <span class="stat-value blue">{{ selectedWeapon()?.range }}</span>
-        </div>
-        <div class="seg-bar">
-          @for (seg of getStatSegments(selectedWeapon()?.range, 10, 'blue'); track selectedWeapon()?.id + '-' + $index)
-          {
-          <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
-          }
-        </div>
-      </div>
-
-    </div>
-    }
-
-    <!-- Archive Data -->
-    <div class="module" style="margin-top: 1.5rem;">
-      <div class="module-header">
-        <span class="material-symbols-outlined module-icon">folder_open</span>
-        ARCHIVE_DATA
-      </div>
-      <div class="archive-text">
-        {{ selectedWeapon()?.description || 'No archive data available for this weapon.' }}
       </div>
     </div>
   </div>

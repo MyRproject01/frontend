@@ -383,7 +383,7 @@
 
 .archive-text {
   font-family: var(--font-inter);
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   color: var(--on-surface-variant);
   line-height: 1.6;
   letter-spacing: 0.05em;
