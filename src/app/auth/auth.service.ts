@@ -12,10 +12,12 @@ export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
 
   login(credentials: LoginRequestDTO): Observable<AuthResponse> {
+    this.logout(); // Limpiar token antiguo para evitar que el interceptor lo envíe
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials);
   }
 
   register(data: RegisterRequestDTO): Observable<any> {
+    this.logout(); // Limpiar token antiguo para evitar que el interceptor lo envíe
     return this.http.post(`${this.apiUrl}/register`, data);
   }
 
@@ -30,5 +32,6 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('username');
   }
 }
