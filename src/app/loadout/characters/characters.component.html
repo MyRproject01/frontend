@@ -1,0 +1,149 @@
+<section class="panel roster-panel">
+  <div class="panel-header">
+    <span class="panel-title">ROSTER_SELECT //</span>
+    <span class="panel-count">{{ characters().length | number:'2.0-0' }}_UNITS_FOUND</span>
+  </div>
+
+  <div class="roster-grid">
+    @if (loading()) {
+      <div style="color: var(--primary); font-family: 'Share Tech Mono', monospace; padding: 1rem;">LOADING...</div>
+    } @else {
+      @for (char of characters(); track char.id) {
+        <button class="unit-card" [class.unit-active]="selectedCharacter()?.id === char.id" [class.unit-inactive]="selectedCharacter()?.id !== char.id" (click)="selectCharacter(char)">
+          <div class="unit-image" [class.grayscale]="selectedCharacter()?.id !== char.id"
+            [style.background-image]="'url(' + getIconUrl(char.name) + ')'">
+          </div>
+          <div class="unit-label">
+            <span class="unit-name" [class.active-name]="selectedCharacter()?.id === char.id">{{ char.name | uppercase }}</span>
+            <div class="unit-dot" [class.dot-active]="selectedCharacter()?.id === char.id"></div>
+          </div>
+        </button>
+      }
+
+      <!-- Locked Slot (Optional) -->
+      <div class="unit-card unit-locked">
+        <span class="material-symbols-outlined lock-icon">lock</span>
+        <span class="lock-label">RESTRICTED</span>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ── CENTER PANEL: Preview ──────────────────── -->
+<section class="panel preview-panel">
+  <!-- Corner accents -->
+  <div class="preview-corner corner-tl"></div>
+  <div class="preview-corner corner-br"></div>
+
+  <!-- Full-body image -->
+  <div class="preview-image"
+    [style.background-image]="selectedCharacter() ? 'url(' + getImageUrl(selectedCharacter()!.name) + ')' : 'none'">
+  </div>
+
+  <!-- Grid overlay -->
+  <div class="preview-grid-overlay"></div>
+
+
+
+  <!-- Bottom name -->
+  <div class="preview-name-block">
+    <h1 class="preview-title">{{ selectedCharacter() ? (selectedCharacter()!.name | uppercase) : 'SELECT_UNIT' }}</h1>
+  </div>
+
+  <!-- Reticle decoration -->
+  <div class="reticle">
+    <div class="reticle-tick rt-top"></div>
+    <div class="reticle-tick rt-bottom"></div>
+    <div class="reticle-tick rt-left"></div>
+    <div class="reticle-tick rt-right"></div>
+    <div class="reticle-inner"></div>
+  </div>
+</section>
+
+<!-- ── RIGHT PANEL: Stats ─────────────────────── -->
+<section class="panel stats-panel">
+
+  <!-- Vitals -->
+  <div class="module">
+    <div class="module-header">
+      <span class="material-symbols-outlined module-icon">insert_chart</span>
+      STATS
+    </div>
+
+    @if (animationState()) {
+      <div class="bar-group">
+        <div class="bar-labels">
+          <span>HEALTH</span>
+          <span class="bar-val cyan">{{ selectedCharacter()?.health || 0 }}</span>
+        </div>
+        <div class="seg-bar">
+          @for (seg of getStatSegments(selectedCharacter()?.health, 100, 'cyan'); track selectedCharacter()?.id + '-' + $index) {
+            <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+          }
+        </div>
+      </div>
+      
+      <div class="bar-group">
+        <div class="bar-labels">
+          <span>SHIELD</span>
+          <span class="bar-val purple">{{ selectedCharacter()?.shield || 0 }}</span>
+        </div>
+        <div class="seg-bar">
+          @for (seg of getStatSegments(selectedCharacter()?.shield, 100, 'purple'); track selectedCharacter()?.id + '-' + $index) {
+            <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+          }
+        </div>
+      </div>
+
+      <div class="bar-group">
+        <div class="bar-labels">
+          <span>DAMAGE</span>
+          <span class="bar-val red">{{ selectedCharacter()?.damage || 0 }}</span>
+        </div>
+        <div class="seg-bar">
+          @for (seg of getStatSegments(selectedCharacter()?.damage, 50, 'red'); track selectedCharacter()?.id + '-' + $index) {
+            <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+          }
+        </div>
+      </div>
+
+      <div class="bar-group">
+        <div class="bar-labels">
+          <span>ATTACK SPEED</span>
+          <span class="bar-val yellow">{{ selectedCharacter()?.attackSpeed || 0 }}</span>
+        </div>
+        <div class="seg-bar">
+          @for (seg of getStatSegments(selectedCharacter()?.attackSpeed, 2, 'yellow'); track selectedCharacter()?.id + '-' + $index) {
+            <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+          }
+        </div>
+      </div>
+
+      <div class="bar-group">
+        <div class="bar-labels">
+          <span>RANGE</span>
+          <span class="bar-val blue">{{ selectedCharacter()?.range || 0 }}</span>
+        </div>
+        <div class="seg-bar">
+          @for (seg of getStatSegments(selectedCharacter()?.range, 1000, 'blue'); track selectedCharacter()?.id + '-' + $index) {
+            <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Archive Data -->
+  <div class="module">
+    <div class="module-header">
+      <span class="material-symbols-outlined module-icon">folder_open</span>
+      ARCHIVE_DATA
+    </div>
+    <div class="archive-text">
+      {{ selectedCharacter()?.description || 'No archive data available for this unit.' }}
+    </div>
+  </div>
+
+
+
+</section>

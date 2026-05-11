@@ -1,0 +1,121 @@
+:host {
+  display: block;
+}
+
+/* ── Container ─────────────────────────── */
+.loadout-container {
+  box-sizing: border-box;
+  height: 100vh;
+  overflow: hidden;
+  background: transparent;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  padding-top: 4.5rem;
+  /* topbar height */
+}
+
+/* ── Loadout Sidebar ───────────────────── */
+.loadout-sidebar {
+  width: 22rem;
+  flex-shrink: 0;
+  height: 100%;
+  background: rgba(9, 9, 11, 0.88);
+  backdrop-filter: blur(16px);
+  border-right: 1px solid var(--outline);
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 0;
+  gap: 0.25rem;
+  z-index: 10;
+}
+
+.sidebar-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-space);
+  font-size: 0.9rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--cyan);
+  padding: 0 1.5rem 1rem;
+  border-bottom: 1px solid var(--outline);
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-title .material-symbols-outlined {
+  font-size: 1.3rem;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.5rem;
+  font-family: var(--font-space);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--on-surface-variant);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  transition: color 0.1s, background 0.1s, border-color 0.1s;
+  cursor: pointer;
+}
+
+.sidebar-link .material-symbols-outlined {
+  font-size: 1.3rem;
+}
+
+.sidebar-link:hover {
+  color: var(--cyan);
+  background: rgba(34, 211, 238, 0.05);
+  border-left-color: rgba(34, 211, 238, 0.4);
+}
+
+.sidebar-link.active {
+  color: var(--cyan);
+  background: rgba(34, 211, 238, 0.08);
+  border-left-color: var(--cyan);
+}
+
+.sidebar-back {
+  color: var(--on-surface-variant);
+  font-size: 0.65rem;
+  opacity: 0.7;
+}
+
+.sidebar-back:hover {
+  color: var(--on-surface);
+  opacity: 1;
+  border-left-color: var(--outline);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--outline);
+  margin: 0.5rem 1.25rem;
+}
+
+/* ── Content Area ───────────────────────── */
+.content-area {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Main Canvas ────────────────────────── */
+.main-canvas {
+  flex: 1;
+  padding: 1rem;
+  display: flex;
+  gap: 0.75rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  height: 100%;
+}

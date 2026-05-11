@@ -1,0 +1,76 @@
+<div class="login-container">
+  <!-- Global Scanline Overlay -->
+  <div class="scanlines-overlay"></div>
+  <!-- Background Atmospheric Noise -->
+  <div class="bg-noise"></div>
+
+  <!-- Central Authentication Panel (Hull Plate) -->
+  <div class="auth-panel">
+    <!-- Circuitry Borders & Wear Details -->
+    <div class="circuit-border top-left-border"></div>
+    <div class="circuit-border top-right-border"></div>
+    <div class="circuit-border bottom-left-border"></div>
+    <div class="circuit-border bottom-right-border"></div>
+
+    <!-- Panel Content -->
+    <div class="panel-content">
+      <!-- Header Identity -->
+      <div class="panel-header">
+        <span class="material-symbols-outlined terminal-icon">terminal</span>
+        <h1 class="system-title">MAINFRAME_OS</h1>
+
+      </div>
+
+      @if (errorMessage) {
+      <div class="error-message-panel"
+        style="color: #ff3366; text-align: center; margin-bottom: 1rem; font-family: monospace; border: 1px solid #ff3366; padding: 0.5rem; background: rgba(255, 51, 102, 0.1);">
+        > ERROR: {{ errorMessage }}
+      </div>
+      }
+
+      <!-- Authentication Form -->
+      <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit($event)">
+        <!-- Input: Access Key -->
+        <div class="input-group">
+          <label class="input-label">
+            <span>NickName</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="input-prefix">&gt;</span>
+            <input type="text" formControlName="username" placeholder="ENTER_IDENTITY..." autocomplete="off"
+              spellcheck="false" class="auth-input" />
+          </div>
+        </div>
+
+        <!-- Input: Encryption Phrase -->
+        <div class="input-group">
+          <label class="input-label">
+            <span>Password</span>
+          </label>
+          <div class="input-wrapper">
+            <span class="input-prefix">&gt;</span>
+            <input type="password" formControlName="password" placeholder="••••••••••••" autocomplete="off"
+              class="auth-input password-input" />
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <button type="submit" class="action-button clip-button">
+          <div class="button-content">
+            <span class="material-symbols-outlined login-icon">login</span>
+            <span>LOGIN</span>
+          </div>
+          <div class="glitch-overlay"></div>
+        </button>
+
+        <div class="auth-links"
+          style="margin-top: 1.5rem; text-align: center; font-family: monospace; font-size: 0.9rem;">
+          <span style="color: rgba(255, 255, 255, 0.6);">NOT ENROLLED?</span>
+          <a routerLink="/register"
+            style="color: #00f3ff; text-decoration: none; margin-left: 0.5rem; text-shadow: 0 0 5px rgba(0, 243, 255, 0.5);">>
+            REGISTER</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,116 @@
+
+
+<!-- Main Content Canvas -->
+<main class="main-content">
+    <!-- Decoration Circuitry -->
+    <div class="circuit-line cl-1"></div>
+    <div class="circuit-line cl-2"></div>
+    <div class="circuit-line cl-3"></div>
+    <div class="circuit-line cl-4"></div>
+
+    <!-- Central Area: Action Stack -->
+    <div class="action-stack-container">
+        <div class="action-stack">
+            <!-- Header Text -->
+            <div class="header-text">
+                <h1 class="os-title">Neon Rush</h1>
+                <div class="awaiting-input">
+                    <div class="line"></div>
+                    <span class="text"></span>
+                    <div class="line"></div>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-group">
+                <!-- PLAY Button -->
+                <button class="btn-play">
+                    <span class="btn-play-text">
+                        <span class="material-symbols-outlined" data-icon="play_arrow">play_arrow</span>
+                        PLAY
+                    </span>
+                    <!-- Hover Glow Effect -->
+                    <div class="btn-play-glow"></div>
+                </button>
+
+                <div class="secondary-buttons">
+                    <button class="btn-secondary" routerLink="/loadout/characters">
+                        <span class="btn-sec-label">
+                            <span class="material-symbols-outlined" data-icon="shield">shield</span>
+                            LOADOUT
+                        </span>
+                    </button>
+                    <button class="btn-secondary" routerLink="/profile">
+                        <span class="btn-sec-label">
+                            <span class="material-symbols-outlined" data-icon="person">person</span>
+                            PROFILE
+                        </span>
+                    </button>
+                    <button class="btn-secondary" routerLink="/settings">
+                        <span class="btn-sec-label">
+                            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+                            SETTINGS
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Sidebar: Leaderboard -->
+    <div class="leaderboard-sidebar">
+        <div class="leaderboard-panel">
+            <div class="leaderboard-header">
+                <span class="title">&#9651; LEADERBOARD</span>
+                <span class="material-symbols-outlined icon">leaderboard</span>
+            </div>
+            <div class="leaderboard-list custom-scrollbar">
+                @if (leaderboard().length === 0) {
+                    <div class="lb-entry" style="justify-content: center; opacity: 0.5;">
+                        <span>LOADING_DATA...</span>
+                    </div>
+                }
+                
+                @for (entry of leaderboard(); track entry.username; let i = $index) {
+                <div class="lb-entry">
+                    <div class="lb-rank" [class.rank-1]="i === 0">#{{ (i + 1).toString().padStart(2, '0') }}</div>
+                    <div class="lb-avatar" [class.lb-avatar-placeholder]="i > 2">
+                        @if (i <= 2) {
+                            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA88Zpw-Of9gI_97rHUC27VLteVkOOXaD3pgjCwgKbgdDIJHJrvkDZgvLtDnx7Yz2GbMQJjI6uiQYeiP2iHd5Zko3IA9Ncnt2OOdleHvQxBdT2uYpTFwYrLB3Ewk_NlTRlwVj5s0O_Lxlnlh9xHNzwO7Rid3ej78Y0ZrPMB-YbgajchainEwX2zvJZbR23SWRXSKcX0LEnUGL1KMXhikzQHK4QqnfY__3KQsL-b3eadY1ZsofRPZJeiTJlzHER-8bD5Fb96g4fdieea" alt="{{ entry.username }}" />
+                        } @else {
+                            <span class="material-symbols-outlined">person</span>
+                        }
+                    </div>
+                    <div class="lb-card">
+                        <span class="lb-name">{{ entry.username }}</span>
+                        <span class="lb-score">{{ entry.highScore }} <span style="font-size: 0.65rem; color: var(--color-zinc-500); margin-left: 4px;">(W{{ entry.maxWave }})</span></span>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <!-- Player entry (you) -->
+            <div class="lb-footer">
+                @if (showUserFooter()) {
+                    @if (userHighScore() !== null) {
+                        <div class="lb-entry user-entry">
+                            <div class="lb-rank lb-rank-you">#{{ userRank() }}</div>
+                            <div class="lb-avatar lb-avatar-you">
+                                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuA88Zpw-Of9gI_97rHUC27VLteVkOOXaD3pgjCwgKbgdDIJHJrvkDZgvLtDnx7Yz2GbMQJjI6uiQYeiP2iHd5Zko3IA9Ncnt2OOdleHvQxBdT2uYpTFwYrLB3Ewk_NlTRlwVj5s0O_Lxlnlh9xHNzwO7Rid3ej78Y0ZrPMB-YbgajchainEwX2zvJZbR23SWRXSKcX0LEnUGL1KMXhikzQHK4QqnfY__3KQsL-b3eadY1ZsofRPZJeiTJlzHER-8bD5Fb96g4fdieea" alt="YOU" />
+                            </div>
+                            <div class="lb-card user-card">
+                                <span class="lb-name">YOU</span>
+                                <span class="lb-score">{{ userHighScore() }} <span style="font-size: 0.65rem; opacity: 0.7; margin-left: 4px;">(W{{ userMaxWave() }})</span></span>
+                            </div>
+                        </div>
+                    } @else {
+                        <div class="lb-entry user-entry" style="justify-content: center; opacity: 0.7;">
+                            <span style="font-family: monospace; font-size: 0.9rem;">LOADING_USER_DATA...</span>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+</main>

@@ -1,0 +1,43 @@
+<div class="loadout-container">
+  <!-- Loadout Sidebar -->
+  <nav class="loadout-sidebar">
+    <!-- Title -->
+    <div class="sidebar-title">
+      <span class="material-symbols-outlined">deployed_code</span>
+      LOADOUT
+    </div>
+
+    <!-- Back to Main -->
+    <a class="sidebar-link sidebar-back" routerLink="/main">
+      <span class="material-symbols-outlined">arrow_back_ios</span>
+      MAIN MENU
+    </a>
+
+    <div class="sidebar-divider"></div>
+
+    <!-- Nav items using routerLinkActive -->
+    <a class="sidebar-link" routerLink="/loadout/characters" routerLinkActive="active">
+      <span class="material-symbols-outlined">person_off</span>
+      CHARACTERS
+    </a>
+    <a class="sidebar-link" routerLink="/loadout/weapons" routerLinkActive="active">
+      <span class="material-symbols-outlined">swords</span>
+      WEAPONS
+    </a>
+    <a class="sidebar-link" routerLink="/loadout/items" routerLinkActive="active">
+      <span class="material-symbols-outlined">inventory_2</span>
+      ITEMS
+    </a>
+    <a class="sidebar-link" routerLink="/loadout/enemies" routerLinkActive="active">
+      <span class="material-symbols-outlined">skull</span>
+      ENEMIES
+    </a>
+  </nav>
+
+  <!-- Dynamic Content Area -->
+  <div class="content-area">
+    <main class="main-canvas">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

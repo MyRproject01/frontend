@@ -1,0 +1,136 @@
+
+      <section class="panel roster-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span class="material-symbols-outlined title-icon">grid_view</span>
+            ENEMY_ROSTER
+          </h2>
+          <div class="panel-count">
+            FOUND: <span class="text-cyan">{{ enemies().length }}</span>
+          </div>
+        </div>
+        
+        <div class="roster-grid-wrapper">
+          <div class="roster-grid">
+            @if (loading()) {
+              <div style="color: var(--cyan); font-family: 'Share Tech Mono', monospace; padding: 1rem;">LOADING...</div>
+            } @else {
+              @for (enemy of enemies(); track enemy.id) {
+                <div class="item-slot" 
+                     [class.active-slot]="selectedEnemy()?.id === enemy.id" 
+                     [class.available-slot]="selectedEnemy()?.id !== enemy.id"
+                     (click)="selectEnemy(enemy)">
+                  <img class="slot-image"
+                       [class.grayscale]="selectedEnemy()?.id !== enemy.id"
+                       [src]="getIconUrl(enemy.name)"
+                       [alt]="enemy.name"
+                       (error)="$any($event.target).src = getImageUrl(enemy.name)" />
+                  <div class="slot-badge" [class.active-badge]="selectedEnemy()?.id === enemy.id" [class.text-cyan-dim]="selectedEnemy()?.id !== enemy.id" style="font-size: 0.5rem; text-align: center;">{{ enemy.name | uppercase | slice:0:10 }}</div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: ENEMY_INTEL -->
+      <section class="panel intel-panel">
+        <div class="corner-decoration"></div>
+        
+        <div class="intel-content">
+          <!-- Header -->
+          <div class="intel-header">
+            <h1 class="intel-title">{{ selectedEnemy() ? (selectedEnemy()!.name | uppercase) : 'SELECT_ENEMY' }}</h1>
+            <div class="intel-divider">
+              <div class="intel-divider-progress" style="background: var(--purple);"></div>
+            </div>
+          </div>
+          
+          <!-- Enemy Visualizer -->
+          <div class="visualizer-box" style="border-color: rgba(235,178,255,0.25);">
+            <img class="visualizer-image" 
+                 [src]="selectedEnemy() ? getImageUrl(selectedEnemy()!.name) : ''"
+                 [alt]="selectedEnemy()?.name || 'enemy'" />
+          </div>
+          
+          <!-- Stats Grid -->
+          <div class="intel-details">
+
+            @if (animationState()) {
+              <div class="module">
+                <div class="module-header">
+                  <span class="material-symbols-outlined module-icon">bar_chart</span>
+                  COMBAT_SPECS
+                </div>
+                <div class="stats-grid">
+
+                  <!-- HEALTH -->
+                  <div class="stat-bar-container">
+                    <div class="stat-labels">
+                      <span>HEALTH</span>
+                      <span class="stat-value cyan">{{ selectedEnemy()?.health }}</span>
+                    </div>
+                    <div class="seg-bar">
+                      @for (seg of getStatSegments(selectedEnemy()?.health, 500, 'cyan'); track $index) {
+                        <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- DAMAGE -->
+                  <div class="stat-bar-container">
+                    <div class="stat-labels">
+                      <span>DAMAGE</span>
+                      <span class="stat-value red">{{ selectedEnemy()?.damage }}</span>
+                    </div>
+                    <div class="seg-bar">
+                      @for (seg of getStatSegments(selectedEnemy()?.damage, 100, 'red'); track $index) {
+                        <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- SPEED -->
+                  <div class="stat-bar-container">
+                    <div class="stat-labels">
+                      <span>SPEED</span>
+                      <span class="stat-value yellow">{{ selectedEnemy()?.speed }}</span>
+                    </div>
+                    <div class="seg-bar">
+                      @for (seg of getStatSegments(selectedEnemy()?.speed, 10, 'yellow'); track $index) {
+                        <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- DIFFICULTY -->
+                  <div class="stat-bar-container">
+                    <div class="stat-labels">
+                      <span>DIFFICULTY</span>
+                      <span class="stat-value purple">{{ selectedEnemy()?.difficulty }}</span>
+                    </div>
+                    <div class="seg-bar">
+                      @for (seg of getStatSegments(selectedEnemy()?.difficulty, 10, 'purple'); track $index) {
+                        <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+                      }
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            }
+
+            <!-- Archive Data -->
+            <div class="module">
+              <div class="module-header">
+                <span class="material-symbols-outlined module-icon">folder_open</span>
+                ARCHIVE_DATA
+              </div>
+              <div class="archive-text">
+                {{ selectedEnemy()?.description || 'No archive data available for this unit.' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+

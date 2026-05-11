@@ -1,0 +1,69 @@
+
+      <section class="panel roster-panel">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <span class="material-symbols-outlined title-icon">grid_view</span>
+            ITEM_ROSTER
+          </h2>
+          <div class="panel-count">
+            FOUND: <span class="text-cyan">{{ items().length }}</span>
+          </div>
+        </div>
+        
+        <div class="roster-grid-wrapper">
+          <div class="roster-grid">
+            @if (loading()) {
+              <div style="color: var(--cyan); font-family: 'Share Tech Mono', monospace; padding: 1rem;">LOADING...</div>
+            } @else {
+              @for (item of items(); track item.id) {
+                <div class="item-slot" 
+                     [class.active-slot]="selectedItem()?.id === item.id" 
+                     [class.available-slot]="selectedItem()?.id !== item.id"
+                     (click)="selectItem(item)">
+                  <div class="slot-image"
+                       [class.grayscale]="selectedItem()?.id !== item.id"
+                       [style.background-image]="'url(' + getImageUrl(item.name) + ')'">
+                  </div>
+                  <div class="slot-badge" [class.active-badge]="selectedItem()?.id === item.id" [class.text-cyan-dim]="selectedItem()?.id !== item.id" style="font-size: 0.5rem; text-align: center;">{{ item.name | uppercase | slice:0:10 }}</div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: ITEM_INTEL -->
+      <section class="panel intel-panel">
+        <div class="corner-decoration"></div>
+        
+        <div class="intel-content">
+          <!-- Header -->
+          <div class="intel-header">
+            <h1 class="intel-title">{{ selectedItem() ? (selectedItem()!.name | uppercase) : 'SELECT_ITEM' }}</h1>
+            <div class="intel-divider">
+              <div class="intel-divider-progress"></div>
+            </div>
+          </div>
+          
+          <!-- Item Visualizer -->
+          <div class="visualizer-box">
+            <img class="visualizer-image" 
+                 [src]="selectedItem() ? getImageUrl(selectedItem()!.name) : ''"
+                 [alt]="selectedItem()?.name || 'item'" />
+          </div>
+          
+          <!-- Archive Data -->
+          <div class="intel-details">
+            <div class="module">
+              <div class="module-header">
+                <span class="material-symbols-outlined module-icon">folder_open</span>
+                ARCHIVE_DATA
+              </div>
+              <div class="archive-text">
+                {{ selectedItem()?.description || 'No archive data available for this item.' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+

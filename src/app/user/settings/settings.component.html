@@ -1,0 +1,140 @@
+<div class="settings-container">
+
+  <!-- Back Button -->
+  <button class="back-btn" routerLink="/main">
+    <span class="material-symbols-outlined">arrow_back_ios</span>
+    BACK TO MAIN MENU
+  </button>
+
+  <!-- Main Content -->
+  <main class="main-canvas">
+    <div class="content-wrapper">
+
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs">
+        <span>SYSTEM</span>
+        <span class="material-symbols-outlined">chevron_right</span>
+        <span class="active">AUDIO_MATRIX</span>
+      </div>
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1 class="page-title">
+          <span class="material-symbols-outlined">volume_up</span>
+          SOUND_SETTINGS
+        </h1>
+        <p class="page-subtitle">CALIBRATING NEURAL AUDIO INTERFACE...</p>
+      </div>
+
+      <!-- Audio Panel -->
+      <div class="audio-panel">
+        <!-- Corner decorations -->
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+
+        <div class="settings-stack">
+
+          <!-- MASTER_VOLUME -->
+          <div class="setting-row">
+            <div class="setting-header">
+              <label class="setting-label">
+                <span class="dot"></span> MASTER_VOLUME
+              </label>
+              <span class="setting-value">{{ draftMaster }}%</span>
+            </div>
+            <input
+              class="slider"
+              type="range"
+              min="0"
+              max="100"
+              [value]="draftMaster"
+              (input)="draftMaster = +$any($event.target).value"
+            />
+          </div>
+
+          <!-- MUSIC_LEVEL -->
+          <div class="setting-row setting-with-toggle" [class.muted]="!draftMusicOn">
+            <div class="setting-main">
+              <div class="setting-header">
+                <label class="setting-label secondary">MUSIC_LEVEL</label>
+                <span class="setting-value secondary">{{ draftMusic }}%</span>
+              </div>
+              <input
+                class="slider"
+                type="range"
+                min="0"
+                max="100"
+                [value]="draftMusic"
+                [disabled]="!draftMusicOn"
+                (input)="draftMusic = +$any($event.target).value"
+              />
+            </div>
+            <div class="toggle-group">
+              <span class="toggle-label">{{ draftMusicOn ? 'ENABLED' : 'DISABLED' }}</span>
+              <button class="toggle" [class.on]="draftMusicOn" (click)="draftMusicOn = !draftMusicOn">
+                <div class="toggle-thumb"></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- SFX_LEVEL -->
+          <div class="setting-row setting-with-toggle" [class.muted]="!draftSfxOn">
+            <div class="setting-main">
+              <div class="setting-header">
+                <label class="setting-label secondary">SFX_LEVEL</label>
+                <span class="setting-value secondary">{{ draftSfx }}%</span>
+              </div>
+              <input
+                class="slider"
+                type="range"
+                min="0"
+                max="100"
+                [value]="draftSfx"
+                [disabled]="!draftSfxOn"
+                (input)="draftSfx = +$any($event.target).value"
+              />
+            </div>
+            <div class="toggle-group">
+              <span class="toggle-label">{{ draftSfxOn ? 'ENABLED' : 'DISABLED' }}</span>
+              <button class="toggle" [class.on]="draftSfxOn" (click)="draftSfxOn = !draftSfxOn">
+                <div class="toggle-thumb"></div>
+              </button>
+            </div>
+          </div>
+
+          <!-- APPLIED STATUS -->
+          <div class="apply-status" [class.visible]="applied">
+            <span class="material-symbols-outlined">check_circle</span>
+            SETTINGS APPLIED
+          </div>
+
+          <!-- APPLY BUTTON -->
+          <div class="test-audio-wrapper">
+            <button class="test-btn" [class.applied]="applied" (click)="applySettings()">
+              <div class="test-btn-glow"></div>
+              {{ applied ? 'APPLIED' : 'Apply' }}
+              <span class="material-symbols-outlined">{{ applied ? 'check' : 'graphic_eq' }}</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Warning -->
+      <div class="warning-panel">
+        <span class="material-symbols-outlined warn-icon">warning</span>
+        <p class="warn-text">Warning: High intensity audio frequencies may interfere with neural link synchronization.
+          Discretion advised.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Corner Data -->
+  <div class="corner-data">
+    <p>PACKET_LOSS: 0.002%</p>
+    <p>BUFFER_LATENCY: 12ms</p>
+    <p>ENCRYPTION: AES_256_V2</p>
+  </div>
+
+</div>
