@@ -33,6 +33,7 @@ export class LoginComponent {
       this.authService.login(credentials).subscribe({
         next: (response) => {
           this.authService.saveToken(response.token);
+          localStorage.setItem('username', credentials.username);
           this.router.navigate(['/main']);
         },
         error: (err) => {

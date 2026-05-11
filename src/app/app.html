@@ -2,10 +2,12 @@
   <source src="/soundtrack.mp3" type="audio/mpeg" />
 </audio>
 
+@if (showVideo()) {
 <video autoplay loop [muted]="true" playsinline class="video-background">
     <source src="/background.mp4" type="video/mp4" />
 </video>
 <div class="scanlines"></div>
+}
 
 <!-- Global TopAppBar -->
 @if (showTopbar()) {
@@ -18,7 +20,7 @@
             <div class="avatar-overlay"></div>
         </div>
         <div class="user-info">
-            <div class="user-name">OPERATOR_99 <span class="badge">PRO</span></div>
+            <div class="user-name">{{ username() | uppercase }} <span class="badge">PRO</span></div>
             <div class="user-status">
                 <span class="status-dot"></span> CONNECTION STABLE
             </div>

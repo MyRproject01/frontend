@@ -1,0 +1,61 @@
+<div id="game-container"></div>
+
+<!-- HUD Overlay -->
+<div class="hud-container">
+
+    <!-- Top Bar Container -->
+    <!-- Top Bar Container -->
+    <div class="hud-top-bar">
+        <!-- Left: Resources -->
+        <div class="hud-panel panel-left angled-left">
+            <span class="resource-text gold-text">🟡 {{ GameState.gold() }}</span>
+        </div>
+
+        <!-- Center: Pause Button -->
+        <div class="hud-panel panel-center angled-center clickable" (click)="togglePause()">
+            <span class="pause-icon">⏸️</span>
+        </div>
+
+        <!-- Right: Wave / Score -->
+        <div class="hud-panel panel-right angled-right">
+            <span class="resource-text">Ronda {{ GameState.wave() }} | Ptos: {{ GameState.score() }}</span>
+            <button class="speed-btn" (click)="toggleSpeed()">
+                {{ isFastForward ? '⏩ x2' : '▶️ x1' }}
+            </button>
+            <button class="next-wave-btn" [disabled]="GameState.isWaveActive()" (click)="startWave()">
+                ▶
+            </button>
+        </div>
+    </div>
+
+    <!-- Vertical Lives Bar (Left Side) - Keeping consistent -->
+    <!-- Vertical Lives & Shield Bar (Left Side) -->
+    <div class="lives-bar-wrapper">
+        <div class="bars-group">
+            <!-- Shield Bar (Blue) -->
+            <div class="lives-bar-container shield-bar">
+                <div class="lives-bar-fill shield-fill"
+                    [style.height.%]="(GameState.shield() / GameState.maxShield()) * 100"></div>
+            </div>
+            <!-- HP Bar (Red) -->
+            <div class="lives-bar-container">
+                <div class="lives-bar-fill" [style.height.%]="(GameState.lives() / 20) * 100"></div>
+            </div>
+        </div>
+        <div class="lives-icon">🛡️ ❤️</div>
+    </div>
+
+    <!-- Tower Selection (Bottom Right) -->
+    <div class="hud-panel panel-bottom-right angled-corner">
+        <div class="tower-grid">
+            @for (w of DataManager.data().weapons; track w.id) {
+            <div class="tower-slot" [class.selected]="GameState.selectedWeapon()?.type === w.id"
+                (click)="selectWeapon(w.id, w.cost)"
+                [title]="w.name + ' (' + w.cost + 'g)'">
+                <img [src]="w.icon" [alt]="w.name">
+                <span class="price">{{ w.cost }}</span>
+            </div>
+            }
+        </div>
+    </div>
+</div>

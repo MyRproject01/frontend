@@ -20,28 +20,12 @@
     <div class="identity-row">
       <div class="avatar-block">
         <div class="avatar-frame">
-          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1VQcjFTYZ3S9ejv4tFMbp9ZESgXhsN_MjzJptzZ8BEQPrra4V41QXnlw_NtNuXuRu6cZBeBV4huK2JGmZ3XvFn3-EF11hS76eu_OiLUKnNV1DmPD4zzMaK7z5BAsrb1UT5Pd4pZ5OSPY6F3Rfag4kuIMWDkKH51JQCwc09TRZqwNPWqZ1Zdv-JtFgCPH85w95t_a5CXFa9VvHZte_3MHBNJkCS_3-422SH-whraykPmaKLurG_UjAQ_iwRp6DHg3w67rvihrEwPkh" alt="OPERATOR_01" />
-          <div class="lvl-badge">LVL 42</div>
+          <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1VQcjFTYZ3S9ejv4tFMbp9ZESgXhsN_MjzJptzZ8BEQPrra4V41QXnlw_NtNuXuRu6cZBeBV4huK2JGmZ3XvFn3-EF11hS76eu_OiLUKnNV1DmPD4zzMaK7z5BAsrb1UT5Pd4pZ5OSPY6F3Rfag4kuIMWDkKH51JQCwc09TRZqwNPWqZ1Zdv-JtFgCPH85w95t_a5CXFa9VvHZte_3MHBNJkCS_3-422SH-whraykPmaKLurG_UjAQ_iwRp6DHg3w67rvihrEwPkh" alt="{{ username }}" />
         </div>
       </div>
 
       <div class="identity-info">
-        <div class="uid-badge">UID: 99x-AF-01 // SEC_LEVEL_UNRESTRICTED</div>
-        <h1 class="operator-name">OPERATOR_01</h1>
-        <p class="operator-status">
-          SYS_STATUS: <span class="status-active">ACTIVE_ENGAGEMENT</span>
-        </p>
-
-        <!-- XP Bar -->
-        <div class="xp-block">
-          <div class="xp-labels">
-            <span>EXP_PROGRESS</span>
-            <span>12,400 / 15,000 XP &nbsp;[74%]</span>
-          </div>
-          <div class="xp-track">
-            <div class="xp-fill" style="width: 74%;"></div>
-          </div>
-        </div>
+        <h1 class="operator-name">{{ username | uppercase }}</h1>
       </div>
     </div>
 
@@ -52,58 +36,13 @@
     <div class="stats-row">
       <div class="stat-cell">
         <span class="material-symbols-outlined stat-icon">emoji_events</span>
-        <span class="stat-val">99,420</span>
+        <span class="stat-val">{{ highScore | number }}</span>
         <span class="stat-lbl">HIGH SCORE</span>
       </div>
       <div class="stat-cell">
         <span class="material-symbols-outlined stat-icon">waves</span>
-        <span class="stat-val">W84</span>
+        <span class="stat-val">W{{ maxWave }}</span>
         <span class="stat-lbl">BEST WAVE</span>
-      </div>
-      <div class="stat-cell">
-        <span class="material-symbols-outlined stat-icon">sword_alt</span>
-        <span class="stat-val">12,450</span>
-        <span class="stat-lbl">ELIMINATIONS</span>
-      </div>
-      <div class="stat-cell">
-        <span class="material-symbols-outlined stat-icon">gps_fixed</span>
-        <span class="stat-val">88.4%</span>
-        <span class="stat-lbl">ACCURACY</span>
-      </div>
-      <div class="stat-cell">
-        <span class="material-symbols-outlined stat-icon">timer</span>
-        <span class="stat-val">142H</span>
-        <span class="stat-lbl">SURVIVAL TIME</span>
-      </div>
-    </div>
-
-    <!-- Divider -->
-    <div class="divider"></div>
-
-    <!-- Bottom: Achievements -->
-    <div class="medals-row">
-      <span class="medals-title">MEDALS_EARNED</span>
-      <div class="medals-list">
-        <div class="medal">
-          <div class="medal-icon"><span class="material-symbols-outlined">swords</span></div>
-          <span class="medal-lbl">FIRST BLOOD</span>
-        </div>
-        <div class="medal">
-          <div class="medal-icon"><span class="material-symbols-outlined">shield</span></div>
-          <span class="medal-lbl">SURVIVOR</span>
-        </div>
-        <div class="medal">
-          <div class="medal-icon"><span class="material-symbols-outlined">bolt</span></div>
-          <span class="medal-lbl">TECH MASTER</span>
-        </div>
-        <div class="medal">
-          <div class="medal-icon locked"><span class="material-symbols-outlined">lock</span></div>
-          <span class="medal-lbl locked-lbl">???</span>
-        </div>
-        <div class="medal">
-          <div class="medal-icon locked"><span class="material-symbols-outlined">lock</span></div>
-          <span class="medal-lbl locked-lbl">???</span>
-        </div>
       </div>
     </div>
 

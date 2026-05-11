@@ -1,0 +1,315 @@
+#game-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    font-family: 'GothicByte', sans-serif;
+    /* Global font */
+}
+
+/* HUD Overlay Styles */
+.hud-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Click-through to game */
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* --- TOP BAR LAYOUT --- */
+.hud-top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0;
+    /* REMOVED PADDING to touch edges */
+    box-sizing: border-box;
+}
+
+/* General Panel Style (Medieval/Dark) */
+.hud-panel {
+    background-color: rgba(30, 20, 20, 0.9);
+    /* Dark reddish-brown */
+    color: #ffd700;
+    /* Gold text */
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 2px solid #5a3a2a;
+    /* Muted border */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
+    /* Allow clicks */
+}
+
+.clickable {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.clickable:hover {
+    background-color: rgba(50, 30, 30, 1);
+}
+
+.pause-icon {
+    font-size: 24px;
+}
+
+/* Angled Shapes (Clip Path) */
+.angled-left {
+    min-width: 180px;
+    /* Bit wider */
+    height: 60px;
+    /* Taller to stick to corner better */
+    clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
+    padding-right: 40px;
+    /* Offset for angle */
+}
+
+.angled-center {
+    min-width: 80px;
+    height: 50px;
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+    /* Trapezoid */
+    background-color: rgba(20, 20, 20, 0.95);
+    border-top: none;
+}
+
+.angled-right {
+    min-width: 250px;
+    /* Wider for Score + Wave */
+    height: 60px;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 15% 100%);
+    padding-left: 40px;
+    /* Offset for angle */
+    justify-content: flex-end;
+}
+
+.resource-text {
+    font-size: 22px;
+    text-shadow: 2px 2px 0 #000;
+}
+
+.gold-text {
+    color: #ffd700;
+}
+
+.status-text {
+    font-size: 16px;
+    color: #fff;
+    letter-spacing: 2px;
+}
+
+.next-wave-btn {
+    background-color: #4CAF50;
+    /* Green */
+    border: 2px solid #2E7D32;
+    color: white;
+    padding: 5px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin-left: 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: 'GothicByte', sans-serif;
+    transition: all 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.speed-btn {
+    background-color: #2196F3;
+    /* Blue */
+    border: 2px solid #1976D2;
+    color: white;
+    padding: 5px 10px;
+    margin-left: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-family: 'GothicByte', sans-serif;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.speed-btn:hover {
+    background-color: #1E88E5;
+    transform: scale(1.05);
+}
+
+.next-wave-btn:hover {
+    background-color: #45a049;
+    transform: scale(1.1);
+    box-shadow: 0 0 10px #4CAF50;
+}
+
+/* --- BOTTOM RIGHT TOWER PANEL --- */
+.panel-bottom-right {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 450px;
+    /* WIDER */
+    height: 160px;
+    /* TALLER */
+    background-color: rgba(25, 20, 20, 0.95);
+    border-top: 2px solid #5a3a2a;
+    border-left: 2px solid #5a3a2a;
+
+    /* Angled Cut: Top-Left corner cut off */
+    clip-path: polygon(10% 0, 100% 0, 100% 100%, 0 100%);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center content */
+    justify-content: center;
+    padding: 10px 20px 10px 50px;
+    /* Extra left padding for angle */
+}
+
+.tower-label {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    text-transform: uppercase;
+}
+
+.tower-grid {
+    display: flex;
+    gap: 25px;
+    /* More gap */
+    justify-content: center;
+    width: 100%;
+}
+
+.tower-slot {
+    width: 90px;
+    /* BIGGER */
+    height: 110px;
+    /* BIGGER */
+    background: #111;
+    border: 1px solid #444;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.tower-slot:hover {
+    border-color: #ffd700;
+    background: #2e2e2e;
+    transform: translateY(-8px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+}
+
+.tower-slot.selected {
+    border-color: #00ff00;
+    /* Green Selection */
+    background: #1e3a1e;
+    box-shadow: 0 0 20px #00ff00;
+    transform: translateY(-8px);
+}
+
+.next-wave-btn:disabled {
+    background-color: #555;
+    border-color: #333;
+    color: #aaa;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.tower-slot img {
+    width: 64px;
+    /* BIGGER ICON */
+    height: 64px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 2px #000);
+}
+
+.price {
+    font-size: 18px;
+    /* BIGGER FONT */
+    color: #ffd700;
+    margin-top: 2px;
+}
+
+/* --- VERTICAL LIVES BAR (Preserved & Refined) --- */
+.lives-bar-wrapper {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    pointer-events: auto;
+}
+
+.bars-group {
+    display: flex;
+    gap: 8px;
+    /* Gap between Shield and HP bars */
+}
+
+.lives-bar-container {
+    width: 20px;
+    height: 250px;
+    background-color: rgba(10, 10, 10, 0.8);
+    border: 2px solid #5a3a2a;
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.shield-bar {
+    border-color: #005a8d;
+}
+
+.lives-bar-fill {
+    width: 100%;
+    background: linear-gradient(to top, #8b0000, #ff4444);
+    transition: height 0.3s ease-out;
+    box-shadow: 0 0 15px #ff0000;
+}
+
+.shield-fill {
+    background: linear-gradient(to top, #004488, #0088ff);
+    box-shadow: 0 0 15px #0088ff;
+}
+
+.lives-icon {
+    font-size: 24px;
+    filter: drop-shadow(2px 2px 0 #000);
+    margin-top: -5px;
+}
+
+/* Game Canvas */
+canvas {
+    display: block;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+}
