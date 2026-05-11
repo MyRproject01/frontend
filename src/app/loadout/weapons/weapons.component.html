@@ -17,7 +17,7 @@
       @for (wpn of weapons(); track wpn.id) {
       <div class="item-slot" [class.active-slot]="selectedWeapon()?.id === wpn.id"
         [class.available-slot]="selectedWeapon()?.id !== wpn.id" (click)="selectWeapon(wpn)">
-        <img class="slot-image" [class.grayscale]="selectedWeapon()?.id !== wpn.id" [src]="getImageUrl(wpn.name)"
+        <img class="slot-image" [class.grayscale]="selectedWeapon()?.id !== wpn.id" [src]="getIconUrl(wpn.name)"
           [alt]="wpn.name" />
         <div class="slot-badge" [class.active-badge]="selectedWeapon()?.id === wpn.id"
           [class.text-cyan-dim]="selectedWeapon()?.id !== wpn.id" style="font-size: 0.5rem; text-align: center;">{{

@@ -47,6 +47,11 @@ export class WeaponsComponent implements OnInit {
     return `/weapons/${formattedName}.png`;
   }
 
+  getIconUrl(name: string): string {
+    const formattedName = name.toLowerCase().replace(/\s+/g, '-');
+    return `/weapons/${formattedName}-icon.png`;
+  }
+
   getStatSegments(value: number | undefined, maxBase: number, colorType: string): { type: string }[] {
     const val = value || 0;
     const segments = [];
