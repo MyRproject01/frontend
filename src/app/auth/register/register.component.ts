@@ -14,7 +14,7 @@ export class RegisterComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
-  
+
   errorMessage: string | null = null;
 
   registerForm = this.fb.group({
@@ -31,7 +31,7 @@ export class RegisterComponent {
         email: this.registerForm.value.email!,
         password: this.registerForm.value.password!
       };
-      
+
       this.authService.register(data).subscribe({
         next: () => {
           // After successful registration, usually redirect to login

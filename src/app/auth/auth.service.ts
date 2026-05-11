@@ -9,15 +9,13 @@ import { LoginRequestDTO, RegisterRequestDTO, AuthResponse } from './auth.models
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;
+  private apiUrl = `${environment.apiUrl}/auth`;
 
   login(credentials: LoginRequestDTO): Observable<AuthResponse> {
-    this.logout(); // Limpiar token antiguo para evitar que el interceptor lo envíe
     return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials);
   }
 
   register(data: RegisterRequestDTO): Observable<any> {
-    this.logout(); // Limpiar token antiguo para evitar que el interceptor lo envíe
     return this.http.post(`${this.apiUrl}/register`, data);
   }
 
@@ -27,13 +25,10 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    const token = localStorage.getItem('auth_token');
-    if (!token || token === 'null' || token === 'undefined') return null;
-    return token;
+    return localStorage.getItem('auth_token');
   }
 
   logout() {
     localStorage.removeItem('auth_token');
-    localStorage.removeItem('username');
   }
 }

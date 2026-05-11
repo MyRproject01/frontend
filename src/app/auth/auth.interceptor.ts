@@ -6,9 +6,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const token = authService.getToken();
 
-  // No adjuntar token en rutas de autenticación o si no hay token
-  const url = req.url.toLowerCase();
-  const isAuthUrl = url.includes('login') || url.includes('register');
+  // No adjuntar token en rutas públicas de autenticación
+  const isAuthUrl = req.url.includes('/auth/login') || req.url.includes('/auth/register');
 
   if (token && !isAuthUrl) {
     const authReq = req.clone({

@@ -14,7 +14,7 @@ export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
-  
+
   errorMessage: string | null = null;
 
   loginForm = this.fb.group({
@@ -29,11 +29,10 @@ export class LoginComponent {
         username: this.loginForm.value.username!,
         password: this.loginForm.value.password!
       };
-      
+
       this.authService.login(credentials).subscribe({
         next: (response) => {
           this.authService.saveToken(response.token);
-          localStorage.setItem('username', credentials.username);
           this.router.navigate(['/main']);
         },
         error: (err) => {
