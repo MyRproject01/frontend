@@ -9,7 +9,7 @@ import { LoginRequestDTO, RegisterRequestDTO, AuthResponse } from './auth.models
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/auth`;
+  private apiUrl = environment.apiUrl;
 
   login(credentials: LoginRequestDTO): Observable<AuthResponse> {
     this.logout(); // Limpiar token antiguo para evitar que el interceptor lo envíe
@@ -27,7 +27,9 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('auth_token');
+    const token = localStorage.getItem('auth_token');
+    if (!token || token === 'null' || token === 'undefined') return null;
+    return token;
   }
 
   logout() {
