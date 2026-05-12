@@ -22,7 +22,7 @@
                      (click)="selectItem(item)">
                   <div class="slot-image"
                        [class.grayscale]="selectedItem()?.id !== item.id"
-                       [style.background-image]="'url(' + getImageUrl(item.name) + ')'">
+                       [style.background-image]="'url(' + getIconUrl(item.name) + ')'">
                   </div>
                   <div class="slot-badge" [class.active-badge]="selectedItem()?.id === item.id" [class.text-cyan-dim]="selectedItem()?.id !== item.id" style="font-size: 0.5rem; text-align: center;">{{ item.name | uppercase | slice:0:10 }}</div>
                 </div>
@@ -59,9 +59,7 @@
                 <span class="material-symbols-outlined module-icon">folder_open</span>
                 ARCHIVE_DATA
               </div>
-              <div class="archive-text">
-                {{ selectedItem()?.description || 'No archive data available for this item.' }}
-              </div>
+              <div class="archive-text" [innerHTML]="formatDescription(selectedItem()?.description)"></div>
             </div>
           </div>
         </div>

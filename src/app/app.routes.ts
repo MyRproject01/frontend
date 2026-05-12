@@ -10,10 +10,12 @@ import { ItemsComponent } from './loadout/items/items.component';
 import { EnemiesComponent } from './loadout/enemies/enemies.component';
 import { LoadoutComponent } from './loadout/loadout.component';
 import { GameComponent } from './game/game';
+import { Buildselector } from './buildselector/buildselector';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
     { path: 'main', component: MainComponent },
+    { path: 'build-selector', component: Buildselector },
     { path: 'game', component: GameComponent },
     { path: 'profile', component: ProfileComponent },
     { path: 'settings', component: SettingsComponent },

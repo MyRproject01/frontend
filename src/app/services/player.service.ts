@@ -11,7 +11,11 @@ export interface LeaderboardEntry {
 
 export interface PlayerStats {
   highScore: number;
+  gamesPlayed: number;
+  totalScore: number;
   maxWave: number;
+  enemiesKilled: number;
+  totalTimeSec: number;
 }
 
 @Injectable({

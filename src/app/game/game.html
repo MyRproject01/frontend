@@ -6,9 +6,8 @@
     <!-- Top Bar Container -->
     <!-- Top Bar Container -->
     <div class="hud-top-bar">
-        <!-- Left: Resources -->
         <div class="hud-panel panel-left angled-left">
-            <span class="resource-text gold-text">🟡 {{ GameState.gold() }}</span>
+            <span class="resource-text cyan-text"><span class="icon-bolt">⚡</span> {{ GameState.gold() }}</span>
         </div>
 
         <!-- Center: Pause Button -->
@@ -33,22 +32,27 @@
     <div class="lives-bar-wrapper">
         <div class="bars-group">
             <!-- Shield Bar (Blue) -->
-            <div class="lives-bar-container shield-bar">
-                <div class="lives-bar-fill shield-fill"
-                    [style.height.%]="(GameState.shield() / GameState.maxShield()) * 100"></div>
+            <div class="battery-column">
+                <div class="lives-bar-container shield-bar">
+                    <div class="lives-bar-fill shield-fill"
+                        [style.height.%]="(GameState.shield() / GameState.maxShield()) * 100"></div>
+                </div>
+                <span class="label-shield">SHIELD</span>
             </div>
             <!-- HP Bar (Red) -->
-            <div class="lives-bar-container">
-                <div class="lives-bar-fill" [style.height.%]="(GameState.lives() / 20) * 100"></div>
+            <div class="battery-column">
+                <div class="lives-bar-container">
+                    <div class="lives-bar-fill" [style.height.%]="(GameState.lives() / 20) * 100"></div>
+                </div>
+                <span class="label-hp">HULL</span>
             </div>
         </div>
-        <div class="lives-icon">🛡️ ❤️</div>
     </div>
 
     <!-- Tower Selection (Bottom Right) -->
     <div class="hud-panel panel-bottom-right angled-corner">
         <div class="tower-grid">
-            @for (w of DataManager.data().weapons; track w.id) {
+            @for (w of DataManager.data().weapons.slice(0, 3); track w.id) {
             <div class="tower-slot" [class.selected]="GameState.selectedWeapon()?.type === w.id"
                 (click)="selectWeapon(w.id, w.cost)"
                 [title]="w.name + ' (' + w.cost + 'g)'">

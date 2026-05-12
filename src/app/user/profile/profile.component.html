@@ -36,13 +36,33 @@
     <div class="stats-row">
       <div class="stat-cell">
         <span class="material-symbols-outlined stat-icon">emoji_events</span>
-        <span class="stat-val">{{ highScore | number }}</span>
+        <span class="stat-val">{{ stats()?.highScore || 0 | number }}</span>
         <span class="stat-lbl">HIGH SCORE</span>
       </div>
       <div class="stat-cell">
+        <span class="material-symbols-outlined stat-icon">military_tech</span>
+        <span class="stat-val">{{ stats()?.totalScore || 0 | number }}</span>
+        <span class="stat-lbl">TOTAL SCORE</span>
+      </div>
+      <div class="stat-cell">
         <span class="material-symbols-outlined stat-icon">waves</span>
-        <span class="stat-val">W{{ maxWave }}</span>
+        <span class="stat-val">W{{ stats()?.maxWave || 0 }}</span>
         <span class="stat-lbl">BEST WAVE</span>
+      </div>
+      <div class="stat-cell">
+        <span class="material-symbols-outlined stat-icon">sports_esports</span>
+        <span class="stat-val">{{ stats()?.gamesPlayed || 0 | number }}</span>
+        <span class="stat-lbl">GAMES PLAYED</span>
+      </div>
+      <div class="stat-cell">
+        <span class="material-symbols-outlined stat-icon">skull</span>
+        <span class="stat-val">{{ stats()?.enemiesKilled || 0 | number }}</span>
+        <span class="stat-lbl">ENEMIES KILLED</span>
+      </div>
+      <div class="stat-cell">
+        <span class="material-symbols-outlined stat-icon">schedule</span>
+        <span class="stat-val">{{ formatTime(stats()?.totalTimeSec) }}</span>
+        <span class="stat-lbl">PLAY TIME</span>
       </div>
     </div>
 

@@ -8,27 +8,27 @@
     </div>
 
     <!-- Back to Main -->
-    <a class="sidebar-link sidebar-back" routerLink="/main">
+    <a class="sidebar-link sidebar-back" [routerLink]="returnUrl">
       <span class="material-symbols-outlined">arrow_back_ios</span>
-      MAIN MENU
+      {{ returnLabel }}
     </a>
 
     <div class="sidebar-divider"></div>
 
     <!-- Nav items using routerLinkActive -->
-    <a class="sidebar-link" routerLink="/loadout/characters" routerLinkActive="active">
+    <a class="sidebar-link" routerLink="/loadout/characters" routerLinkActive="active" queryParamsHandling="merge">
       <span class="material-symbols-outlined">person_off</span>
       CHARACTERS
     </a>
-    <a class="sidebar-link" routerLink="/loadout/weapons" routerLinkActive="active">
+    <a class="sidebar-link" routerLink="/loadout/weapons" routerLinkActive="active" queryParamsHandling="merge">
       <span class="material-symbols-outlined">swords</span>
       WEAPONS
     </a>
-    <a class="sidebar-link" routerLink="/loadout/items" routerLinkActive="active">
+    <a class="sidebar-link" routerLink="/loadout/items" routerLinkActive="active" queryParamsHandling="merge">
       <span class="material-symbols-outlined">inventory_2</span>
       ITEMS
     </a>
-    <a class="sidebar-link" routerLink="/loadout/enemies" routerLinkActive="active">
+    <a class="sidebar-link" routerLink="/loadout/enemies" routerLinkActive="active" queryParamsHandling="merge">
       <span class="material-symbols-outlined">skull</span>
       ENEMIES
     </a>
