@@ -1,11 +1,24 @@
+#game-bg-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    object-fit: cover;
+    z-index: -1;
+    pointer-events: none;
+}
+
 #game-container {
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: transparent;
     font-family: 'Inter', sans-serif;
+    position: relative;
+    overflow: hidden;
 }
 
 /* HUD Overlay Styles */
@@ -380,6 +393,6 @@
 /* Game Canvas */
 canvas {
     display: block;
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.9);
-    border-radius: 4px;
+    /* Removed box-shadow and border-radius to allow the background video to be seen clearly if the game is transparent */
+    /* background: transparent !important; */
 }

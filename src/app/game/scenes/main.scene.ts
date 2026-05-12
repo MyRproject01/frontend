@@ -66,7 +66,7 @@ export class MainScene extends Scene {
 
     create() {
         // --- CONFIGURACIÓN ESCENARIO ---
-        this.add.image(800, 450, 'bg').setDisplaySize(1600, 900);
+        // this.add.image(800, 450, 'bg').setDisplaySize(1600, 900);
 
         this.graphics = this.add.graphics();
         this.createPath();

@@ -55,8 +55,6 @@
                 <img [src]="getWeaponIconUrl(weapon.name)" [alt]="weapon.name" 
                      style="width: 100%; height: 100%; object-fit: contain; padding: 4px;"
                      (error)="$event.target.style.display = 'none'">
-                <!-- Fallback icon -->
-                <span class="material-symbols-outlined" style="position: absolute; opacity: 0.15;">swords</span>
               </div>
               <div class="weapon-info">
                 <div class="weapon-name">{{ weapon.name | uppercase }}</div>
@@ -73,17 +71,17 @@
           <h3>Operation Type</h3>
         </div>
         <div class="mode-grid">
-          <button class="mode-btn">
-            <div class="mode-name">SURVIVAL</div>
-            <div class="mode-desc">Endless Wave</div>
+          <button class="mode-btn locked" disabled>
+            <div class="mode-name">ARCADE</div>
+            <div class="mode-desc">Classics Mode (Locked)</div>
           </button>
           <button class="mode-btn active">
-            <div class="mode-name">TIME_ATTACK</div>
-            <div class="mode-desc">Extraction Priority</div>
+            <div class="mode-name">ENDLESS</div>
+            <div class="mode-desc">Infinite Survival</div>
           </button>
-          <button class="mode-btn danger">
-            <div class="mode-name">HARDCORE</div>
-            <div class="mode-desc">Single Life</div>
+          <button class="mode-btn locked" disabled>
+            <div class="mode-name">CHALLENGES</div>
+            <div class="mode-desc">Tactical Missions (Locked)</div>
           </button>
         </div>
       </div>
@@ -94,32 +92,69 @@
           <span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
           <h3>Bio-Metrics Overview</h3>
         </div>
-        <div class="stats-list">
-          <div class="stat-row">
-            <div class="stat-header">
-              <span class="stat-name">AGILITY_RATING</span>
-              <span class="stat-value">88%</span>
+        <div class="stats-list" *ngIf="animationState()">
+          <!-- HEALTH -->
+          <div class="bar-group">
+            <div class="bar-labels">
+              <span>HEALTH</span>
+              <span class="bar-val cyan">{{ selectedCharacter()?.health || 0 }}</span>
             </div>
-            <div class="stat-bar-container">
-              <div class="stat-bar"><div class="fill"></div><div class="fill"></div><div class="fill"></div><div class="fill"></div><div class="fill"></div><div class="fill"></div><div class="fill"></div><div class="empty"></div></div>
-            </div>
-          </div>
-          <div class="stat-row">
-            <div class="stat-header">
-              <span class="stat-name">KINETIC_RESISTANCE</span>
-              <span class="stat-value">64%</span>
-            </div>
-            <div class="stat-bar-container">
-              <div class="stat-bar"><div class="fill"></div><div class="fill"></div><div class="fill"></div><div class="fill"></div><div class="fill"></div><div class="empty"></div><div class="empty"></div><div class="empty"></div></div>
+            <div class="seg-bar">
+              @for (seg of getStatSegments(selectedCharacter()?.health, 100, 'cyan'); track selectedCharacter()?.id + '-' + $index) {
+                <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+              }
             </div>
           </div>
-          <div class="stat-row">
-            <div class="stat-header">
-              <span class="stat-name">NEURAL_SYNC_LATENCY</span>
-              <span class="stat-value warning">12MS</span>
+          
+          <!-- SHIELD -->
+          <div class="bar-group">
+            <div class="bar-labels">
+              <span>SHIELD</span>
+              <span class="bar-val purple">{{ selectedCharacter()?.shield || 0 }}</span>
             </div>
-            <div class="stat-bar-container warning">
-              <div class="stat-bar"><div class="fill"></div><div class="fill"></div><div class="empty"></div><div class="empty"></div><div class="empty"></div><div class="empty"></div><div class="empty"></div><div class="empty"></div></div>
+            <div class="seg-bar">
+              @for (seg of getStatSegments(selectedCharacter()?.shield, 100, 'purple'); track selectedCharacter()?.id + '-' + $index) {
+                <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+              }
+            </div>
+          </div>
+
+          <!-- DAMAGE -->
+          <div class="bar-group">
+            <div class="bar-labels">
+              <span>DAMAGE</span>
+              <span class="bar-val red">{{ selectedCharacter()?.damage || 0 }}</span>
+            </div>
+            <div class="seg-bar">
+              @for (seg of getStatSegments(selectedCharacter()?.damage, 50, 'red'); track selectedCharacter()?.id + '-' + $index) {
+                <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+              }
+            </div>
+          </div>
+
+          <!-- ATTACK SPEED -->
+          <div class="bar-group">
+            <div class="bar-labels">
+              <span>ATTACK SPEED</span>
+              <span class="bar-val yellow">{{ selectedCharacter()?.attackSpeed || 0 }}</span>
+            </div>
+            <div class="seg-bar">
+              @for (seg of getStatSegments(selectedCharacter()?.attackSpeed, 2, 'yellow'); track selectedCharacter()?.id + '-' + $index) {
+                <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+              }
+            </div>
+          </div>
+
+          <!-- RANGE -->
+          <div class="bar-group">
+            <div class="bar-labels">
+              <span>RANGE</span>
+              <span class="bar-val blue">{{ selectedCharacter()?.range || 0 }}</span>
+            </div>
+            <div class="seg-bar">
+              @for (seg of getStatSegments(selectedCharacter()?.range, 1000, 'blue'); track selectedCharacter()?.id + '-' + $index) {
+                <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
+              }
             </div>
           </div>
         </div>
