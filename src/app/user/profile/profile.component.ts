@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { PlayerService, PlayerStats } from '../../services/player.service';
-
+import { AuthService } from '../../auth/auth.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -13,6 +13,8 @@ import { CommonModule } from '@angular/common';
 })
 export class ProfileComponent implements OnInit {
   private playerService = inject(PlayerService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
   
   username = signal(localStorage.getItem('username') || 'OPERATOR');
   stats = signal<PlayerStats | null>(null);
@@ -28,6 +30,11 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  onLogout() {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
+
   formatTime(seconds: number | undefined): string {
     if (!seconds) return '00:00:00';
     const h = Math.floor(seconds / 3600);
@@ -36,3 +43,4 @@ export class ProfileComponent implements OnInit {
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   }
 }
+

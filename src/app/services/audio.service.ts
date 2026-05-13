@@ -11,6 +11,7 @@ export class AudioService {
   readonly sfxEnabled   = signal<boolean>(true);
 
   private unmuted = false;
+  private isMusicPausedExternally = false;
   private sfxAudio: HTMLAudioElement | null = null;
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -35,7 +36,7 @@ export class AudioService {
     };
 
     const ensurePlayingThenUnmute = () => {
-      if (this.unmuted) return;
+      if (this.unmuted || this.isMusicPausedExternally) return;
       if (!bgAudio.paused) {
         unmute();
       } else {
@@ -102,6 +103,29 @@ export class AudioService {
 
   effectiveSfxVolume(): number {
     return (this.masterVolume() / 100) * (this.sfxVolume() / 100);
+  }
+
+  /**
+   * Toggles the background music playback.
+   * Useful for stopping music during specific routes (like the game) 
+   * without overriding the user's general preference.
+   */
+  setMusicPlaying(play: boolean) {
+    this.isMusicPausedExternally = !play;
+    const bgAudio = this.getBgAudio();
+    if (!bgAudio) return;
+
+    if (play && this.musicEnabled()) {
+      // Ensure it is unmuted if we want to play it
+      bgAudio.muted = false; 
+      bgAudio.volume = this.effectiveMusicVolume();
+      bgAudio.play().catch(() => {
+        // If play() fails (e.g. no interaction yet), 
+        // the init() listeners will catch it later.
+      });
+    } else {
+      bgAudio.pause();
+    }
   }
 
   private getBgAudio(): HTMLAudioElement | null {

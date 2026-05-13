@@ -30,5 +30,10 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('username');
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.getToken();
   }
 }

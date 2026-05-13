@@ -1,7 +1,10 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CatalogService } from '../catalog.service';
 import { Character } from '../catalog.models';
+import { BuildService } from '../../services/build.service';
+import { BuildSelectionService } from '../../services/build-selection.service';
 
 @Component({
   selector: 'app-characters',
@@ -12,20 +15,39 @@ import { Character } from '../catalog.models';
 })
 export class CharactersComponent implements OnInit {
   private catalogService = inject(CatalogService);
+  private buildService = inject(BuildService);
+  private selectionService = inject(BuildSelectionService);
+  private route = inject(ActivatedRoute);
 
   characters = signal<Character[]>([]);
-  selectedCharacter = signal<Character | null>(null);
+  previewCharacter = signal<Character | null>(null);
   loading = signal<boolean>(true);
   animationState = signal<boolean>(true);
+  isFromBuild = signal<boolean>(false);
+
+  get pendingCharacter() {
+    return this.selectionService.pendingCharacter();
+  }
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.isFromBuild.set(params['from'] === 'build');
+    });
+
     this.catalogService.getCharacters().subscribe({
       next: (data) => {
         const sortedData = [...data].sort((a, b) => b.id - a.id);
         this.characters.set(sortedData);
-        if (sortedData.length > 0) {
-          this.selectedCharacter.set(sortedData[0]);
+        
+        // Initial preview
+        if (this.isFromBuild() && this.selectionService.pendingCharacter()) {
+          this.previewCharacter.set(this.selectionService.pendingCharacter());
+        } else if (this.buildService.selectedCharacter()) {
+          this.previewCharacter.set(this.buildService.selectedCharacter());
+        } else if (sortedData.length > 0) {
+          this.previewCharacter.set(sortedData[0]);
         }
+        
         this.loading.set(false);
       },
       error: (err) => {
@@ -38,10 +60,25 @@ export class CharactersComponent implements OnInit {
   selectCharacter(character: Character) {
     // Force DOM destruction and recreation to re-trigger CSS animations
     this.animationState.set(false);
-    this.selectedCharacter.set(character);
+    this.previewCharacter.set(character);
     setTimeout(() => {
       this.animationState.set(true);
     }, 10);
+  }
+
+  confirmSelection() {
+    if (this.previewCharacter()) {
+      this.selectionService.pendingCharacter.set(this.previewCharacter());
+    }
+  }
+
+  isCharacterPending(char: Character | null): boolean {
+    if (!char) return false;
+    return this.selectionService.pendingCharacter()?.id === char.id;
+  }
+
+  isCharacterActive(char: Character): boolean {
+    return this.buildService.selectedCharacter()?.id === char.id;
   }
 
   getIconUrl(name: string): string {

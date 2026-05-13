@@ -11,17 +11,20 @@ import { EnemiesComponent } from './loadout/enemies/enemies.component';
 import { LoadoutComponent } from './loadout/loadout.component';
 import { GameComponent } from './game/game';
 import { Buildselector } from './buildselector/buildselector';
+import { authGuard } from './auth/auth.guard';
+import { publicGuard } from './auth/public.guard';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
-    { path: 'main', component: MainComponent },
-    { path: 'build-selector', component: Buildselector },
-    { path: 'game', component: GameComponent },
-    { path: 'profile', component: ProfileComponent },
-    { path: 'settings', component: SettingsComponent },
+    { path: 'main', component: MainComponent, canActivate: [authGuard] },
+    { path: 'build-selector', component: Buildselector, canActivate: [authGuard] },
+    { path: 'game', component: GameComponent, canActivate: [authGuard] },
+    { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+    { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
     { 
         path: 'loadout', 
         component: LoadoutComponent,
+        canActivate: [authGuard],
         children: [
             { path: 'characters', component: CharactersComponent },
             { path: 'weapons', component: WeaponsComponent },
@@ -30,7 +33,9 @@ export const routes: Routes = [
             { path: '', redirectTo: 'characters', pathMatch: 'full' }
         ]
     },
-    { path: 'login', component: LoginComponent },
-    { path: 'register', component: RegisterComponent },
+    { path: 'login', component: LoginComponent, canActivate: [publicGuard] },
+    { path: 'register', component: RegisterComponent, canActivate: [publicGuard] },
     { path: '**', redirectTo: '' }
 ];
+
+

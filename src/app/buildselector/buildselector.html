@@ -87,14 +87,15 @@
       </div>
 
       <!-- 3. Character Stats Overview -->
-      <div class="config-section stats-overview">
+      <div class="config-section">
         <div class="section-header stats">
           <span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
-          <h3>Bio-Metrics Overview</h3>
+          <h3>Character Stats</h3>
         </div>
-        <div class="stats-list" *ngIf="animationState()">
-          <!-- HEALTH -->
-          <div class="bar-group">
+        <div class="stats-overview">
+          <div class="stats-list" *ngIf="animationState()">
+            <!-- HEALTH -->
+            <div class="bar-group">
             <div class="bar-labels">
               <span>HEALTH</span>
               <span class="bar-val cyan">{{ selectedCharacter()?.health || 0 }}</span>
@@ -160,10 +161,11 @@
         </div>
       </div>
     </div>
+  </div>
 
     <!-- Footer: Confirm Button -->
     <div class="confirm-footer">
-      <button class="btn-confirm" routerLink="/game">
+      <button class="btn-confirm" (click)="confirmBuild()">
         <span class="btn-text">CONFIRM_BUILD &amp; PLAY <span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span></span>
       </button>
     </div>

@@ -1,3 +1,4 @@
+import * as Phaser from 'phaser';
 import { GameObjects, Scene } from 'phaser';
 
 export abstract class Weapon extends GameObjects.Sprite {

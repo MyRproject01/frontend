@@ -24,9 +24,15 @@ export class App implements AfterViewInit {
       filter((event): event is NavigationEnd => event instanceof NavigationEnd)
     ).subscribe((event) => {
       const url = event.urlAfterRedirects;
-      const isHiddenRoute = url.includes('/login') || url.includes('/register') || url.includes('/profile') || url.includes('/game');
+      const isGame = url.includes('/game');
+      const isHiddenRoute = url.includes('/login') || url.includes('/register') || url.includes('/profile') || isGame;
+      
       this.showTopbar.set(!isHiddenRoute);
-      this.showVideo.set(!url.includes('/game'));
+      this.showVideo.set(!isGame);
+      
+      // Stop music if we are in the game, play it otherwise (respecting settings)
+      this.audio.setMusicPlaying(!isGame);
+
       this.username.set(localStorage.getItem('username') || 'OPERATOR');
     });
   }

@@ -1,3 +1,4 @@
+import * as Phaser from 'phaser';
 import { GameObjects, Math as PhaserMath, Scene } from 'phaser';
 import { DataManager } from '../core/data.manager';
 

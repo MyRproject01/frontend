@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../auth.service';
+import { BuildService } from '../../services/build.service';
 
 @Component({
   selector: 'app-login',
@@ -13,6 +14,7 @@ import { AuthService } from '../auth.service';
 export class LoginComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private buildService = inject(BuildService);
   private router = inject(Router);
 
   errorMessage: string | null = null;
@@ -34,6 +36,7 @@ export class LoginComponent {
         next: (response) => {
           this.authService.saveToken(response.token);
           localStorage.setItem('username', credentials.username);
+          this.buildService.loadLastBuild(credentials.username);
           this.router.navigate(['/main']);
         },
         error: (err) => {

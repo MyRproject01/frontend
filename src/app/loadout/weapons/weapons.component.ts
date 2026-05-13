@@ -1,7 +1,10 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CatalogService } from '../catalog.service';
-import { Weapon } from '../catalog.models';
+import { Character, Weapon } from '../catalog.models';
+import { BuildService } from '../../services/build.service';
+import { BuildSelectionService } from '../../services/build-selection.service';
 
 @Component({
   selector: 'app-weapons',
@@ -12,21 +15,41 @@ import { Weapon } from '../catalog.models';
 })
 export class WeaponsComponent implements OnInit {
   private catalogService = inject(CatalogService);
+  private buildService = inject(BuildService);
+  private selectionService = inject(BuildSelectionService);
+  private route = inject(ActivatedRoute);
 
   weapons = signal<Weapon[]>([]);
-  selectedWeapon = signal<Weapon | null>(null);
+  previewWeapon = signal<Weapon | null>(null);
   loading = signal<boolean>(true);
   animationState = signal<boolean>(true);
+  isFromBuild = signal<boolean>(false);
+  
+  get pendingWeapons() {
+    return this.selectionService.pendingWeapons();
+  }
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.isFromBuild.set(params['from'] === 'build');
+    });
+
     this.catalogService.getWeapons().subscribe({
-      next: (data) => {
-        this.weapons.set(data);
-        if (data.length > 0) {
-          this.selectedWeapon.set(data[0]);
-        }
-        this.loading.set(false);
-      },
+    next: (data) => {
+      const sorted = [...data].sort((a, b) => (a.price || 0) - (b.price || 0));
+      this.weapons.set(sorted);
+      
+      // Initial preview
+      if (this.isFromBuild() && this.selectionService.pendingWeapons().length > 0) {
+        this.previewWeapon.set(this.selectionService.pendingWeapons()[0]);
+      } else if (this.buildService.selectedWeapons().length > 0) {
+        this.previewWeapon.set(this.buildService.selectedWeapons()[0]);
+      } else if (data.length > 0) {
+        this.previewWeapon.set(data[0]);
+      }
+      
+      this.loading.set(false);
+    },
       error: (err) => {
         console.error('Error fetching weapons:', err);
         this.loading.set(false);
@@ -36,10 +59,38 @@ export class WeaponsComponent implements OnInit {
 
   selectWeapon(weapon: Weapon) {
     this.animationState.set(false);
-    this.selectedWeapon.set(weapon);
+    this.previewWeapon.set(weapon);
     setTimeout(() => {
       this.animationState.set(true);
     }, 10);
+  }
+
+  isWeaponPending(weapon: Weapon | null): boolean {
+    if (!weapon) return false;
+    return this.selectionService.pendingWeapons().some(w => w.id === weapon.id);
+  }
+
+  isWeaponActive(weapon: Weapon | null): boolean {
+    if (!weapon) return false;
+    return this.buildService.selectedWeapons().some(w => w.id === weapon.id);
+  }
+
+  toggleWeapon(weapon: Weapon | null, select: boolean) {
+    if (!weapon) return;
+    
+    const current = this.selectionService.pendingWeapons();
+    if (select) {
+      if (current.length < 3 && !current.some(w => w.id === weapon.id)) {
+        this.selectionService.pendingWeapons.set([...current, weapon]);
+      }
+    } else {
+      this.selectionService.pendingWeapons.set(current.filter(w => w.id !== weapon.id));
+    }
+  }
+
+  confirmSelection() {
+    // This button might be redundant now but we can keep it as a "Add to build" shortcut
+    this.toggleWeapon(this.previewWeapon(), true);
   }
 
   getImageUrl(name: string): string {

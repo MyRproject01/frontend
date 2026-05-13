@@ -56,45 +56,41 @@ export class BootScene extends Scene {
     });
 
     // --- CARGA DE RECURSOS (ASSETS) ---
+    console.log("BootScene: Preloading icons as textures... [v3]");
+    const data = DataManager.data();
 
-    // 1. Personajes
-    this.load.image('archer', 'characters/archer/archerSprite.png');
-    this.load.image('raf', 'characters/raf/rafSprite.png');
+    // 1. Personaje Seleccionado (Icono como textura)
+    const char = data.character;
+    if (char && char.id) {
+        this.load.image(char.id, `characters/${char.id}-icon.png`);
+    }
 
-    // 2. Elementos de la Base
-    this.load.image('buho', 'pillars/buho/buhoPillar.png');
-    this.load.image('tonya', 'pillars/Tonya/tonyaPillar.png');
+    // 2. Torres (Iconos seleccionados para el juego y HUD)
+    data.weapons.forEach(w => {
+        // Usamos el icono como textura del juego
+        this.load.image(w.id + '_icon', `weapons/${w.id}-icon.png`);
+    });
 
-    // 3. Torres (Iconos)
-    this.load.image('cannon', 'icons/turrets/cannon.png');
-    this.load.image('crossbow', 'icons/turrets/crossbow.png');
-    this.load.image('tesla', 'icons/turrets/tesla.png');
-
-    // 4. Fondos
-    // (Cargado en MainScene)
-
-    // 5. Pruebas / Animaciones
-    // (Legacy removed) Enemy loading moved to MainScene
+    // 3. Enemigos (Iconos como textura)
+    data.enemies.forEach(e => {
+        this.load.image(e.id, `enemies/${e.id}-icon.png`);
+    });
 
     this.load.on('loaderror', (file: any) => {
       console.error('Error loading asset:', file.key);
     });
   }
 
-  async create() {
+  create() {
     // Generar textura para la bala de forma procedural (Bola Azul)
     const graphics = this.make.graphics({ x: 0, y: 0 });
     graphics.fillStyle(0x0088ff, 1); // Color: Azul Brillante
     graphics.fillCircle(10, 10, 8);  // Dibujar círculo: x, y, radio
     graphics.generateTexture('bullet', 20, 20); // Guardar como textura 'bullet' (20x20)
 
-    // Cargar Datos de la API antes de iniciar el juego
-    console.log("BootScene: Loading Game Data from API...");
-    await DataManager.loadData();
-    console.log("BootScene: Data Loaded. Starting MainScene.");
+    console.log("BootScene: All assets and data ready. Starting MainScene.");
 
-    // Iniciar la escena principal (La UI ahora es HTML/Angular)
+    // Iniciar la escena principal
     this.scene.start('MainScene');
-    // this.scene.launch('UIScene'); // Deshabilitado, usamos UI de Angular
   }
 }

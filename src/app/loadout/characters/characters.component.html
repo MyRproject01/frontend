@@ -11,14 +11,25 @@
       <div style="color: var(--primary); font-family: 'Share Tech Mono', monospace; padding: 1rem;">LOADING...</div>
     } @else {
       @for (char of characters(); track char.id) {
-        <button class="unit-card" [class.unit-active]="selectedCharacter()?.id === char.id" [class.unit-inactive]="selectedCharacter()?.id !== char.id" (click)="selectCharacter(char)">
-          <div class="unit-image" [class.grayscale]="selectedCharacter()?.id !== char.id"
+        <button class="unit-card" 
+          [class.unit-active]="previewCharacter()?.id === char.id" 
+          [class.unit-inactive]="previewCharacter()?.id !== char.id" 
+          [class.unit-pending]="isFromBuild() && isCharacterPending(char)"
+          (click)="selectCharacter(char)">
+          <div class="unit-image" [class.grayscale]="previewCharacter()?.id !== char.id"
             [style.background-image]="'url(' + getIconUrl(char.name) + ')'">
           </div>
           <div class="unit-label">
-            <span class="unit-name" [class.active-name]="selectedCharacter()?.id === char.id">{{ char.name | uppercase }}</span>
-            <div class="unit-dot" [class.dot-active]="selectedCharacter()?.id === char.id"></div>
+            <span class="unit-name" [class.active-name]="previewCharacter()?.id === char.id">{{ char.name | uppercase }}</span>
+            <div class="unit-dot" 
+              [class.dot-active]="previewCharacter()?.id === char.id"
+              [class.dot-pending]="isFromBuild() && isCharacterPending(char)"
+              [class.dot-confirmed]="!isFromBuild() && isCharacterActive(char)">
+            </div>
           </div>
+          @if (isFromBuild() && isCharacterPending(char)) {
+            <div class="pending-badge">SELECTED</div>
+          }
         </button>
       }
 
@@ -39,17 +50,15 @@
 
   <!-- Full-body image -->
   <div class="preview-image"
-    [style.background-image]="selectedCharacter() ? 'url(' + getImageUrl(selectedCharacter()!.name) + ')' : 'none'">
+    [style.background-image]="previewCharacter() ? 'url(' + getImageUrl(previewCharacter()!.name) + ')' : 'none'">
   </div>
 
   <!-- Grid overlay -->
   <div class="preview-grid-overlay"></div>
 
-
-
   <!-- Bottom name -->
   <div class="preview-name-block">
-    <h1 class="preview-title">{{ selectedCharacter() ? (selectedCharacter()!.name | uppercase) : 'SELECT_UNIT' }}</h1>
+    <h1 class="preview-title">{{ previewCharacter() ? (previewCharacter()!.name | uppercase) : 'SELECT_UNIT' }}</h1>
   </div>
 
   <!-- Reticle decoration -->
@@ -76,10 +85,10 @@
       <div class="bar-group">
         <div class="bar-labels">
           <span>HEALTH</span>
-          <span class="bar-val cyan">{{ selectedCharacter()?.health || 0 }}</span>
+          <span class="bar-val cyan">{{ previewCharacter()?.health || 0 }}</span>
         </div>
         <div class="seg-bar">
-          @for (seg of getStatSegments(selectedCharacter()?.health, 100, 'cyan'); track selectedCharacter()?.id + '-' + $index) {
+          @for (seg of getStatSegments(previewCharacter()?.health, 100, 'cyan'); track previewCharacter()?.id + '-' + $index) {
             <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
           }
         </div>
@@ -88,10 +97,10 @@
       <div class="bar-group">
         <div class="bar-labels">
           <span>SHIELD</span>
-          <span class="bar-val purple">{{ selectedCharacter()?.shield || 0 }}</span>
+          <span class="bar-val purple">{{ previewCharacter()?.shield || 0 }}</span>
         </div>
         <div class="seg-bar">
-          @for (seg of getStatSegments(selectedCharacter()?.shield, 100, 'purple'); track selectedCharacter()?.id + '-' + $index) {
+          @for (seg of getStatSegments(previewCharacter()?.shield, 100, 'purple'); track previewCharacter()?.id + '-' + $index) {
             <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
           }
         </div>
@@ -100,10 +109,10 @@
       <div class="bar-group">
         <div class="bar-labels">
           <span>DAMAGE</span>
-          <span class="bar-val red">{{ selectedCharacter()?.damage || 0 }}</span>
+          <span class="bar-val red">{{ previewCharacter()?.damage || 0 }}</span>
         </div>
         <div class="seg-bar">
-          @for (seg of getStatSegments(selectedCharacter()?.damage, 50, 'red'); track selectedCharacter()?.id + '-' + $index) {
+          @for (seg of getStatSegments(previewCharacter()?.damage, 50, 'red'); track previewCharacter()?.id + '-' + $index) {
             <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
           }
         </div>
@@ -112,10 +121,10 @@
       <div class="bar-group">
         <div class="bar-labels">
           <span>ATTACK SPEED</span>
-          <span class="bar-val yellow">{{ selectedCharacter()?.attackSpeed || 0 }}</span>
+          <span class="bar-val yellow">{{ previewCharacter()?.attackSpeed || 0 }}</span>
         </div>
         <div class="seg-bar">
-          @for (seg of getStatSegments(selectedCharacter()?.attackSpeed, 2, 'yellow'); track selectedCharacter()?.id + '-' + $index) {
+          @for (seg of getStatSegments(previewCharacter()?.attackSpeed, 2, 'yellow'); track previewCharacter()?.id + '-' + $index) {
             <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
           }
         </div>
@@ -124,10 +133,10 @@
       <div class="bar-group">
         <div class="bar-labels">
           <span>RANGE</span>
-          <span class="bar-val blue">{{ selectedCharacter()?.range || 0 }}</span>
+          <span class="bar-val blue">{{ previewCharacter()?.range || 0 }}</span>
         </div>
         <div class="seg-bar">
-          @for (seg of getStatSegments(selectedCharacter()?.range, 1000, 'blue'); track selectedCharacter()?.id + '-' + $index) {
+          @for (seg of getStatSegments(previewCharacter()?.range, 1000, 'blue'); track previewCharacter()?.id + '-' + $index) {
             <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
           }
         </div>
@@ -142,10 +151,21 @@
       ARCHIVE_DATA
     </div>
     <div class="archive-text">
-      {{ selectedCharacter()?.description || 'No archive data available for this unit.' }}
+      {{ previewCharacter()?.description || 'No archive data available for this unit.' }}
     </div>
   </div>
 
-
-
+  @if (isFromBuild()) {
+    <div class="selection-footer">
+      @if (isCharacterPending(previewCharacter()!)) {
+        <button class="btn-confirm-selection selected" disabled>
+          UNIT_SELECTED <span class="material-symbols-outlined">check_circle</span>
+        </button>
+      } @else {
+        <button class="btn-confirm-selection" (click)="confirmSelection()">
+          SELECT CHARACTER <span class="material-symbols-outlined">add_circle</span>
+        </button>
+      }
+    </div>
+  }
 </section>

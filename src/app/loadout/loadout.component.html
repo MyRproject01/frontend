@@ -7,11 +7,22 @@
       LOADOUT
     </div>
 
-    <!-- Back to Main -->
-    <a class="sidebar-link sidebar-back" [routerLink]="returnUrl">
-      <span class="material-symbols-outlined">arrow_back_ios</span>
-      {{ returnLabel }}
-    </a>
+    <!-- Back to Main / Selection Actions -->
+    @if (!isSelectionActive) {
+      <a class="sidebar-link sidebar-back" [routerLink]="returnUrl">
+        <span class="material-symbols-outlined">arrow_back_ios</span>
+        MAIN MENU
+      </a>
+    } @else {
+      <button class="sidebar-link sidebar-accept" (click)="acceptChanges()">
+        <span class="material-symbols-outlined">check_circle</span>
+        ACCEPT CHANGES
+      </button>
+      <button class="sidebar-link sidebar-cancel" (click)="cancelChanges()">
+        <span class="material-symbols-outlined">cancel</span>
+        CANCEL CHANGES
+      </button>
+    }
 
     <div class="sidebar-divider"></div>
 

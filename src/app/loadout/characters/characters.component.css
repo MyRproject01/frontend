@@ -286,6 +286,33 @@
   box-shadow: 0 0 6px var(--cyan-bright);
 }
 
+.dot-pending {
+  background: #ffcc00;
+  box-shadow: 0 0 6px #ffcc00;
+}
+
+.dot-confirmed {
+  background: var(--cyan);
+}
+
+/* Pending unit state */
+.unit-pending {
+  border-color: rgba(255, 204, 0, 0.4) !important;
+}
+
+.pending-badge {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: #ffcc00;
+  color: #000;
+  font-family: var(--font-space);
+  font-size: 0.5rem;
+  font-weight: 900;
+  padding: 0.2rem 0.4rem;
+  z-index: 20;
+}
+
 /* Locked */
 .unit-locked {
   flex-direction: column;
@@ -715,4 +742,53 @@
 
 .deploy-btn .material-symbols-outlined {
   font-size: 1.25rem;
+}
+
+/* ── Selection Footer ──────────────────── */
+.selection-footer {
+  margin-top: auto;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--outline);
+}
+
+.btn-confirm-selection {
+  width: 100%;
+  background: var(--cyan-bright);
+  color: var(--zinc-950);
+  border: none;
+  font-family: var(--font-space);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  transition: transform 0.15s, filter 0.15s;
+  text-transform: uppercase;
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+}
+
+.btn-confirm-selection:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.btn-confirm-selection:active {
+  transform: translateY(0);
+}
+
+.btn-confirm-selection.selected {
+  background: rgba(0, 243, 255, 0.2);
+  color: var(--cyan-bright);
+  border: 1px solid var(--cyan-bright);
+  cursor: default;
+  transform: none;
+  filter: none;
+}
+
+.btn-confirm-selection .material-symbols-outlined {
+  font-size: 1.5rem;
 }

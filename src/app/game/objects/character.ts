@@ -2,6 +2,7 @@ import { Scene, GameObjects, Math as PhaserMath } from 'phaser';
 import { Bullet } from './bullet';
 import { Enemy } from './enemy';
 import { GameState } from '../core/game-state.manager';
+import * as Phaser from 'phaser';
 
 export interface CharacterStats {
     dmg: number;

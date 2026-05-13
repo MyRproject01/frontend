@@ -95,6 +95,34 @@
   background: rgba(255, 255, 255, 0.03);
 }
 
+.sidebar-accept {
+  color: #4ade80; /* Green */
+}
+
+.sidebar-accept:hover {
+  background: rgba(74, 222, 128, 0.1);
+  border-left-color: #4ade80;
+}
+
+.sidebar-cancel {
+  color: #ff4444;
+}
+
+.sidebar-cancel:hover {
+  background: rgba(255, 68, 68, 0.1);
+  border-left-color: #ff4444;
+}
+
+/* Make buttons look like links */
+button.sidebar-link {
+  background: transparent;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  width: 100%;
+  text-align: left;
+}
+
 .sidebar-divider {
   height: 1px;
   background: var(--outline);

@@ -1,4 +1,4 @@
-import { Scene } from 'phaser';
+import * as Phaser from 'phaser';
 import { Enemy } from '../objects/enemy';
 import { Character } from '../objects/character';
 import { Bullet } from '../objects/bullet';
@@ -15,7 +15,7 @@ import { DataManager } from '../core/data.manager';
  * - Colocación y lógica de personajes (defensores).
  * - Control de colisiones y eventos.
  */
-export class MainScene extends Scene {
+export class MainScene extends Phaser.Scene {
     // --- VARIABLES DE CLASE ---
     graphics: Phaser.GameObjects.Graphics | undefined;
     path: Phaser.Curves.Path | undefined;
@@ -45,23 +45,6 @@ export class MainScene extends Scene {
     }
 
     preload() {
-        // Carga de la imagen de fondo de la partida
-        this.load.image('bg', 'assets/game-bg.png');
-        // this.load.image('bullet', 'assets/bullet.png');
-
-        // Carga dinámica de armas desde DataManager
-        const weapons = DataManager.data().weapons;
-        weapons.forEach(w => {
-            // Asumimos que los íconos se guardan en public/weapons/id.png
-            this.load.image(w.id + '_icon', 'weapons/' + w.id + '.png');
-        });
-
-        // Enemigos
-        const enemies = DataManager.data().enemies;
-        enemies.forEach(e => {
-            // Asumimos que public/enemies/id.png existe
-            this.load.spritesheet(e.id, 'enemies/' + e.id + '.png', { frameWidth: 56, frameHeight: 56 });
-        });
     }
 
     create() {
@@ -77,7 +60,9 @@ export class MainScene extends Scene {
         this.weapons = this.add.group({ runChildUpdate: true });
 
         // Inicialización de Torre Fantasma (Oculta inicialmente)
-        this.ghost = this.add.sprite(0, 0, 'cannon_icon').setAlpha(0.6).setVisible(false).setDisplaySize(64, 64);
+        const firstWeapon = DataManager.data().weapons[0];
+        const ghostKey = firstWeapon ? firstWeapon.id + '_icon' : '';
+        this.ghost = this.add.sprite(0, 0, ghostKey).setAlpha(0.6).setVisible(false).setDisplaySize(64, 64);
         this.ghostRange = this.add.circle(0, 0, 200, 0x00ff00, 0.2).setVisible(false);
 
         // Escucha de Entrada para Colocación
@@ -92,7 +77,7 @@ export class MainScene extends Scene {
 
         // Personaje (Defensor)
         const characterStats = DataManager.data().character;
-        this.character = new Character(this, 230, 430, 'raf', characterStats, this.bullets, this.enemies);
+        this.character = new Character(this, 230, 430, characterStats.id, characterStats, this.bullets, this.enemies);
         this.character.setDisplaySize(160, 160);
         this.character.setVisible(false);
 
@@ -130,22 +115,22 @@ export class MainScene extends Scene {
      * Crea el camino (Path) que seguirán los enemigos.
      */
     createPath() {
-        this.path = this.add.path(1500, 361);
-        this.path.lineTo(1372, 434);
-        this.path.lineTo(1176, 327);
-        this.path.lineTo(1093, 369);
-        this.path.lineTo(1043, 444);
-        this.path.lineTo(990, 467);
-        this.path.lineTo(858, 391);
-        this.path.lineTo(869, 345);
-        this.path.lineTo(750, 276);
-        this.path.lineTo(419, 472);
-        this.path.lineTo(527, 553);
-        this.path.lineTo(390, 641);
-        this.path.lineTo(271, 572);
+        this.path = this.add.path(170, 440);
+        this.path.lineTo(350, 440);
+        this.path.lineTo(350, 710);
+        this.path.lineTo(620, 710);
+        this.path.lineTo(620, 160);
+        this.path.lineTo(890, 160);
+        this.path.lineTo(890, 440);
+        this.path.lineTo(1075, 440);
+        this.path.lineTo(1075, 620)
+        this.path.lineTo(1345, 620);
+        this.path.lineTo(1345, 160);
     }
 
     createAnimations() {
+        // Animaciones desactivadas temporalmente para usar iconos estáticos
+        /*
         const enemies = DataManager.data().enemies;
         enemies.forEach(e => {
             const animKey = e.id + '_walk';
@@ -153,6 +138,7 @@ export class MainScene extends Scene {
                 this.anims.create({ key: animKey, frames: this.anims.generateFrameNumbers(e.id, { start: 0, end: 7 }), frameRate: 12, repeat: -1 });
             }
         });
+        */
     }
 
     /**
@@ -165,17 +151,22 @@ export class MainScene extends Scene {
 
         // Texto Game Over
         this.add.text(cam.width / 2, cam.height / 2 - 50, 'GAME OVER', {
-            fontSize: '64px',
+            fontSize: '84px',
             color: '#ff0000',
-            fontFamily: 'Gothica'
+            fontFamily: '"Space Grotesk"',
+            fontStyle: '900',
+            stroke: '#000000',
+            strokeThickness: 8
         }).setOrigin(0.5);
 
-        // Botón Volver al Menú
-        const btn = this.add.text(cam.width / 2, cam.height / 2 + 50, 'Volver al Menú', {
-            fontSize: '32px',
-            color: '#ffffff',
-            backgroundColor: '#000000',
-            padding: { x: 20, y: 10 }
+        // Botón BACK TO MENU
+        const btn = this.add.text(cam.width / 2, cam.height / 2 + 80, 'BACK TO MENU', {
+            fontSize: '28px',
+            color: '#00373a',
+            backgroundColor: '#00f3ff',
+            fontFamily: '"Space Grotesk"',
+            fontStyle: '700',
+            padding: { x: 30, y: 15 }
         })
             .setOrigin(0.5)
             .setInteractive({ useHandCursor: true })
@@ -328,8 +319,8 @@ export class MainScene extends Scene {
 
             // Callbacks
             enemy.setOnDeath(() => {
-                GameState.updateGold(enemyStats.reward); 
-                GameState.updateScore(enemyStats.reward * 10); 
+                GameState.updateGold(enemyStats.reward);
+                GameState.updateScore(enemyStats.reward * 10);
             });
             enemy.setOnReachBase(() => {
                 this.character?.takeDamage(enemy.damage);

@@ -1,3 +1,4 @@
+import * as Phaser from 'phaser';
 import { Scene } from 'phaser';
 import { Weapon } from './weapon';
 import { DataManager } from '../core/data.manager';

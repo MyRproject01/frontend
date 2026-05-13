@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { map } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { BuildSelectionService } from '../services/build-selection.service';
 
 @Component({
   selector: 'app-loadout',
@@ -11,19 +12,34 @@ import { toSignal } from '@angular/core/rxjs-interop';
   templateUrl: './loadout.component.html',
   styleUrls: ['./loadout.component.css']
 })
-export class LoadoutComponent {
+export class LoadoutComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private selectionService = inject(BuildSelectionService);
 
   // Detect if we came from build selector
   fromBuild = toSignal(
     this.route.queryParams.pipe(map(params => params['from'] === 'build'))
   );
 
-  get returnUrl() {
-    return this.fromBuild() ? '/build-selector' : '/main';
+  ngOnInit() {
+    if (this.fromBuild()) {
+      this.selectionService.initSession();
+    }
   }
 
-  get returnLabel() {
-    return this.fromBuild() ? 'BUILD SELECTOR' : 'MAIN MENU';
+  get returnUrl() {
+    return '/main';
+  }
+
+  get isSelectionActive() {
+    return this.selectionService.isSelectionActive();
+  }
+
+  acceptChanges() {
+    this.selectionService.accept();
+  }
+
+  cancelChanges() {
+    this.selectionService.cancel();
   }
 }

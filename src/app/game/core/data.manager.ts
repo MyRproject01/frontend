@@ -3,6 +3,7 @@ import { environment } from '../../../environments/environment';
 
 export interface GameData {
     character: {
+        id: string;
         hp: number;
         dmg: number;
         def: number;
@@ -30,7 +31,7 @@ export interface GameData {
 
 export class DataManager {
     static data = signal<GameData>({
-        character: { hp: 0, dmg: 0, def: 0, attackSpeed: 0, range: 0 },
+        character: { id: 'raf', hp: 0, dmg: 0, def: 0, attackSpeed: 0, range: 0 },
         enemies: [],
         weapons: []
     });
@@ -65,18 +66,27 @@ export class DataManager {
             const weaponList = weaponsApi.content || (Array.isArray(weaponsApi) ? weaponsApi : []);
 
             // Get current default data (mock)
-            const newData: GameData = { character: { hp: 0, dmg: 0, def: 0, attackSpeed: 0, range: 0 }, enemies: [], weapons: [] };
+            const newData: GameData = { character: { id: 'raf', hp: 0, dmg: 0, def: 0, attackSpeed: 0, range: 0 }, enemies: [], weapons: [] };
 
-            // 1. Map Character (Take first)
-            const rafData = Array.isArray(characterList) && characterList.length > 0 ? characterList[0] : null;
+            // --- BUILD SELECTION LOGIC ---
+            // Check if there is a saved build in localStorage
+            const username = localStorage.getItem('username') || 'OPERATOR';
+            const savedBuild = localStorage.getItem(`last_build_${username}`);
+            let build = savedBuild ? JSON.parse(savedBuild) : null;
 
-            if (rafData) {
+            // 1. Map Character
+            // Prioritize selection from Build Selector, fallback to first in list
+            const selectedChar = build?.character || (Array.isArray(characterList) && characterList.length > 0 ? characterList[0] : null);
+
+            if (selectedChar && selectedChar.name) {
+                const charId = selectedChar.name.toLowerCase().replace(/ /g, '-');
                 newData.character = {
-                    hp: rafData.health,
-                    dmg: rafData.damage,
-                    def: rafData.shield,
-                    attackSpeed: Number(rafData.attackSpeed || rafData.attack_speed || 1),
-                    range: Number(rafData.range || 100)
+                    id: charId,
+                    hp: selectedChar.health || 100,
+                    dmg: selectedChar.damage || 10,
+                    def: selectedChar.shield || 0,
+                    attackSpeed: Number(selectedChar.attackSpeed || selectedChar.attack_speed || 1),
+                    range: Number(selectedChar.range || 100)
                 };
             }
 
@@ -95,20 +105,26 @@ export class DataManager {
                 });
             }
 
-            // 3. Map Weapons (Take only first 3)
-            if (Array.isArray(weaponList)) {
-                weaponList.slice(0, 3).forEach((w: any) => {
+            // 3. Map Weapons
+            // Prioritize weapons from Build Selector, fallback to first 3 in list
+            let selectedWeapons = (build?.weapons && build.weapons.length > 0) ? build.weapons : weaponList.slice(0, 3);
+
+            if (Array.isArray(selectedWeapons)) {
+                selectedWeapons.forEach((w: any) => {
+                    if (!w || !w.name) return;
                     const id = w.name.toLowerCase().replace(/ /g, '-');
                     newData.weapons.push({
                         id,
                         name: w.name,
                         cost: w.price || 0,
-                        dmg: w.damage,
-                        range: Number(w.range) * 64,
+                        dmg: w.damage || 0,
+                        range: Number(w.range || 100) * 64,
                         cooldown: 1000 / Number(w.attackSpeed || w.attack_speed || 1),
-                        icon: `/weapons/${id}-icon.png` // Añadimos / inicial y usamos -icon para el HUD
+                        icon: `/weapons/${id}-icon.png` 
                     });
                 });
+                // Sort by cost (price)
+                newData.weapons.sort((a, b) => a.cost - b.cost);
             }
 
             this.data.set(newData);
@@ -119,7 +135,7 @@ export class DataManager {
             
             // Mock fallback data so the game doesn't break when backend is down
             const mockData: GameData = {
-                character: { hp: 100, dmg: 10, def: 5, attackSpeed: 1, range: 100 },
+                character: { id: 'raf', hp: 100, dmg: 10, def: 5, attackSpeed: 1, range: 100 },
                 enemies: [
                     { id: 'slime', name: '[MOCK] Slime', hp: 50, reward: 10, speed: 1, damage: 5 },
                     { id: 'goblin', name: '[MOCK] Goblin', hp: 80, reward: 20, speed: 1.5, damage: 10 }

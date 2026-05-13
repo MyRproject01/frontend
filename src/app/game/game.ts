@@ -29,32 +29,37 @@ export class GameComponent implements AfterViewInit, OnDestroy {
    * Inicializa el juego de Phaser después de que la vista de Angular esté lista.
    */
   ngAfterViewInit() {
-    const config: Phaser.Types.Core.GameConfig = {
-      type: Phaser.AUTO,
-      width: 1600,
-      height: 900,
-      parent: 'game-container',
-      // Configuración de Escalado (Responsive)
-      transparent: true,
-      scale: {
-        mode: Phaser.Scale.ENVELOP, // Llena el contenedor manteniendo aspecto (recorta si necesario)
-        autoCenter: Phaser.Scale.CENTER_BOTH
-      },
-      physics: {
-        default: 'arcade',
-        arcade: {
-          debug: true // Útil para ver cajas de colisión (hitboxes) en desarrollo
-        }
-      },
-      scene: [BootScene, MainScene, UIScene]
-    };
+    // Cargar datos ANTES de inicializar Phaser para que estén disponibles en el preload de las escenas
+    DataManager.loadData().then(() => {
+      const config: Phaser.Types.Core.GameConfig = {
+        type: Phaser.AUTO,
+        width: 1600,
+        height: 900,
+        parent: 'game-container',
+        // Configuración de Escalado (Responsive)
+        transparent: true,
+        scale: {
+          mode: Phaser.Scale.ENVELOP, // Llena el contenedor manteniendo aspecto (recorta si necesario)
+          autoCenter: Phaser.Scale.CENTER_BOTH
+        },
+        physics: {
+          default: 'arcade',
+          arcade: {
+            debug: true // Útil para ver cajas de colisión (hitboxes) en desarrollo
+          }
+        },
+        scene: [BootScene, MainScene, UIScene]
+      };
 
-    this.game = new Phaser.Game(config);
+      this.game = new Phaser.Game(config);
 
-    // Listen for Exit Event from Phaser
-    this.game.events.on('exit-game', () => {
-      GameState.reset();
-      this.router.navigate(['/menu']); // Navigate to Main Menu
+      // Listen for Exit Event from Phaser
+      if (this.game) {
+        this.game.events.on('exit-game', () => {
+          GameState.reset();
+          this.router.navigate(['/main']); // Navigate to Main Menu
+        });
+      }
     });
   }
 
