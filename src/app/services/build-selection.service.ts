@@ -12,11 +12,13 @@ export class BuildSelectionService {
 
   pendingCharacter = signal<Character | null>(null);
   pendingWeapons = signal<Weapon[]>([]);
+  pendingBoon = signal<any | null>(null);
   isSelectionActive = signal<boolean>(false);
 
   initSession() {
     this.pendingCharacter.set(this.buildService.selectedCharacter());
     this.pendingWeapons.set([...this.buildService.selectedWeapons()]);
+    this.pendingBoon.set(this.buildService.selectedBoon());
     this.isSelectionActive.set(true);
   }
 
@@ -28,12 +30,14 @@ export class BuildSelectionService {
   accept() {
     const char = this.pendingCharacter();
     const weapons = this.pendingWeapons();
+    const boon = this.pendingBoon();
     
     if (char) {
       this.buildService.selectedCharacter.set(char);
       const sortedWeapons = [...weapons].sort((a, b) => (a.price || 0) - (b.price || 0));
       this.buildService.selectedWeapons.set(sortedWeapons);
-      this.buildService.saveBuild(char, sortedWeapons);
+      this.buildService.selectedBoon.set(boon);
+      this.buildService.saveBuild(char, sortedWeapons, boon);
     }
     
     this.isSelectionActive.set(false);

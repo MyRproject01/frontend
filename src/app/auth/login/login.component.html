@@ -55,10 +55,10 @@
         </div>
 
         <!-- Action Button -->
-        <button type="submit" class="action-button clip-button">
+        <button type="submit" class="action-button clip-button" [disabled]="isLoading() || loginForm.invalid">
           <div class="button-content">
-            <span class="material-symbols-outlined login-icon">login</span>
-            <span>LOGIN</span>
+            <span class="material-symbols-outlined login-icon">{{ isLoading() ? 'sync' : 'login' }}</span>
+            <span>{{ isLoading() ? 'AUTHENTICATING...' : 'LOGIN' }}</span>
           </div>
           <div class="glitch-overlay"></div>
         </button>

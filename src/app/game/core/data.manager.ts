@@ -4,84 +4,110 @@ import { environment } from '../../../environments/environment';
 export interface GameData {
     character: {
         id: string;
+        apiId: number;
         hp: number;
         dmg: number;
         def: number;
         attackSpeed: number;
         range: number;
     };
-    enemies: {
+    enemies: Array<{
         id: string;
+        apiId: number;
         name: string;
         hp: number;
-        reward: number;
-        speed: number;
         damage: number;
-    }[];
-    weapons: {
+        speed: number;
+        reward: number;
+    }>;
+    weapons: Array<{
         id: string;
+        apiId: number;
         name: string;
         cost: number;
         dmg: number;
         range: number;
         cooldown: number;
         icon: string;
-    }[];
+    }>;
+    boon: {
+        id: number;
+        name: string;
+        passiveType: string;
+        passiveValue: number;
+    } | null;
 }
 
 export class DataManager {
     static data = signal<GameData>({
-        character: { id: 'raf', hp: 0, dmg: 0, def: 0, attackSpeed: 0, range: 0 },
+        character: { id: 'raf', apiId: 0, hp: 0, dmg: 0, def: 0, attackSpeed: 0, range: 0 },
         enemies: [],
-        weapons: []
+        weapons: [],
+        boon: null
     });
 
     /**
      * Initializes data by attempting to fetch from API, falling back to mock.
      */
-    static async loadData() {
+    static async loadData(): Promise<GameData> {
         try {
-            console.log(`DataManager: Fetching data from ${environment.apiUrl}`);
-            
             const token = localStorage.getItem('auth_token');
             const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-            const [charRes, enemiesRes, weaponsRes] = await Promise.all([
+            // Fetch All (Global) AND Unlocks (IDs only)
+            const [allCharRes, unlockedCharRes, enemiesRes, allWeaponsRes, unlockedWeaponsRes, allBoonsRes, unlockedBoonsRes] = await Promise.all([
                 fetch(`${environment.apiUrl}/characters`, { headers }),
+                fetch(`${environment.apiUrl}/player/unlocks/characters`, { headers }),
                 fetch(`${environment.apiUrl}/enemies`, { headers }),
-                fetch(`${environment.apiUrl}/weapons`, { headers })
+                fetch(`${environment.apiUrl}/weapons`, { headers }),
+                fetch(`${environment.apiUrl}/player/unlocks/weapons`, { headers }),
+                fetch(`${environment.apiUrl}/boons`, { headers }),
+                fetch(`${environment.apiUrl}/player/unlocks/boons`, { headers })
             ]);
 
-            if (!charRes.ok || !enemiesRes.ok || !weaponsRes.ok) {
-                throw new Error(`API Error: Characters ${charRes.status}, Enemies ${enemiesRes.status}, Weapons ${weaponsRes.status}`);
+            if (!allCharRes.ok || !unlockedCharRes.ok || !enemiesRes.ok || !allWeaponsRes.ok || !unlockedWeaponsRes.ok || !allBoonsRes.ok || !unlockedBoonsRes.ok) {
+                throw new Error("API response not OK");
             }
 
-            const charsApi = await charRes.json();
-            const enemiesApi = await enemiesRes.json();
-            const weaponsApi = await weaponsRes.json();
+            const [allChars, unlockedCharIdsObj, enemyListObj, allWeapons, unlockedWeaponIdsObj, allBoons, unlockedBoonIdsObj] = await Promise.all([
+                allCharRes.json(),
+                unlockedCharRes.json(),
+                enemiesRes.json(),
+                allWeaponsRes.json(),
+                unlockedWeaponsRes.json(),
+                allBoonsRes.json(),
+                unlockedBoonsRes.json()
+            ]);
 
-            // The Spring Boot API might return { content: [...] } for collections or directly an array
-            const characterList = charsApi.content || (Array.isArray(charsApi) ? charsApi : []);
-            const enemyList = enemiesApi.content || (Array.isArray(enemiesApi) ? enemiesApi : []);
-            const weaponList = weaponsApi.content || (Array.isArray(weaponsApi) ? weaponsApi : []);
+            // Extraction handling for Page/Content structure
+            const charList = allChars.content || allChars;
+            const unlockedCharIds = unlockedCharIdsObj.content || unlockedCharIdsObj;
+            const enemyList = enemyListObj.content || enemyListObj;
+            const weaponList = allWeapons.content || allWeapons;
+            const unlockedWeaponIds = unlockedWeaponIdsObj.content || unlockedWeaponIdsObj;
+            const boonList = allBoons.content || allBoons;
+            const unlockedBoonIds = unlockedBoonIdsObj.content || unlockedBoonIdsObj;
 
-            // Get current default data (mock)
-            const newData: GameData = { character: { id: 'raf', hp: 0, dmg: 0, def: 0, attackSpeed: 0, range: 0 }, enemies: [], weapons: [] };
+            const newData: GameData = { character: { ...this.data().character }, enemies: [], weapons: [], boon: null };
 
-            // --- BUILD SELECTION LOGIC ---
-            // Check if there is a saved build in localStorage
-            const username = localStorage.getItem('username') || 'OPERATOR';
-            const savedBuild = localStorage.getItem(`last_build_${username}`);
-            let build = savedBuild ? JSON.parse(savedBuild) : null;
+            // 1. Map Character (Filter by unlocked IDs)
+            const unlockedChars = charList.filter((c: any) => unlockedCharIds.includes(c.id));
+            
+            // Try to find the one from Build Selection, else first unlocked
+            const savedBuild = localStorage.getItem(`last_build_${localStorage.getItem('username')}`);
+            let selectedChar = null;
+            if (savedBuild) {
+                const build = JSON.parse(savedBuild);
+                selectedChar = unlockedChars.find((c: any) => c.id === build.character?.id);
+            }
+            if (!selectedChar && unlockedChars.length > 0) {
+                selectedChar = unlockedChars[0];
+            }
 
-            // 1. Map Character
-            // Prioritize selection from Build Selector, fallback to first in list
-            const selectedChar = build?.character || (Array.isArray(characterList) && characterList.length > 0 ? characterList[0] : null);
-
-            if (selectedChar && selectedChar.name) {
-                const charId = selectedChar.name.toLowerCase().replace(/ /g, '-');
+            if (selectedChar) {
                 newData.character = {
-                    id: charId,
+                    id: selectedChar.name.toLowerCase().replace(/ /g, '-'),
+                    apiId: selectedChar.id,
                     hp: selectedChar.health || 100,
                     dmg: selectedChar.damage || 10,
                     def: selectedChar.shield || 0,
@@ -90,65 +116,104 @@ export class DataManager {
                 };
             }
 
-            // 2. Map Enemies directly from Angular names
+            // 2. Map Enemies (Global)
             if (Array.isArray(enemyList)) {
                 enemyList.forEach((e: any) => {
                     const id = e.name.toLowerCase().replace(/ /g, '-');
                     newData.enemies.push({
                         id,
+                        apiId: e.id || 0,
                         name: e.name,
                         hp: e.health,
                         damage: e.damage,
                         speed: Number(e.speed) / 20000,
-                        reward: e.difficulty * 10
+                        reward: (e.difficulty || 1) * 10
                     });
                 });
             }
 
-            // 3. Map Weapons
-            // Prioritize weapons from Build Selector, fallback to first 3 in list
-            let selectedWeapons = (build?.weapons && build.weapons.length > 0) ? build.weapons : weaponList.slice(0, 3);
+            // 3. Map Weapons (Filter by unlocked IDs)
+            const unlockedWeaponItems = weaponList.filter((w: any) => unlockedWeaponIds.includes(w.id));
+            
+            // Prioritize weapons from Build Selector (if they are in the unlocked list)
+            let selectedWeapons: any[] = [];
+            if (savedBuild) {
+                const build = JSON.parse(savedBuild);
+                if (build.weapons) {
+                    selectedWeapons = build.weapons.filter((bw: any) => unlockedWeaponIds.includes(bw.id));
+                }
+            }
+            
+            // Ensure we have 3
+            if (selectedWeapons.length < 3) {
+                const additional = unlockedWeaponItems.filter((uw: any) => !selectedWeapons.some((sw: any) => sw.id === uw.id));
+                selectedWeapons = [...selectedWeapons, ...additional].slice(0, 3);
+            }
 
-            if (Array.isArray(selectedWeapons)) {
-                selectedWeapons.forEach((w: any) => {
-                    if (!w || !w.name) return;
-                    const id = w.name.toLowerCase().replace(/ /g, '-');
-                    newData.weapons.push({
-                        id,
-                        name: w.name,
-                        cost: w.price || 0,
-                        dmg: w.damage || 0,
-                        range: Number(w.range || 100) * 64,
-                        cooldown: 1000 / Number(w.attackSpeed || w.attack_speed || 1),
-                        icon: `/weapons/${id}-icon.png` 
-                    });
+            selectedWeapons.forEach((w: any) => {
+                const id = w.name.toLowerCase().replace(/ /g, '-');
+                newData.weapons.push({
+                    id,
+                    apiId: w.id,
+                    name: w.name,
+                    cost: w.price || 0,
+                    dmg: w.damage || 0,
+                    range: Number(w.range || 100) * 64,
+                    cooldown: 1000 / Number(w.attackSpeed || w.attack_speed || 1),
+                    icon: `/weapons/${id}-icon.png` 
                 });
-                // Sort by cost (price)
-                newData.weapons.sort((a, b) => a.cost - b.cost);
+            });
+            newData.weapons.sort((a, b) => a.cost - b.cost);
+
+            // 4. Map Boon
+            const unlockedBoons = boonList.filter((b: any) => unlockedBoonIds.includes(b.id));
+            let selectedBoon = null;
+            if (savedBuild) {
+                const build = JSON.parse(savedBuild);
+                selectedBoon = unlockedBoons.find((b: any) => b.id === build.boon?.id);
+            }
+            if (!selectedBoon && unlockedBoons.length > 0) {
+                selectedBoon = unlockedBoons[0];
+            }
+
+            if (selectedBoon) {
+                newData.boon = {
+                    id: selectedBoon.id,
+                    name: selectedBoon.name,
+                    passiveType: selectedBoon.passiveType || selectedBoon.passive_type || 'none',
+                    passiveValue: Number(selectedBoon.passiveValue || selectedBoon.passive_value || 0)
+                };
+                
+                // OPTIONAL: Apply boon passive to character stats if applicable
+                if (newData.boon.passiveType === 'hp_boost') {
+                    newData.character.hp += newData.boon.passiveValue;
+                } else if (newData.boon.passiveType === 'dmg_boost') {
+                    newData.character.dmg += newData.boon.passiveValue;
+                }
             }
 
             this.data.set(newData);
-            console.log("✅ DataManager: Data Successfully Mapped from API endpoints.");
+            console.log("✅ DataManager: Data Successfully Mapped and Filtered.");
+            return newData;
 
         } catch (error) {
             console.warn("DataManager: Failed to load from API (using mock)", error);
             
-            // Mock fallback data so the game doesn't break when backend is down
             const mockData: GameData = {
-                character: { id: 'raf', hp: 100, dmg: 10, def: 5, attackSpeed: 1, range: 100 },
+                character: { id: 'raf', apiId: 1, hp: 100, dmg: 10, def: 5, attackSpeed: 1, range: 100 },
                 enemies: [
-                    { id: 'slime', name: '[MOCK] Slime', hp: 50, reward: 10, speed: 1, damage: 5 },
-                    { id: 'goblin', name: '[MOCK] Goblin', hp: 80, reward: 20, speed: 1.5, damage: 10 }
+                    { id: 'drone', apiId: 1, name: '[MOCK] Drone', hp: 50, reward: 10, speed: 1, damage: 5 },
+                    { id: 'bot', apiId: 2, name: '[MOCK] Bot', hp: 80, reward: 20, speed: 1.5, damage: 10 }
                 ],
                 weapons: [
-                    { id: 'pulse-turret', name: '[MOCK] Pulse Turret', cost: 50, dmg: 20, range: 200, cooldown: 1000, icon: '/weapons/pulse-turret-icon.png' },
-                    { id: 'arc-railgun', name: '[MOCK] Arc Railgun', cost: 75, dmg: 15, range: 300, cooldown: 500, icon: '/weapons/arc-railgun-icon.png' },
-                    { id: 'plasma-cannon', name: '[MOCK] Plasma Cannon', cost: 120, dmg: 30, range: 150, cooldown: 800, icon: '/weapons/plasma-cannon-icon.png' }
-                ]
+                    { id: 'pulse-turret', apiId: 1, name: '[MOCK] Pulse Turret', cost: 50, dmg: 20, range: 200, cooldown: 1000, icon: '/weapons/pulse-turret-icon.png' },
+                    { id: 'arc-railgun', apiId: 2, name: '[MOCK] Arc Railgun', cost: 75, dmg: 15, range: 300, cooldown: 500, icon: '/weapons/arc-railgun-icon.png' },
+                    { id: 'plasma-cannon', apiId: 3, name: '[MOCK] Plasma Cannon', cost: 120, dmg: 30, range: 150, cooldown: 800, icon: '/weapons/plasma-cannon-icon.png' }
+                ],
+                boon: null
             };
             this.data.set(mockData);
+            return mockData;
         }
-
-        return this.data();
     }
 }

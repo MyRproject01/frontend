@@ -10,7 +10,7 @@ import { signal } from '@angular/core';
  */
 export class GameState {
     // --- ESTADO REACTIVO (SIGNALS) ---
-    static gold = signal(0);
+    static gold = signal(150);
     static lives = signal(20);
     static shield = signal(0); // Escudo actual
     static maxShield = signal(50); // Escudo máximo (Defensa de Raf)
@@ -18,18 +18,30 @@ export class GameState {
     static wave = signal(1);
     static isWaveActive = signal(false);
     static selectedWeapon = signal<{ type: string, cost: number } | null>(null);
+    
+    // --- NUEVOS CAMPOS PARA RUNS ---
+    static runId = signal<number | null>(null);
+    static enemiesKilled = signal(0);
+    static startTime = signal(0);
+    static rewardPool = signal<any[]>([]);
+    static isRewardPending = signal(false);
 
     /**
      * Resetea el estado del juego (Game Over / Reinicio).
      */
     static reset() {
-        this.gold.set(0);
+        this.gold.set(150);
         this.lives.set(20);
         this.score.set(0);
         this.wave.set(1);
         this.isWaveActive.set(false);
         this.shield.set(0);
         this.selectedWeapon.set(null);
+        this.runId.set(null);
+        this.enemiesKilled.set(0);
+        this.startTime.set(0);
+        this.rewardPool.set([]);
+        this.isRewardPending.set(false);
     }
 
     /**
@@ -59,14 +71,14 @@ export class GameState {
         const currentShield = this.shield();
         if (currentShield > 0) {
             const damageToShield = Math.min(currentShield, amount);
-            this.shield.update(v => v - damageToShield);
+            this.shield.update(v => Math.max(0, v - damageToShield));
 
             const remainingDamage = amount - damageToShield;
             if (remainingDamage > 0) {
-                this.lives.update(v => v - remainingDamage);
+                this.lives.update(v => Math.max(0, v - remainingDamage));
             }
         } else {
-            this.lives.update(v => v - amount);
+            this.lives.update(v => Math.max(0, v - amount));
         }
     }
 

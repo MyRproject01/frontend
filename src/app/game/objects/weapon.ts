@@ -41,7 +41,7 @@ export abstract class Weapon extends GameObjects.Sprite {
         let closestEnemy: any = null;
         let minDistanceSq = this.range * this.range; // Usamos rango al cuadrado
 
-        scene.enemies.children.each((enemy: any) => {
+        scene.enemies.getChildren().forEach((enemy: any) => {
             if (enemy.active && enemy.visible) {
                 // Distancia al cuadrado es más rápida que Math.sqrt
                 const distSq = Phaser.Math.Distance.Squared(this.x, this.y, enemy.x, enemy.y);

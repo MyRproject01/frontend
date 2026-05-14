@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, forkJoin } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Character, Weapon } from './catalog.models';
@@ -34,5 +34,52 @@ export class CatalogService {
   getEnemies(): Observable<any[]> {
     return this.http.get<{content: any[]}>(`${this.apiUrl}/enemies`)
       .pipe(map(response => response.content || response as any));
+  }
+
+  getBoons(): Observable<any[]> {
+    return this.http.get<{content: any[]}>(`${this.apiUrl}/boons`)
+      .pipe(map(response => response.content || response as any));
+  }
+
+  // --- PLAYER UNLOCKS ---
+  // Estos endpoints devuelven solo IDs, así que cruzamos con el catálogo global
+  getUnlockedCharacters(): Observable<Character[]> {
+    return forkJoin([
+      this.getCharacters(),
+      this.http.get<{content: number[]}>(`${this.apiUrl}/player/unlocks/characters`)
+        .pipe(map(res => res.content || []))
+    ]).pipe(
+      map(([all, unlockedIds]) => all.filter(c => unlockedIds.includes(c.id)))
+    );
+  }
+
+  getUnlockedWeapons(): Observable<Weapon[]> {
+    return forkJoin([
+      this.getWeapons(),
+      this.http.get<{content: number[]}>(`${this.apiUrl}/player/unlocks/weapons`)
+        .pipe(map(res => res.content || []))
+    ]).pipe(
+      map(([all, unlockedIds]) => all.filter(w => unlockedIds.includes(w.id)))
+    );
+  }
+
+  getUnlockedBoons(): Observable<any[]> {
+    return forkJoin([
+      this.getBoons(),
+      this.http.get<{content: number[]}>(`${this.apiUrl}/player/unlocks/boons`)
+        .pipe(map(res => res.content || []))
+    ]).pipe(
+      map(([all, unlockedIds]) => all.filter(b => unlockedIds.includes(b.id)))
+    );
+  }
+
+  getUnlockedItems(): Observable<any[]> {
+    return forkJoin([
+      this.getItems(),
+      this.http.get<{content: number[]}>(`${this.apiUrl}/player/unlocks/items`)
+        .pipe(map(res => res.content || []))
+    ]).pipe(
+      map(([all, unlockedIds]) => all.filter(i => unlockedIds.includes(i.id)))
+    );
   }
 }

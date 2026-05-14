@@ -42,6 +42,30 @@
   <!-- Right Section: Menu & Config -->
   <section class="main-right">
     <div class="config-scroll-area custom-scrollbar">
+      <!-- 0. Selected Boon -->
+      <div class="config-section">
+        <div class="section-header boon">
+          <span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+          <h3>Selected Boon</h3>
+        </div>
+        <div class="boon-display" routerLink="/loadout/boons" [queryParams]="{from: 'build'}" style="cursor: pointer;">
+          @if (selectedBoon()) {
+            <div class="boon-card">
+              <div class="boon-icon">
+                <img [src]="getBoonIconUrl(selectedBoon()?.name)" [alt]="selectedBoon()?.name" 
+                     style="width: 100%; height: 100%; object-fit: contain; padding: 4px;">
+              </div>
+              <div class="boon-info">
+                <div class="boon-name">{{ selectedBoon()?.name | uppercase }}</div>
+                <div class="boon-desc">{{ selectedBoon()?.description || 'No description available' }}</div>
+              </div>
+            </div>
+          } @else {
+            <div class="boon-empty">NO BOON SELECTED</div>
+          }
+        </div>
+      </div>
+
       <!-- 1. Selected Weapons -->
       <div class="config-section">
         <div class="section-header">
@@ -86,86 +110,15 @@
         </div>
       </div>
 
-      <!-- 3. Character Stats Overview -->
-      <div class="config-section">
-        <div class="section-header stats">
-          <span class="material-symbols-outlined" data-icon="monitoring">monitoring</span>
-          <h3>Character Stats</h3>
-        </div>
-        <div class="stats-overview">
-          <div class="stats-list" *ngIf="animationState()">
-            <!-- HEALTH -->
-            <div class="bar-group">
-            <div class="bar-labels">
-              <span>HEALTH</span>
-              <span class="bar-val cyan">{{ selectedCharacter()?.health || 0 }}</span>
-            </div>
-            <div class="seg-bar">
-              @for (seg of getStatSegments(selectedCharacter()?.health, 100, 'cyan'); track selectedCharacter()?.id + '-' + $index) {
-                <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
-              }
-            </div>
-          </div>
-          
-          <!-- SHIELD -->
-          <div class="bar-group">
-            <div class="bar-labels">
-              <span>SHIELD</span>
-              <span class="bar-val purple">{{ selectedCharacter()?.shield || 0 }}</span>
-            </div>
-            <div class="seg-bar">
-              @for (seg of getStatSegments(selectedCharacter()?.shield, 100, 'purple'); track selectedCharacter()?.id + '-' + $index) {
-                <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
-              }
-            </div>
-          </div>
-
-          <!-- DAMAGE -->
-          <div class="bar-group">
-            <div class="bar-labels">
-              <span>DAMAGE</span>
-              <span class="bar-val red">{{ selectedCharacter()?.damage || 0 }}</span>
-            </div>
-            <div class="seg-bar">
-              @for (seg of getStatSegments(selectedCharacter()?.damage, 50, 'red'); track selectedCharacter()?.id + '-' + $index) {
-                <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
-              }
-            </div>
-          </div>
-
-          <!-- ATTACK SPEED -->
-          <div class="bar-group">
-            <div class="bar-labels">
-              <span>ATTACK SPEED</span>
-              <span class="bar-val yellow">{{ selectedCharacter()?.attackSpeed || 0 }}</span>
-            </div>
-            <div class="seg-bar">
-              @for (seg of getStatSegments(selectedCharacter()?.attackSpeed, 2, 'yellow'); track selectedCharacter()?.id + '-' + $index) {
-                <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
-              }
-            </div>
-          </div>
-
-          <!-- RANGE -->
-          <div class="bar-group">
-            <div class="bar-labels">
-              <span>RANGE</span>
-              <span class="bar-val blue">{{ selectedCharacter()?.range || 0 }}</span>
-            </div>
-            <div class="seg-bar">
-              @for (seg of getStatSegments(selectedCharacter()?.range, 1000, 'blue'); track selectedCharacter()?.id + '-' + $index) {
-                <div class="seg" [ngClass]="seg.type" [style.animation-delay]="($index * 0.05) + 's'"></div>
-              }
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
 
     <!-- Footer: Confirm Button -->
     <div class="confirm-footer">
-      <button class="btn-confirm" (click)="confirmBuild()">
+      <div class="validation-message" *ngIf="selectedWeapons().length !== 3">
+        <span class="material-symbols-outlined">warning</span>
+        SELECT 3 WEAPONS TO DEPLOY
+      </div>
+      <button class="btn-confirm" [disabled]="selectedWeapons().length !== 3" (click)="confirmBuild()">
         <span class="btn-text">CONFIRM_BUILD &amp; PLAY <span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span></span>
       </button>
     </div>

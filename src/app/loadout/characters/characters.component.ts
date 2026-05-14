@@ -33,8 +33,11 @@ export class CharactersComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.isFromBuild.set(params['from'] === 'build');
     });
+    this.loadCharacters();
+  }
 
-    this.catalogService.getCharacters().subscribe({
+  loadCharacters() {
+    this.catalogService.getUnlockedCharacters().subscribe({
       next: (data) => {
         const sortedData = [...data].sort((a, b) => b.id - a.id);
         this.characters.set(sortedData);
@@ -81,12 +84,14 @@ export class CharactersComponent implements OnInit {
     return this.buildService.selectedCharacter()?.id === char.id;
   }
 
-  getIconUrl(name: string): string {
+  getIconUrl(name: string | undefined): string {
+    if (!name) return '/characters/generic-icon.png';
     const formattedName = name.toLowerCase().replace(/\s+/g, '-');
     return `/characters/${formattedName}-icon.png`;
   }
 
-  getImageUrl(name: string): string {
+  getImageUrl(name: string | undefined): string {
+    if (!name) return '/characters/generic.png';
     const formattedName = name.toLowerCase().replace(/\s+/g, '-');
     return `/characters/${formattedName}.png`;
   }

@@ -34,7 +34,7 @@ export class WeaponsComponent implements OnInit {
       this.isFromBuild.set(params['from'] === 'build');
     });
 
-    this.catalogService.getWeapons().subscribe({
+    this.catalogService.getUnlockedWeapons().subscribe({
     next: (data) => {
       const sorted = [...data].sort((a, b) => (a.price || 0) - (b.price || 0));
       this.weapons.set(sorted);
@@ -93,12 +93,14 @@ export class WeaponsComponent implements OnInit {
     this.toggleWeapon(this.previewWeapon(), true);
   }
 
-  getImageUrl(name: string): string {
+  getImageUrl(name: string | undefined): string {
+    if (!name) return '/weapons/generic.png';
     const formattedName = name.toLowerCase().replace(/\s+/g, '-');
     return `/weapons/${formattedName}.png`;
   }
 
-  getIconUrl(name: string): string {
+  getIconUrl(name: string | undefined): string {
+    if (!name) return '/weapons/generic-icon.png';
     const formattedName = name.toLowerCase().replace(/\s+/g, '-');
     return `/weapons/${formattedName}-icon.png`;
   }

@@ -35,7 +35,7 @@ export class Enemy extends GameObjects.Sprite {
     onReachBaseCallback: (() => void) | undefined;
 
     constructor(scene: Scene) {
-        super(scene, 0, 0, 'goblin'); // Usamos 'goblin' como textura base inicial
+        super(scene, 0, 0, ''); // Sin textura inicial, se asigna en setup()
 
         // Generar ID único para depuración (debug)
         this.id = Math.random().toString(36).substr(2, 9);

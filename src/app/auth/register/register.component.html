@@ -82,9 +82,9 @@
       </div> -->
 
       <!-- Submit Action -->
-      <button class="submit-action btn-tactical" type="submit">
-        <span>Register</span>
-        <span class="material-symbols-outlined arrow-icon">arrow_forward</span>
+      <button class="submit-action btn-tactical" type="submit" [disabled]="isLoading() || registerForm.invalid">
+        <span>{{ isLoading() ? 'INITIALIZING...' : 'Register' }}</span>
+        <span class="material-symbols-outlined arrow-icon">{{ isLoading() ? 'sync' : 'arrow_forward' }}</span>
       </button>
 
       <div class="auth-links"

@@ -1,0 +1,83 @@
+<section class="panel roster-panel">
+  <div class="panel-header">
+    <h2 class="panel-title">
+      <span class="material-symbols-outlined title-icon">auto_awesome</span>
+      BOON_ROSTER
+    </h2>
+    <div class="panel-count">
+      FOUND: <span class="text-cyan">{{ boons().length }}</span>
+    </div>
+  </div>
+  
+  <div class="roster-grid-wrapper">
+    <div class="roster-grid">
+      @if (loading()) {
+        <div style="color: var(--cyan); font-family: 'Share Tech Mono', monospace; padding: 1rem;">LOADING...</div>
+      } @else {
+        @for (boon of boons(); track boon.id) {
+          <div class="boon-slot" 
+               [class.active-slot]="selectedBoon()?.id === boon.id" 
+               [class.available-slot]="selectedBoon()?.id !== boon.id"
+               [class.pending-slot]="isFromBuild() && isBoonPending(boon)"
+               (click)="selectBoon(boon)">
+            <div class="slot-image"
+                 [class.grayscale]="selectedBoon()?.id !== boon.id"
+                 [style.background-image]="'url(' + getIconUrl(boon.name) + ')'">
+            </div>
+            <div class="slot-badge" [class.active-badge]="selectedBoon()?.id === boon.id" [class.text-cyan-dim]="selectedBoon()?.id !== boon.id" style="font-size: 0.5rem; text-align: center;">{{ boon.name | uppercase | slice:0:10 }}</div>
+            @if (isFromBuild() && isBoonPending(boon)) {
+              <div class="pending-badge">SELECTED</div>
+            }
+          </div>
+        }
+      }
+    </div>
+  </div>
+</section>
+
+<!-- Right Panel: BOON_INTEL -->
+<section class="panel intel-panel">
+  <div class="corner-decoration"></div>
+  
+  <div class="intel-content">
+    <!-- Header -->
+    <div class="intel-header">
+      <h1 class="intel-title">{{ selectedBoon() ? (selectedBoon()!.name | uppercase) : 'SELECT_BOON' }}</h1>
+      <div class="intel-divider">
+        <div class="intel-divider-progress"></div>
+      </div>
+    </div>
+    
+    <!-- Boon Visualizer -->
+    <div class="visualizer-box">
+      <img class="visualizer-image" 
+           [src]="selectedBoon() ? getImageUrl(selectedBoon()!.name) : ''"
+           [alt]="selectedBoon()?.name || 'boon'" />
+    </div>
+    
+    <!-- Archive Data -->
+    <div class="intel-details">
+      <div class="module">
+        <div class="module-header">
+          <span class="material-symbols-outlined module-icon">folder_open</span>
+          ARCHIVE_DATA
+        </div>
+        <div class="archive-text" [innerHTML]="formatDescription(selectedBoon()?.description)"></div>
+      </div>
+    </div>
+
+    @if (isFromBuild()) {
+      <div class="selection-footer" style="margin-top: 1.5rem;">
+        @if (isBoonPending(selectedBoon()!)) {
+          <button class="btn-confirm-selection selected" disabled>
+            BOON_SELECTED <span class="material-symbols-outlined">check_circle</span>
+          </button>
+        } @else {
+          <button class="btn-confirm-selection" (click)="confirmSelection()">
+            SELECT BOON <span class="material-symbols-outlined">add_circle</span>
+          </button>
+        }
+      </div>
+    }
+  </div>
+</section>

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../auth.service';
@@ -18,6 +18,7 @@ export class LoginComponent {
   private router = inject(Router);
 
   errorMessage: string | null = null;
+  isLoading = signal<boolean>(false);
 
   loginForm = this.fb.group({
     username: ['', Validators.required],
@@ -26,7 +27,10 @@ export class LoginComponent {
 
   onSubmit(event: Event) {
     event.preventDefault();
-    if (this.loginForm.valid) {
+    if (this.loginForm.valid && !this.isLoading()) {
+      this.isLoading.set(true);
+      this.errorMessage = null;
+
       const credentials = {
         username: this.loginForm.value.username!,
         password: this.loginForm.value.password!
@@ -34,12 +38,14 @@ export class LoginComponent {
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
+          this.isLoading.set(false);
           this.authService.saveToken(response.token);
           localStorage.setItem('username', credentials.username);
           this.buildService.loadLastBuild(credentials.username);
           this.router.navigate(['/main']);
         },
         error: (err) => {
+          this.isLoading.set(false);
           console.error('Error logging in:', err);
           this.errorMessage = err.error?.message || 'LOGIN_FAILED: INVALID_CREDENTIALS';
         }

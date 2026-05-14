@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../auth.service';
@@ -16,6 +16,7 @@ export class RegisterComponent {
   private router = inject(Router);
 
   errorMessage: string | null = null;
+  isLoading = signal<boolean>(false);
 
   registerForm = this.fb.group({
     alias: ['', Validators.required],
@@ -25,7 +26,10 @@ export class RegisterComponent {
 
   onSubmit(event: Event) {
     event.preventDefault();
-    if (this.registerForm.valid) {
+    if (this.registerForm.valid && !this.isLoading()) {
+      this.isLoading.set(true);
+      this.errorMessage = null;
+
       const data = {
         username: this.registerForm.value.alias!,
         email: this.registerForm.value.email!,
@@ -34,10 +38,11 @@ export class RegisterComponent {
 
       this.authService.register(data).subscribe({
         next: () => {
-          // After successful registration, usually redirect to login
+          this.isLoading.set(false);
           this.router.navigate(['/login']);
         },
         error: (err) => {
+          this.isLoading.set(false);
           console.error('Error registering:', err);
           this.errorMessage = err.error?.message || 'ENROLLMENT_FAILED: SYSTEM_ERROR';
         }

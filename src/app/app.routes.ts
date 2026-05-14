@@ -7,6 +7,7 @@ import { SettingsComponent } from './user/settings/settings.component';
 import { CharactersComponent } from './loadout/characters/characters.component';
 import { WeaponsComponent } from './loadout/weapons/weapons.component';
 import { ItemsComponent } from './loadout/items/items.component';
+import { BoonsComponent } from './loadout/boons/boons.component';
 import { EnemiesComponent } from './loadout/enemies/enemies.component';
 import { LoadoutComponent } from './loadout/loadout.component';
 import { GameComponent } from './game/game';
@@ -29,6 +30,7 @@ export const routes: Routes = [
             { path: 'characters', component: CharactersComponent },
             { path: 'weapons', component: WeaponsComponent },
             { path: 'items', component: ItemsComponent },
+            { path: 'boons', component: BoonsComponent },
             { path: 'enemies', component: EnemiesComponent },
             { path: '', redirectTo: 'characters', pathMatch: 'full' }
         ]

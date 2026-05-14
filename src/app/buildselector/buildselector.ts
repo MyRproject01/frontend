@@ -15,20 +15,19 @@ import { BuildService } from '../services/build.service';
 export class Buildselector {
   private catalogService = inject(CatalogService);
   private buildService = inject(BuildService);
-
   private router = inject(Router);
 
   selectedCharacter = this.buildService.selectedCharacter;
   selectedWeapons = this.buildService.selectedWeapons;
+  selectedBoon = this.buildService.selectedBoon;
   animationState = signal<boolean>(true);
 
   confirmBuild() {
-    this.buildService.saveBuild(this.selectedCharacter(), this.selectedWeapons());
+    this.buildService.saveBuild(this.selectedCharacter(), this.selectedWeapons(), this.selectedBoon());
     this.router.navigate(['/game']);
   }
 
   getImageUrl(name: string): string {
-
     const formattedName = name.toLowerCase().replace(/\s+/g, '-');
     return `/characters/${formattedName}.png`;
   }
@@ -36,6 +35,12 @@ export class Buildselector {
   getWeaponIconUrl(name: string): string {
     const formattedName = name.toLowerCase().replace(/\s+/g, '-');
     return `/weapons/${formattedName}-icon.png`;
+  }
+
+  getBoonIconUrl(name: string | undefined): string {
+    if (!name) return '/boons/generic-icon.png';
+    const formattedName = name.toLowerCase().replace(/\s+/g, '-');
+    return `/boons/${formattedName}-icon.png`;
   }
 
   getStatSegments(value: number | undefined, maxBase: number, colorType: string): { type: string }[] {

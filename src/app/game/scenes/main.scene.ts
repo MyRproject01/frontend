@@ -25,6 +25,12 @@ export class MainScene extends Phaser.Scene {
     bullets: Phaser.GameObjects.Group | undefined;
     weapons: Phaser.GameObjects.Group | undefined; // Grupo de torres (weapons)
 
+    // Visualización de Zonas
+    placementGraphics: Phaser.GameObjects.Graphics | undefined;
+    private pathPoints: Phaser.Math.Vector2[] = [];
+    private lastSelectedWeaponType: string | null = null;
+    private lastGold: number = -1;
+
     // Torre Fantasma (Previsualización)
     ghost: Phaser.GameObjects.Sprite | undefined;
     ghostRange: Phaser.GameObjects.Arc | undefined; // Círculo de rango
@@ -52,6 +58,7 @@ export class MainScene extends Phaser.Scene {
         // this.add.image(800, 450, 'bg').setDisplaySize(1600, 900);
 
         this.graphics = this.add.graphics();
+        this.placementGraphics = this.add.graphics();
         this.createPath();
 
         // Grupos
@@ -77,7 +84,7 @@ export class MainScene extends Phaser.Scene {
 
         // Personaje (Defensor)
         const characterStats = DataManager.data().character;
-        this.character = new Character(this, 230, 430, characterStats.id, characterStats, this.bullets, this.enemies);
+        this.character = new Character(this, 1345, 160, characterStats.id, characterStats, this.bullets, this.enemies);
         this.character.setDisplaySize(160, 160);
         this.character.setVisible(false);
 
@@ -96,13 +103,23 @@ export class MainScene extends Phaser.Scene {
         if (this.isGameOver) return;
 
         if (GameState.lives() <= 0) {
-            this.handleGameOver();
+            // Pequeño retardo para que el jugador vea la barra de vida en 0
+            this.time.delayedCall(500, () => {
+                this.handleGameOver();
+            });
+            this.isGameOver = true; // Bloquear múltiples triggers
             return;
         }
 
         if (this.character) this.character.update(time, delta);
 
-        // Lógica de Torre Fantasma
+        // Lógica de Torres
+        this.weapons?.getChildren().forEach((tower: any) => {
+            if (tower.active) tower.update(time, delta);
+        });
+
+        // Lógica de Zonas y Torre Fantasma
+        this.handlePlacementUI();
         this.handleGhostTower();
 
         // Lógica de Oleada
@@ -126,6 +143,9 @@ export class MainScene extends Phaser.Scene {
         this.path.lineTo(1075, 620)
         this.path.lineTo(1345, 620);
         this.path.lineTo(1345, 160);
+
+        // Cachear puntos del camino para colisiones rápidas
+        this.pathPoints = this.path.getPoints(100);
     }
 
     createAnimations() {
@@ -175,8 +195,65 @@ export class MainScene extends Phaser.Scene {
                 this.game.events.emit('exit-game');
             });
 
+        // Emitir evento de Game Over con estadísticas para el backend
+        const stats = {
+            score: GameState.score(),
+            waveReached: GameState.wave(),
+            enemiesKilled: GameState.enemiesKilled(),
+            timeSurvivedSec: Math.floor((Date.now() - GameState.startTime()) / 1000)
+        };
+        this.game.events.emit('game-over', stats);
+
         // No pausamos la escena completa (scene.pause) porque detendría los eventos de input
         // Solo hemos pausado las físicas y detenido el update con el flag isGameOver
+    }
+
+    /**
+     * Gestiona la actualización de la UI de posicionamiento (Zonas).
+     */
+    handlePlacementUI() {
+        const selected = GameState.selectedWeapon();
+        const gold = GameState.gold();
+
+        // Redibujar solo si cambia el arma seleccionada o el oro (que afecta a la disponibilidad)
+        if (selected?.type !== this.lastSelectedWeaponType || gold !== this.lastGold) {
+            this.lastSelectedWeaponType = selected?.type || null;
+            this.lastGold = gold;
+            this.drawPlacementZones();
+        }
+    }
+
+    /**
+     * Dibuja las zonas habilitadas para colocar torres.
+     */
+    drawPlacementZones() {
+        if (!this.placementGraphics) return;
+        this.placementGraphics.clear();
+
+        const selected = GameState.selectedWeapon();
+        if (!selected) {
+            // Asegurarnos de limpiar rastro si no hay nada seleccionado
+            this.lastSelectedWeaponType = null;
+            return;
+        }
+
+        // Estilo de la zona
+        this.placementGraphics.fillStyle(0x00ff00, 0.1);
+        this.placementGraphics.lineStyle(1, 0x00ff00, 0.2);
+
+        const cellSize = 64;
+        const width = Number(this.game.config.width);
+        const height = Number(this.game.config.height);
+
+        // Iteramos por la rejilla para marcar slots libres
+        for (let x = cellSize / 2; x < width; x += cellSize) {
+            for (let y = cellSize / 2; y < height; y += cellSize) {
+                if (this.canPlaceWeapon(x, y, selected.cost, false)) {
+                    this.placementGraphics.strokeRect(x - 30, y - 30, 60, 60);
+                    this.placementGraphics.fillRect(x - 30, y - 30, 60, 60);
+                }
+            }
+        }
     }
 
     /**
@@ -224,34 +301,47 @@ export class MainScene extends Phaser.Scene {
             this.spawnEnemy();
             this.spawnTimer -= this.spawnInterval;
         }
-        if (this.remainingDifficulty <= 0 && this.enemies?.countActive() === 0) {
+        // Comprobar fin de oleada
+        if (GameState.isWaveActive() && this.remainingDifficulty <= 0 && this.enemies?.countActive() === 0) {
             this.endWave();
         }
     }
 
-    canPlaceWeapon(x: number, y: number, cost: number): boolean {
+    canPlaceWeapon(x: number, y: number, cost: number, checkGold: boolean = true): boolean {
         // 1. Comprobar Oro
-        if (GameState.gold() < cost) return false;
+        if (checkGold && GameState.gold() < cost) return false;
 
         // 2. Comprobar Colisión con Camino
-        const p = new Phaser.Math.Vector2(x, y);
+        // Usamos un radio de colisión de 40px para evitar que los cuadrados toquen el camino
+        const collisionRadiusSq = 1600; // 40^2 = 1600
 
-        // Comprobar distancia a puntos del camino (simplificado)
-        const pathPoints = this.path?.getPoints(50) || [];
-        for (const point of pathPoints) {
-            const d = p.distance(point);
-            if (d < 40) return false; // Demasiado cerca del camino
+        if (this.pathPoints && this.pathPoints.length > 0) {
+            for (const point of this.pathPoints) {
+                const dx = x - point.x;
+                const dy = y - point.y;
+                const dSq = dx * dx + dy * dy;
+                if (dSq < collisionRadiusSq) return false;
+            }
         }
 
         // 3. Comprobar Superposición con otras Torres
-        let overlap = false;
-        this.weapons?.getChildren().forEach((tower: any) => {
-            if (p.distance(new Phaser.Math.Vector2(tower.x, tower.y)) < 60) {
-                overlap = true;
+        if (this.weapons) {
+            const towers = this.weapons.getChildren();
+            for (const tower of towers as any[]) {
+                const dx = x - tower.x;
+                const dy = y - tower.y;
+                const dSq = dx * dx + dy * dy;
+                if (dSq < 3600) return false; // 60^2 = 3600
             }
-            return true;
-        });
-        if (overlap) return false;
+        }
+
+        // 4. Comprobar Superposición con el Personaje (Defensor final)
+        if (this.character) {
+            const dx = x - this.character.x;
+            const dy = y - this.character.y;
+            const dSq = dx * dx + dy * dy;
+            if (dSq < 5000) return false; // Evitar poner torres encima del personaje
+        }
 
         return true;
     }
@@ -273,13 +363,14 @@ export class MainScene extends Phaser.Scene {
 
             // Crear Fábrica de Torres
             const tower = new GenericWeapon(this, snapX, snapY, selected.type);
-
             if (tower) {
                 this.weapons?.add(tower);
             }
 
-            // Resetear Selección
+            // Resetear Selección y Limpiar UI
             GameState.selectedWeapon.set(null);
+            this.drawPlacementZones();
+            console.log("Torre colocada correctamente");
         }
     }
 
@@ -321,6 +412,7 @@ export class MainScene extends Phaser.Scene {
             enemy.setOnDeath(() => {
                 GameState.updateGold(enemyStats.reward);
                 GameState.updateScore(enemyStats.reward * 10);
+                GameState.enemiesKilled.update(v => v + 1);
             });
             enemy.setOnReachBase(() => {
                 this.character?.takeDamage(enemy.damage);
@@ -331,14 +423,17 @@ export class MainScene extends Phaser.Scene {
     }
 
     endWave() {
+        console.log(`Wave ${GameState.wave()} completed!`);
         GameState.isWaveActive.set(false);
-
-        // Recompensa: Dificultad * 10
+        
         const reward = this.currentWaveDifficulty * 10;
         GameState.updateGold(reward);
-        console.log(`Oleada Completada! Recompensa: ${reward}`);
-
+        
         // Preparar siguiente
         GameState.nextWave();
+
+        // Solicitar recompensas al final de cada oleada
+        console.log("Emitting request-rewards event...");
+        this.game.events.emit('request-rewards');
     }
 }

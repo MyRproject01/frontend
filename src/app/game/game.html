@@ -65,4 +65,23 @@
             }
         </div>
     </div>
+
+    <!-- Rewards Modal -->
+    @if (GameState.isRewardPending()) {
+    <div class="rewards-overlay">
+        <div class="rewards-modal">
+            <h2 class="rewards-title">MEJORA DISPONIBLE</h2>
+            <div class="rewards-grid">
+                @for (item of GameState.rewardPool(); track item.id) {
+                <div class="reward-card" (click)="chooseReward(item)">
+                    <img [src]="item.iconUrl" [alt]="item.name" class="reward-icon"
+                         (error)="$event.target.src = '/items/optic-array-icon.png'">
+                    <h3 class="reward-name">{{ item.name }}</h3>
+                    <p class="reward-desc">{{ item.description }}</p>
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+    }
 </div>
