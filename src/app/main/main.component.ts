@@ -23,6 +23,7 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this.playerService.getLeaderboard().subscribe({
       next: (data) => {
+        console.log('🏆 Leaderboard Data:', data);
         if (data && data.length > 0) {
           const sorted = [...data].sort((a, b) => b.highScore - a.highScore);
           this.leaderboard.set(sorted.slice(0, 10)); // Top 10

@@ -5,6 +5,7 @@ import { Bullet } from '../objects/bullet';
 import { GenericWeapon } from '../objects/generic-weapon';
 import { GameState } from '../core/game-state.manager';
 import { DataManager } from '../core/data.manager';
+import { ItemEffects } from '../core/item-effects.manager';
 
 /**
  * Escena Principal (MainScene)
@@ -88,8 +89,12 @@ export class MainScene extends Phaser.Scene {
         this.character.setDisplaySize(160, 160);
         this.character.setVisible(false);
 
-        // Inicializar Escudo
+        // Inicializar Escudo y Vida base desde estadísticas del personaje
+        GameState.baseMaxShield.set(characterStats.def);
+        GameState.baseMaxHealth.set(characterStats.hp);
         GameState.maxShield.set(characterStats.def);
+        GameState.maxHealth.set(characterStats.hp);
+        GameState.lives.set(characterStats.hp);
         GameState.refillShield();
 
         GameState.isWaveActive.set(false);
@@ -384,8 +389,21 @@ export class MainScene extends Phaser.Scene {
 
         GameState.isWaveActive.set(true);
         this.spawnTimer = 0; // Resetear timer
+
+        // Recalcular shield y health con multiplicadores de items
+        const towerTypes = this.getUniqueTowerTypeCount();
+        const newMaxShield = Math.floor(GameState.baseMaxShield() * ItemEffects.getMaxShieldMultiplier(towerTypes));
+        const newMaxHealth = Math.floor(GameState.baseMaxHealth() * ItemEffects.getMaxHealthMultiplier(towerTypes));
+        GameState.maxShield.set(newMaxShield);
+        GameState.maxHealth.set(newMaxHealth);
+
+        // Ajustar vida actual si supera el nuevo máximo
+        if (GameState.lives() > newMaxHealth) {
+            GameState.lives.set(newMaxHealth);
+        }
+
         this.character?.regenerateShield();
-        console.log(`Iniciando Oleada ${wave} con Dificultad ${this.currentWaveDifficulty}`);
+        console.log(`Iniciando Oleada ${wave} con Dificultad ${this.currentWaveDifficulty} | Shield: ${newMaxShield} | MaxHP: ${newMaxHealth}`);
     }
 
     spawnEnemy() {
@@ -423,7 +441,8 @@ export class MainScene extends Phaser.Scene {
     }
 
     endWave() {
-        console.log(`Wave ${GameState.wave()} completed!`);
+        const wave = GameState.wave();
+        console.log(`Wave ${wave} completed!`);
         GameState.isWaveActive.set(false);
         
         const reward = this.currentWaveDifficulty * 10;
@@ -432,8 +451,27 @@ export class MainScene extends Phaser.Scene {
         // Preparar siguiente
         GameState.nextWave();
 
-        // Solicitar recompensas al final de cada oleada
-        console.log("Emitting request-rewards event...");
-        this.game.events.emit('request-rewards');
+        // Solicitar recompensas solo en rondas impares (1, 3, 5, 7...)
+        if (wave % 2 !== 0) {
+            console.log(`Ronda ${wave} (impar) - Emitting request-rewards event...`);
+            this.game.events.emit('request-rewards');
+        } else {
+            console.log(`Ronda ${wave} (par) - Sin recompensas.`);
+        }
+    }
+
+    /**
+     * Cuenta cuántos tipos de torres únicos hay en el mapa.
+     * Usado por Synergy Core para calcular bonificaciones.
+     */
+    getUniqueTowerTypeCount(): number {
+        if (!this.weapons) return 0;
+        const types = new Set<string>();
+        this.weapons.getChildren().forEach((tower: any) => {
+            if (tower.active && tower.weaponId) {
+                types.add(tower.weaponId);
+            }
+        });
+        return types.size;
     }
 }

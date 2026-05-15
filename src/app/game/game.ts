@@ -1,4 +1,5 @@
-import { Component, OnDestroy, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy, AfterViewInit, inject } from '@angular/core';
+
 import { Router } from '@angular/router';
 import * as Phaser from 'phaser';
 import { BootScene } from './scenes/boot.scene';
@@ -10,6 +11,8 @@ import { RunService, GameEndStats } from '../services/run.service';
 import { CatalogService } from '../loadout/catalog.service';
 import { BuildService } from '../services/build.service';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-game',
@@ -24,6 +27,21 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   // Exponer GameState y DataManager al template
   protected GameState = GameState;
   protected DataManager = DataManager;
+
+  // Atajos para Signals (evita errores de compilación en template)
+  protected gold = GameState.gold;
+  protected lives = GameState.lives;
+  protected maxHealth = GameState.maxHealth;
+  protected shield = GameState.shield;
+  protected maxShield = GameState.maxShield;
+  protected score = GameState.score;
+  protected wave = GameState.wave;
+  protected isWaveActive = GameState.isWaveActive;
+  protected rewardPool = GameState.rewardPool;
+  protected isRewardPending = GameState.isRewardPending;
+  protected inventory = GameState.inventory;
+
+  private sanitizer = inject(DomSanitizer);
 
   constructor(
     private router: Router,
@@ -43,12 +61,14 @@ export class GameComponent implements AfterViewInit, OnDestroy {
       
       // 2. Si hay boon seleccionado, lo usamos. Si no, buscamos el primero desbloqueado como fallback
       if (selectedBoon) {
+        GameState.selectedBoon.set(selectedBoon.name);
         this.startRun(data, selectedBoon.id);
       } else {
         this.catalogService.getUnlockedBoons().subscribe({
           next: (boons) => {
-            const firstBoonId = (boons && boons.length > 0) ? boons[0].id : 1;
-            this.startRun(data, firstBoonId);
+            const fallbackBoon = (boons && boons.length > 0) ? boons[0] : { id: 1, name: 'Tonya' };
+            GameState.selectedBoon.set(fallbackBoon.name);
+            this.startRun(data, fallbackBoon.id);
           },
           error: (err) => {
             console.warn("⚠️ Error al obtener Boons, intentando con ID 1", err);
@@ -195,7 +215,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
       next: (rewards) => {
         console.log("🎁 Pool de recompensas recibido del servidor:", rewards);
         if (rewards && rewards.length > 0) {
-          // Generar la URL del icono basada en el nombre que ya viene del servidor
+          // Generar la URL del icono y descripción formateada
           const enrichedRewards = rewards.map(item => ({
             ...item,
             iconUrl: `/items/${item.name.toLowerCase().replace(/\s+/g, '-')}-icon.png`
@@ -216,11 +236,69 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.runService.chooseReward(runId, item.id).subscribe({
       next: () => {
         console.log(`🎁 Elegido: ${item.name}`);
+        // Añadir al inventario local
+        GameState.inventory.update(inv => [...inv, item]);
+        
         GameState.isRewardPending.set(false);
         GameState.rewardPool.set([]);
         this.togglePause(false);
       },
       error: (err) => console.error("❌ Error al elegir:", err)
     });
+  }
+
+  formatDescription(desc: string | undefined): SafeHtml {
+    if (!desc) return '';
+    
+    let formatted = desc.trim()
+      .replace(/^[\s-]+/, '')
+      .replace(/-?\s*(Effect:|Passive:|Synergy:|Sinergy:)/gi, '$1');
+    
+    formatted = formatted.replace(/(Effect:|Passive:|Synergy:|Sinergy:)/gi, '<br>- $1');
+    formatted = formatted.replace(/^<br>/, '');
+    
+    if (formatted && !formatted.startsWith('-')) {
+      formatted = '- ' + formatted;
+    }
+    
+    formatted = formatted.replace(/(Effect:)/gi, '<span class="keyword-effect">$1</span>');
+    formatted = formatted.replace(/(Passive:)/gi, '<span class="keyword-passive">$1</span>');
+    formatted = formatted.replace(/(Synergy:|Sinergy:)/gi, '<span class="keyword-synergy">$1</span>');
+    
+    return this.sanitizer.bypassSecurityTrustHtml(formatted);
+  }
+
+  getItemCount(itemId: number): number {
+    return GameState.inventory().filter(i => i.id === itemId).length;
+  }
+
+  getGroupedInventory(): Array<{ id: number; name: string; iconUrl: string; count: number }> {
+    const inv = GameState.inventory();
+    const map = new Map<number, { id: number; name: string; iconUrl: string; count: number }>();
+    for (const item of inv) {
+      const existing = map.get(item.id);
+      if (existing) {
+        existing.count++;
+      } else {
+        map.set(item.id, {
+          id: item.id,
+          name: item.name,
+          iconUrl: item.iconUrl || `/items/${item.name.toLowerCase().replace(/\s+/g, '-')}-icon.png`,
+          count: 1
+        });
+      }
+    }
+    return Array.from(map.values());
+  }
+
+  getActiveBoonIcon(): string {
+    const boonName = GameState.selectedBoon();
+    if (!boonName) return '';
+    const formattedName = boonName.toLowerCase().replace(/\s+/g, '-');
+    return `/boons/${formattedName}-icon.png`;
+  }
+
+  getActiveBoonName(): string {
+    return GameState.selectedBoon() || '';
   }
 }

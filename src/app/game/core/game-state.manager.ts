@@ -11,13 +11,17 @@ import { signal } from '@angular/core';
 export class GameState {
     // --- ESTADO REACTIVO (SIGNALS) ---
     static gold = signal(150);
-    static lives = signal(20);
+    static lives = signal(100);
+    static maxHealth = signal(100); // Vida máxima (afectada por items)
+    static baseMaxHealth = signal(100); // Vida máxima base (sin items)
     static shield = signal(0); // Escudo actual
-    static maxShield = signal(50); // Escudo máximo (Defensa de Raf)
+    static maxShield = signal(50); // Escudo máximo (afectado por items)
+    static baseMaxShield = signal(50); // Escudo máximo base (sin items)
     static score = signal(0);
     static wave = signal(1);
     static isWaveActive = signal(false);
     static selectedWeapon = signal<{ type: string, cost: number } | null>(null);
+    static selectedBoon = signal<string | null>(null); // Nombre del boon inicial
     
     // --- NUEVOS CAMPOS PARA RUNS ---
     static runId = signal<number | null>(null);
@@ -25,23 +29,31 @@ export class GameState {
     static startTime = signal(0);
     static rewardPool = signal<any[]>([]);
     static isRewardPending = signal(false);
+    static inventory = signal<any[]>([]); // Items adquiridos en la run
+
 
     /**
      * Resetea el estado del juego (Game Over / Reinicio).
      */
     static reset() {
         this.gold.set(150);
-        this.lives.set(20);
+        this.lives.set(100);
+        this.maxHealth.set(100);
+        this.baseMaxHealth.set(100);
         this.score.set(0);
         this.wave.set(1);
         this.isWaveActive.set(false);
         this.shield.set(0);
+        this.maxShield.set(50);
+        this.baseMaxShield.set(50);
         this.selectedWeapon.set(null);
+        this.selectedBoon.set(null);
         this.runId.set(null);
         this.enemiesKilled.set(0);
         this.startTime.set(0);
         this.rewardPool.set([]);
         this.isRewardPending.set(false);
+        this.inventory.set([]);
     }
 
     /**

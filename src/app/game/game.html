@@ -10,7 +10,7 @@
     <!-- Top Bar Container -->
     <div class="hud-top-bar">
         <div class="hud-panel panel-left angled-left">
-            <span class="resource-text cyan-text"><span class="icon-bolt">⚡</span> {{ GameState.gold() }}</span>
+            <span class="resource-text cyan-text"><span class="icon-bolt">⚡</span> {{ gold() }}</span>
         </div>
 
         <!-- Center: Pause Button -->
@@ -20,11 +20,11 @@
 
         <!-- Right: Wave / Score -->
         <div class="hud-panel panel-right angled-right">
-            <span class="resource-text">Ronda {{ GameState.wave() }} | Ptos: {{ GameState.score() }}</span>
+            <span class="resource-text">Ronda {{ wave() }} | Ptos: {{ score() }}</span>
             <button class="speed-btn" (click)="toggleSpeed()">
                 {{ isFastForward ? '⏩ x2' : '▶️ x1' }}
             </button>
-            <button class="next-wave-btn" [disabled]="GameState.isWaveActive()" (click)="startWave()">
+            <button class="next-wave-btn" [disabled]="isWaveActive()" (click)="startWave()">
                 ▶
             </button>
         </div>
@@ -38,21 +38,50 @@
             <div class="battery-column">
                 <div class="lives-bar-container shield-bar">
                     <div class="lives-bar-fill shield-fill"
-                        [style.height.%]="(GameState.shield() / GameState.maxShield()) * 100"></div>
+                        [style.height.%]="(shield() / maxShield()) * 100"></div>
                 </div>
                 <span class="label-shield">SHIELD</span>
             </div>
             <!-- HP Bar (Red) -->
             <div class="battery-column">
                 <div class="lives-bar-container">
-                    <div class="lives-bar-fill" [style.height.%]="(GameState.lives() / 20) * 100"></div>
+                    <div class="lives-bar-fill" [style.height.%]="(lives() / maxHealth()) * 100"></div>
                 </div>
                 <span class="label-hp">HULL</span>
             </div>
         </div>
     </div>
 
+    <!-- Inventory HUD (Bottom Left) -->
+    @if (getGroupedInventory().length > 0) {
+    <div class="inventory-hud">
+        <div class="inventory-label">ACTIVE_BOON & ITEMS</div>
+        <div class="inventory-slots">
+            <!-- Active Boon -->
+            @if (getActiveBoonName()) {
+                <div class="inventory-slot boon-slot" [title]="getActiveBoonName()">
+                    <img [src]="getActiveBoonIcon()" [alt]="getActiveBoonName()" class="inventory-icon boon-icon">
+                    <span class="boon-badge">BOON</span>
+                </div>
+                <div class="inventory-divider"></div>
+            }
+
+            <!-- Items -->
+            @for (item of getGroupedInventory(); track item.id) {
+            <div class="inventory-slot" [title]="item.name">
+                <img [src]="item.iconUrl" [alt]="item.name" class="inventory-icon"
+                     (error)="$event.target.src = '/items/optic-array-icon.png'">
+                @if (item.count > 1) {
+                    <span class="inventory-count">x{{ item.count }}</span>
+                }
+            </div>
+            }
+        </div>
+    </div>
+    }
+
     <!-- Tower Selection (Bottom Right) -->
+
     <div class="hud-panel panel-bottom-right angled-corner">
         <div class="tower-grid">
             @for (w of DataManager.data().weapons.slice(0, 3); track w.id) {
@@ -67,21 +96,26 @@
     </div>
 
     <!-- Rewards Modal -->
-    @if (GameState.isRewardPending()) {
+    @if (isRewardPending()) {
     <div class="rewards-overlay">
         <div class="rewards-modal">
             <h2 class="rewards-title">MEJORA DISPONIBLE</h2>
             <div class="rewards-grid">
-                @for (item of GameState.rewardPool(); track item.id) {
+                @for (item of rewardPool(); track item.id) {
                 <div class="reward-card" (click)="chooseReward(item)">
+                    @if (getItemCount(item.id) > 0) {
+                        <div class="item-stack-badge">x{{ getItemCount(item.id) }}</div>
+                    }
                     <img [src]="item.iconUrl" [alt]="item.name" class="reward-icon"
                          (error)="$event.target.src = '/items/optic-array-icon.png'">
                     <h3 class="reward-name">{{ item.name }}</h3>
-                    <p class="reward-desc">{{ item.description }}</p>
+                    <div class="reward-divider"></div>
+                    <p class="reward-desc" [innerHTML]="formatDescription(item.description)"></p>
                 </div>
+
                 }
             </div>
         </div>
     </div>
     }
-</div>
+</div>
