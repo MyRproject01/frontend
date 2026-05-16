@@ -12,7 +12,7 @@ export abstract class Weapon extends GameObjects.Sprite {
     constructor(scene: Scene, x: number, y: number, texture: string) {
         super(scene, x, y, texture);
         scene.add.existing(this);
-        this.setDisplaySize(64, 64);
+        this.setDisplaySize(96, 96);
     }
 
     abstract fire(target: any, time: number): void;
@@ -95,6 +95,11 @@ export abstract class Weapon extends GameObjects.Sprite {
                 bullet.setTint(tint);
                 bullet.fire(this.x, this.y, target, finalDamage);
                 bullet.speed = speed;
+
+                // Asegurar tamaño razonable para la bala y rotación hacia el objetivo
+                bullet.setDisplaySize(32, 32);
+                const angle = Phaser.Math.Angle.Between(this.x, this.y, target.x, target.y);
+                bullet.setRotation(angle - Math.PI / 2);
             }
         }
     }

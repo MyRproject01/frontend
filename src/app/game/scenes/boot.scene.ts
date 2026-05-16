@@ -67,8 +67,19 @@ export class BootScene extends Scene {
 
     // 2. Torres (Iconos seleccionados para el juego y HUD)
     data.weapons.forEach(w => {
-        // Usamos el icono como textura del juego
+        // Usamos el icono como textura del HUD
         this.load.image(w.id + '_icon', `weapons/${w.id}-icon.png`);
+        
+        // Cargamos la textura in-game (si existe el archivo con el nombre del id)
+        // Algunas torres tienen assets especiales (hojas de sprites y balas custom)
+        const specialWeapons = ['pulse-turret', 'arc-railgun', 'plasma-cannon', 'neuro-laser-tower', 'quantum-obelisk'];
+        
+        if (specialWeapons.includes(w.id)) {
+            this.load.spritesheet(w.id + '_sheet', `weapons/${w.id}-sheet.png`, { frameWidth: 1254, frameHeight: 1254 });
+            this.load.image(w.id + '_bullet', `weapons/${w.id}-bullet.png`);
+        } else {
+            this.load.image(w.id, `weapons/${w.id}.png`);
+        }
     });
 
     // 3. Enemigos (Iconos como textura)

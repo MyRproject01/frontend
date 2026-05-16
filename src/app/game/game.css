@@ -448,6 +448,7 @@ canvas {
 }
 
 .reward-card {
+    position: relative;
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(34, 211, 238, 0.3);
     border-radius: 8px;

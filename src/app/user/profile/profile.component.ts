@@ -2,12 +2,12 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { PlayerService, PlayerStats } from '../../services/player.service';
 import { AuthService } from '../../auth/auth.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, DecimalPipe],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
@@ -32,7 +32,7 @@ export class ProfileComponent implements OnInit {
 
   onLogout() {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/login']);
   }
 
   formatTime(seconds: number | undefined): string {
@@ -43,4 +43,3 @@ export class ProfileComponent implements OnInit {
     return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   }
 }
-
