@@ -64,6 +64,8 @@ export class BootScene extends Scene {
     if (char && char.id) {
         // Personaje con sheet (animado)
         this.load.spritesheet(char.id + '_sheet', `characters/${char.id}-sheet.png`, { frameWidth: 1254, frameHeight: 1254 });
+        // Bala personalizada del personaje
+        this.load.image(char.id + '_bullet', `characters/${char.id}-bullet.png`);
     }
 
     // 2. Torres (Iconos seleccionados para el juego y HUD)

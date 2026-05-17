@@ -142,15 +142,29 @@ export class Character extends GameObjects.Sprite {
 
             // Crit check
             const isCrit = ItemEffects.rollCrit();
+            let tint = 0xffffff;
             if (isCrit) {
                 finalDamage *= 2;
-                bullet.setTint(0xffff00); // Amarillo para crits
+                tint = 0xffff00; // Amarillo para crits
             }
 
             // Debug: log cuando hay items activos
             if (GameState.inventory().length > 0) {
                 console.log(`🛡️ Personaje dispara: base=${this.dmg} → final=${finalDamage.toFixed(1)} (x${ItemEffects.getDamageMultiplier(towerTypes).toFixed(2)}) ${isCrit ? '💥CRIT!' : ''}`);
             }
+
+            // Obtener el ID del personaje a partir de la textura
+            const characterId = this.texture.key.replace('_sheet', '');
+            const bulletTexture = characterId + '_bullet';
+
+            // Configurar textura de la bala, tamaño y tint
+            bullet.setTexture(bulletTexture);
+            bullet.setTint(tint);
+            bullet.setDisplaySize(32, 32);
+
+            // Rotar la bala hacia el objetivo (girada 90º adicionales a la izquierda para alineación perfecta)
+            const angle = Phaser.Math.Angle.Between(this.x, this.y - 40, target.x, target.y);
+            bullet.setRotation(angle - Math.PI);
 
             // Offset Y (-40) para simular disparo desde "altura" o centro
             bullet.fire(this.x, this.y - 40, target, finalDamage);

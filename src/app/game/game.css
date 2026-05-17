@@ -36,7 +36,7 @@
     z-index: -100;
     transform: translate(-42%, -50%);
     object-fit: cover;
-    filter: brightness(0.8) contrast(1.1);
+    filter: brightness(1.0) contrast(1.1);
 }
 
 .hud-container {

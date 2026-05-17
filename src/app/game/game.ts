@@ -12,6 +12,7 @@ import { CatalogService } from '../loadout/catalog.service';
 import { BuildService } from '../services/build.service';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { AudioService } from '../services/audio.service';
 
 
 @Component({
@@ -43,6 +44,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   protected isPaused = signal(false);
 
   private sanitizer = inject(DomSanitizer);
+  private audioService = inject(AudioService);
 
   constructor(
     private router: Router,
@@ -131,6 +133,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     };
 
     this.game = new Phaser.Game(config);
+    (this.game as any).audioService = this.audioService;
 
     // Listen for events from Phaser
     this.game.events.on('game-over', (stats: GameEndStats) => {

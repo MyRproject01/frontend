@@ -101,7 +101,13 @@ export class MainScene extends Phaser.Scene {
 
         // Play background music
         if (this.cache.audio.exists('game-music') && !this.sound.get('game-music')) {
-            this.sound.play('game-music', { loop: true, volume: 0.4 });
+            let gameMusicVolume = 0.4;
+            const audioService = (this.game as any).audioService;
+            if (audioService) {
+                const isMusicEnabled = audioService.musicEnabled();
+                gameMusicVolume = isMusicEnabled ? audioService.effectiveMusicVolume() : 0;
+            }
+            this.sound.play('game-music', { loop: true, volume: gameMusicVolume });
         }
     }
 
@@ -111,6 +117,17 @@ export class MainScene extends Phaser.Scene {
     override update(time: number, delta: number) {
         // Lógica de Game Over
         if (this.isGameOver) return;
+
+        // Sincronizar el volumen de la música con AudioService en tiempo real
+        const audioService = (this.game as any).audioService;
+        if (audioService && this.cache.audio.exists('game-music')) {
+            const isMusicEnabled = audioService.musicEnabled();
+            const targetVolume = isMusicEnabled ? audioService.effectiveMusicVolume() : 0;
+            const sound = this.sound.get('game-music') as any;
+            if (sound && sound.volume !== targetVolume) {
+                sound.setVolume(targetVolume);
+            }
+        }
 
         if (GameState.lives() <= 0) {
             // Pequeño retardo para que el jugador vea la barra de vida en 0
@@ -183,33 +200,6 @@ export class MainScene extends Phaser.Scene {
     handleGameOver() {
         this.isGameOver = true;
         this.physics.pause();
-        const cam = this.cameras.main;
-
-        // Texto Game Over
-        this.add.text(cam.width / 2, cam.height / 2 - 50, 'GAME OVER', {
-            fontSize: '84px',
-            color: '#ff0000',
-            fontFamily: '"Space Grotesk"',
-            fontStyle: '900',
-            stroke: '#000000',
-            strokeThickness: 8
-        }).setOrigin(0.5);
-
-        // Botón BACK TO MENU
-        const btn = this.add.text(cam.width / 2, cam.height / 2 + 80, 'BACK TO MENU', {
-            fontSize: '28px',
-            color: '#00373a',
-            backgroundColor: '#00f3ff',
-            fontFamily: '"Space Grotesk"',
-            fontStyle: '700',
-            padding: { x: 30, y: 15 }
-        })
-            .setOrigin(0.5)
-            .setInteractive({ useHandCursor: true })
-            .on('pointerdown', () => {
-                console.log('Button Clicked: Exit Game');
-                this.game.events.emit('exit-game');
-            });
 
         // Emitir evento de Game Over con estadísticas para el backend
         const stats = {
@@ -219,9 +209,6 @@ export class MainScene extends Phaser.Scene {
             timeSurvivedSec: Math.floor((Date.now() - GameState.startTime()) / 1000)
         };
         this.game.events.emit('game-over', stats);
-
-        // No pausamos la escena completa (scene.pause) porque detendría los eventos de input
-        // Solo hemos pausado las físicas y detenido el update con el flag isGameOver
     }
 
     /**
