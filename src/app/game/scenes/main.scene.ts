@@ -85,7 +85,7 @@ export class MainScene extends Phaser.Scene {
 
         // Personaje (Defensor)
         const characterStats = DataManager.data().character;
-        this.character = new Character(this, 1345, 160, characterStats.id + '_sheet', characterStats, this.bullets, this.enemies);
+        this.character = new Character(this, 1470, 140, characterStats.id + '_sheet', characterStats, this.bullets, this.enemies);
         this.character.setDisplaySize(110, 110);
         this.character.setVisible(true);
 
@@ -142,20 +142,22 @@ export class MainScene extends Phaser.Scene {
      * Crea el camino (Path) que seguirán los enemigos.
      */
     createPath() {
-        this.path = this.add.path(170, 440);
-        this.path.lineTo(350, 440);
-        this.path.lineTo(350, 710);
-        this.path.lineTo(620, 710);
-        this.path.lineTo(620, 160);
-        this.path.lineTo(890, 160);
-        this.path.lineTo(890, 440);
-        this.path.lineTo(1075, 440);
-        this.path.lineTo(1075, 620)
-        this.path.lineTo(1345, 620);
-        this.path.lineTo(1345, 160);
+        this.path = this.add.path(300, 410);
+        this.path.lineTo(480, 410);
+        this.path.lineTo(480, 680);
+        this.path.lineTo(750, 680);
+        this.path.lineTo(750, 140);
+        this.path.lineTo(1020, 140);
+        this.path.lineTo(1020, 410);
+        this.path.lineTo(1200, 410);
+        this.path.lineTo(1200, 590)
+        this.path.lineTo(1470, 590);
+        this.path.lineTo(1470, 140);
 
         // Cachear puntos del camino para colisiones rápidas
         this.pathPoints = this.path.getPoints(100);
+
+
     }
 
     createAnimations() {
@@ -163,13 +165,13 @@ export class MainScene extends Phaser.Scene {
         enemies.forEach(e => {
             const animKey = e.id + '_walk';
             const textureKey = e.id + '_sheet';
-            
+
             if (!this.anims.exists(animKey)) {
-                this.anims.create({ 
-                    key: animKey, 
-                    frames: this.anims.generateFrameNumbers(textureKey, { start: 0, end: 3 }), 
-                    frameRate: 10, 
-                    repeat: -1 
+                this.anims.create({
+                    key: animKey,
+                    frames: this.anims.generateFrameNumbers(textureKey, { start: 0, end: 3 }),
+                    frameRate: 10,
+                    repeat: -1
                 });
             }
         });
@@ -453,10 +455,10 @@ export class MainScene extends Phaser.Scene {
         const wave = GameState.wave();
         console.log(`Wave ${wave} completed!`);
         GameState.isWaveActive.set(false);
-        
+
         const reward = this.currentWaveDifficulty * 10;
         GameState.updateGold(reward);
-        
+
         // Preparar siguiente
         GameState.nextWave();
 
