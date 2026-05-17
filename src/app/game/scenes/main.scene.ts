@@ -85,9 +85,9 @@ export class MainScene extends Phaser.Scene {
 
         // Personaje (Defensor)
         const characterStats = DataManager.data().character;
-        this.character = new Character(this, 1345, 160, characterStats.id, characterStats, this.bullets, this.enemies);
-        this.character.setDisplaySize(160, 160);
-        this.character.setVisible(false);
+        this.character = new Character(this, 1345, 160, characterStats.id + '_sheet', characterStats, this.bullets, this.enemies);
+        this.character.setDisplaySize(110, 110);
+        this.character.setVisible(true);
 
         // Inicializar Escudo y Vida base desde estadísticas del personaje
         GameState.baseMaxShield.set(characterStats.def);
@@ -98,6 +98,11 @@ export class MainScene extends Phaser.Scene {
         GameState.refillShield();
 
         GameState.isWaveActive.set(false);
+
+        // Play background music
+        if (this.cache.audio.exists('game-music') && !this.sound.get('game-music')) {
+            this.sound.play('game-music', { loop: true, volume: 0.4 });
+        }
     }
 
     // Flag to prevent multiple Game Over triggers
@@ -154,16 +159,20 @@ export class MainScene extends Phaser.Scene {
     }
 
     createAnimations() {
-        // Animaciones desactivadas temporalmente para usar iconos estáticos
-        /*
         const enemies = DataManager.data().enemies;
         enemies.forEach(e => {
             const animKey = e.id + '_walk';
+            const textureKey = e.id + '_sheet';
+            
             if (!this.anims.exists(animKey)) {
-                this.anims.create({ key: animKey, frames: this.anims.generateFrameNumbers(e.id, { start: 0, end: 7 }), frameRate: 12, repeat: -1 });
+                this.anims.create({ 
+                    key: animKey, 
+                    frames: this.anims.generateFrameNumbers(textureKey, { start: 0, end: 3 }), 
+                    frameRate: 10, 
+                    repeat: -1 
+                });
             }
         });
-        */
     }
 
     /**
@@ -361,7 +370,7 @@ export class MainScene extends Phaser.Scene {
 
         if (this.canPlaceWeapon(snapX, snapY, selected.cost)) {
             // Colocar torre
-            console.log("Colocando torre en", snapX, snapY);
+            console.log("Placing tower at", snapX, snapY);
 
             // Deducir Oro
             GameState.updateGold(-selected.cost);
@@ -375,7 +384,7 @@ export class MainScene extends Phaser.Scene {
             // Resetear Selección y Limpiar UI
             GameState.selectedWeapon.set(null);
             this.drawPlacementZones();
-            console.log("Torre colocada correctamente");
+            console.log("Tower placed successfully");
         }
     }
 
@@ -403,7 +412,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         this.character?.regenerateShield();
-        console.log(`Iniciando Oleada ${wave} con Dificultad ${this.currentWaveDifficulty} | Shield: ${newMaxShield} | MaxHP: ${newMaxHealth}`);
+        console.log(`Starting Wave ${wave} with Difficulty ${this.currentWaveDifficulty} | Shield: ${newMaxShield} | MaxHP: ${newMaxHealth}`);
     }
 
     spawnEnemy() {
@@ -456,7 +465,7 @@ export class MainScene extends Phaser.Scene {
             console.log(`Ronda ${wave} (impar) - Emitting request-rewards event...`);
             this.game.events.emit('request-rewards');
         } else {
-            console.log(`Ronda ${wave} (par) - Sin recompensas.`);
+            console.log(`Round ${wave} (even) - No rewards.`);
         }
     }
 

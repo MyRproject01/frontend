@@ -6,100 +6,113 @@
 <!-- HUD Overlay -->
 <div class="hud-container">
 
-    <!-- Top Bar Container -->
-    <!-- Top Bar Container -->
-    <div class="hud-top-bar">
-        <div class="hud-panel panel-left angled-left">
-            <span class="resource-text cyan-text"><span class="icon-bolt">⚡</span> {{ gold() }}</span>
-        </div>
-
-        <!-- Center: Pause Button -->
-        <div class="hud-panel panel-center angled-center clickable" (click)="togglePause()">
-            <span class="pause-icon">⏸️</span>
-        </div>
-
-        <!-- Right: Wave / Score -->
-        <div class="hud-panel panel-right angled-right">
-            <span class="resource-text">Ronda {{ wave() }} | Ptos: {{ score() }}</span>
-            <button class="speed-btn" (click)="toggleSpeed()">
-                {{ isFastForward ? '⏩ x2' : '▶️ x1' }}
-            </button>
-            <button class="next-wave-btn" [disabled]="isWaveActive()" (click)="startWave()">
-                ▶
-            </button>
-        </div>
-    </div>
-
-    <!-- Vertical Lives Bar (Left Side) - Keeping consistent -->
-    <!-- Vertical Lives & Shield Bar (Left Side) -->
-    <div class="lives-bar-wrapper">
-        <div class="bars-group">
-            <!-- Shield Bar (Blue) -->
-            <div class="battery-column">
-                <div class="lives-bar-container shield-bar">
-                    <div class="lives-bar-fill shield-fill"
-                        [style.height.%]="(shield() / maxShield()) * 100"></div>
-                </div>
-                <span class="label-shield">SHIELD</span>
+    <!-- LEFT SIDEBAR HUD -->
+    <div class="hud-sidebar-left">
+        <!-- 1. Identity Block (Avatar + Vertical Bars) -->
+        <div class="identity-section">
+            <div class="avatar-box">
+                <img [src]="'/characters/' + (DataManager.data().character.id) + '.png'" alt="Avatar" class="avatar-img">
             </div>
-            <!-- HP Bar (Red) -->
-            <div class="battery-column">
-                <div class="lives-bar-container">
-                    <div class="lives-bar-fill" [style.height.%]="(lives() / maxHealth()) * 100"></div>
+            
+            <div class="bars-container">
+                <div class="v-bar-wrapper">
+                    <div class="v-bar">
+                        <div class="v-bar-fill shield-fill" [style.height.%]="(shield() / maxShield()) * 100">
+                            <div class="diagonal-pattern"></div>
+                        </div>
+                    </div>
+                    <span class="v-bar-label">SHIELD</span>
                 </div>
-                <span class="label-hp">HULL</span>
+                <div class="v-bar-wrapper">
+                    <div class="v-bar">
+                        <div class="v-bar-fill hull-fill" [style.height.%]="(lives() / maxHealth()) * 100">
+                            <div class="diagonal-pattern"></div>
+                        </div>
+                    </div>
+                    <span class="v-bar-label">HEALTH</span>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Inventory HUD (Bottom Left) -->
-    @if (getGroupedInventory().length > 0) {
-    <div class="inventory-hud">
-        <div class="inventory-label">ACTIVE_BOON & ITEMS</div>
-        <div class="inventory-slots">
-            <!-- Active Boon -->
-            @if (getActiveBoonName()) {
-                <div class="inventory-slot boon-slot" [title]="getActiveBoonName()">
-                    <img [src]="getActiveBoonIcon()" [alt]="getActiveBoonName()" class="inventory-icon boon-icon">
-                    <span class="boon-badge">BOON</span>
+        <!-- Boon Display -->
+        @if (getActiveBoonName()) {
+        <div class="boon-display">
+            <img [src]="getActiveBoonIcon()" [alt]="getActiveBoonName()" class="boon-img">
+            <span class="boon-name">{{ getActiveBoonName() | uppercase }}</span>
+        </div>
+        }
+
+        <!-- 2. Weapons Grid -->
+        <div class="sidebar-weapons">
+            @for (w of DataManager.data().weapons.slice(0, 3); track w.id) {
+                <div class="tower-slot-compact" 
+                    [class.selected]="GameState.selectedWeapon()?.type === w.id"
+                    (click)="selectWeapon(w.id, w.cost)"
+                    [title]="w.name">
+                    <img [src]="w.icon" [alt]="w.name" class="tower-icon">
+                    <span class="tower-price">{{ w.cost }}</span>
                 </div>
-                <div class="inventory-divider"></div>
             }
+        </div>
 
-            <!-- Items -->
-            @for (item of getGroupedInventory(); track item.id) {
-            <div class="inventory-slot" [title]="item.name">
-                <img [src]="item.iconUrl" [alt]="item.name" class="inventory-icon"
-                     (error)="$event.target.src = '/items/optic-array-icon.png'">
-                @if (item.count > 1) {
-                    <span class="inventory-count">x{{ item.count }}</span>
+        <!-- 3. Currency -->
+        <div class="currency-display">
+            <span class="gold-icon">⚡</span>
+            <span class="gold-value">{{ gold() }}</span>
+        </div>
+
+        <!-- 4. Collected Items -->
+        @if (getGroupedInventory().length > 0) {
+        <div class="inventory-section">
+            <div class="inventory-grid">
+                @for (item of getGroupedInventory(); track item.id) {
+                <div class="inv-slot" [title]="item.name">
+                    <img [src]="item.iconUrl" [alt]="item.name" class="inv-icon"
+                         (error)="$event.target.src = '/items/optic-array-icon.png'">
+                    @if (item.count > 1) {
+                        <span class="inv-count">x{{ item.count }}</span>
+                    }
+                </div>
                 }
             </div>
-            }
+        </div>
+        }
+
+        <div class="sidebar-spacer"></div>
+
+        <!-- 5. Game Stats (Bottom of Sidebar) -->
+        <div class="game-info-blocks">
+            <div class="info-block">
+                <span class="info-label">Wave {{ wave() }}</span>
+            </div>
+            <div class="info-block">
+                <span class="info-label">Pts: {{ score() }}</span>
+            </div>
+            <button class="forfeit-btn" (click)="exitGame()">
+                FORFEIT
+            </button>
         </div>
     </div>
-    }
 
-    <!-- Tower Selection (Bottom Right) -->
-
-    <div class="hud-panel panel-bottom-right angled-corner">
-        <div class="tower-grid">
-            @for (w of DataManager.data().weapons.slice(0, 3); track w.id) {
-            <div class="tower-slot" [class.selected]="GameState.selectedWeapon()?.type === w.id"
-                (click)="selectWeapon(w.id, w.cost)"
-                [title]="w.name + ' (' + w.cost + 'g)'">
-                <img [src]="w.icon" [alt]="w.name">
-                <span class="price">{{ w.cost }}</span>
-            </div>
-            }
-        </div>
+    <!-- BOTTOM RIGHT CONTROLS -->
+    <div class="hud-controls-right">
+        <button class="control-btn" (click)="togglePause()">
+            <span class="material-symbols-outlined">{{ isPaused() ? 'play_arrow' : 'pause' }}</span>
+        </button>
+        <button class="control-btn" (click)="toggleSpeed()">
+            <span class="material-symbols-outlined">{{ isFastForward ? 'fast_forward' : 'speed' }}</span>
+            <span class="speed-label">{{ isFastForward ? 'x2' : 'x1' }}</span>
+        </button>
+        <button class="control-btn play-btn" [disabled]="isWaveActive()" (click)="startWave()">
+            <span class="material-symbols-outlined">skip_next</span>
+        </button>
     </div>
 
     <!-- Rewards Modal -->
     @if (isRewardPending()) {
     <div class="rewards-overlay">
         <div class="rewards-modal">
-            <h2 class="rewards-title">MEJORA DISPONIBLE</h2>
+            <h2 class="rewards-title">UPGRADE AVAILABLE</h2>
             <div class="rewards-grid">
                 @for (item of rewardPool(); track item.id) {
                 <div class="reward-card" (click)="chooseReward(item)">
@@ -112,10 +125,26 @@
                     <div class="reward-divider"></div>
                     <p class="reward-desc" [innerHTML]="formatDescription(item.description)"></p>
                 </div>
-
                 }
             </div>
         </div>
     </div>
     }
-</div>
+
+    <!-- Forfeit Confirmation Modal -->
+    @if (showForfeitModal()) {
+    <div class="modal-overlay">
+        <div class="custom-modal danger-theme">
+            <div class="modal-header">
+                <span class="material-symbols-outlined modal-icon">warning</span>
+                <h2 class="modal-title">TERMINATE MISSION?</h2>
+            </div>
+            <p class="modal-body">All progress in this sector will be lost. Are you sure you want to forfeit?</p>
+            <div class="modal-actions">
+                <button class="modal-btn cancel" (click)="cancelForfeit()">ABORT</button>
+                <button class="modal-btn confirm" (click)="confirmForfeit()">CONFIRM FORFEIT</button>
+            </div>
+        </div>
+    </div>
+    }
+</div>

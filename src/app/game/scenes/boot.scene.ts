@@ -34,7 +34,7 @@ export class BootScene extends Scene {
     const loadingText = this.make.text({
       x: width / 2,
       y: height / 2 - 50,
-      text: 'Cargando...',
+      text: 'Loading...',
       style: {
         font: '20px monospace',
         color: '#ffffff'
@@ -62,7 +62,8 @@ export class BootScene extends Scene {
     // 1. Personaje Seleccionado (Icono como textura)
     const char = data.character;
     if (char && char.id) {
-        this.load.image(char.id, `characters/${char.id}-icon.png`);
+        // Personaje con sheet (animado)
+        this.load.spritesheet(char.id + '_sheet', `characters/${char.id}-sheet.png`, { frameWidth: 1254, frameHeight: 1254 });
     }
 
     // 2. Torres (Iconos seleccionados para el juego y HUD)
@@ -76,7 +77,12 @@ export class BootScene extends Scene {
         
         if (specialWeapons.includes(w.id)) {
             this.load.spritesheet(w.id + '_sheet', `weapons/${w.id}-sheet.png`, { frameWidth: 1254, frameHeight: 1254 });
-            this.load.image(w.id + '_bullet', `weapons/${w.id}-bullet.png`);
+            
+            // Solo cargamos bala si NO es una torre de rayo (láser/obelisco)
+            const beamWeapons = ['neuro-laser-tower', 'quantum-obelisk'];
+            if (!beamWeapons.includes(w.id)) {
+                this.load.image(w.id + '_bullet', `weapons/${w.id}-bullet.png`);
+            }
         } else {
             this.load.image(w.id, `weapons/${w.id}.png`);
         }
@@ -84,8 +90,11 @@ export class BootScene extends Scene {
 
     // 3. Enemigos (Iconos como textura)
     data.enemies.forEach(e => {
-        this.load.image(e.id, `enemies/${e.id}-icon.png`);
+        this.load.spritesheet(e.id + '_sheet', `enemies/${e.id}-sheet.png`, { frameWidth: 1254, frameHeight: 1254 });
     });
+
+    // 4. Music
+    this.load.audio('game-music', 'game-music.mp3');
 
     this.load.on('loaderror', (file: any) => {
       console.error('Error loading asset:', file.key);

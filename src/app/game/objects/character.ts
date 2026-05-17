@@ -20,7 +20,7 @@ export interface CharacterStats {
  * - Apunta automáticamente a los enemigos más cercanos dentro del rango.
  * - Dispara balas basándose en su Velocidad de Ataque.
  */
-export class Character extends GameObjects.Image {
+export class Character extends GameObjects.Sprite {
     id: string;
 
     // Estadísticas
@@ -57,10 +57,29 @@ export class Character extends GameObjects.Image {
         this.enemies = enemies;
 
         scene.add.existing(this);
-        console.log(`Personaje Inicializado. Rango: ${this.range}, Daño: ${this.dmg}`);
+        
+        // Crear y reproducir animación de "idle/loop"
+        const animKey = `${texture}_loop`;
+        if (!scene.anims.exists(animKey)) {
+            scene.anims.create({
+                key: animKey,
+                frames: scene.anims.generateFrameNumbers(texture, { start: 0, end: 3 }), // Asumiendo 4 frames como las torres
+                frameRate: 10,
+                repeat: -1
+            });
+        }
+        this.play(animKey);
+
+        console.log(`Personaje Inicializado con Animación. Rango: ${this.range}, Daño: ${this.dmg}`);
     }
 
     override update(time: number, delta: number) {
+        // Compensar el timeScale global para que la animación sea constante relative a tiempo real
+        if (this.anims && this.anims.isPlaying) {
+            const globalTimeScale = this.scene.time.timeScale || 1;
+            this.anims.timeScale = 1 / globalTimeScale;
+        }
+
         const scaledDelta = delta * this.scene.time.timeScale;
 
         // Obtener tipos de torres para Synergy Core

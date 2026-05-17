@@ -318,20 +318,26 @@
   flex-direction: column;
   gap: 0.5rem;
   border-style: dashed;
-  opacity: 0.45;
+  opacity: 0.8;
   cursor: default;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .lock-icon {
-  font-size: 1.75rem;
-  color: var(--outline);
+  font-size: 2rem;
+  color: var(--cyan-dim);
+  text-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
 }
 
 .lock-label {
   font-family: var(--font-inter);
   font-size: 0.55rem;
-  letter-spacing: 0.15em;
-  color: var(--outline);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--on-surface-variant);
+  text-align: center;
+  padding: 0 0.5rem;
+  opacity: 0.9;
 }
 
 /* ── CENTER: Preview ────────────────────── */

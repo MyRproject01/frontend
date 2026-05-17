@@ -32,7 +32,7 @@ export class ProfileComponent implements OnInit {
 
   onLogout() {
     this.authService.logout();
-    this.router.navigate(['/auth/login']);
+    this.router.navigate(['/login']);
   }
 
   formatTime(seconds: number | undefined): string {

@@ -1,0 +1,137 @@
+<video autoplay loop [muted]="true" playsinline class="endgame-bg-video">
+    <source src="/background.mp4" type="video/mp4" />
+</video>
+
+<div class="endgame-overlay" [class.revealed]="isRevealed()">
+
+    <!-- Left: Character Splash Art -->
+    <div class="splash-column">
+        <div class="splash-container">
+            <img [src]="characterSplashUrl()" [alt]="characterName()" class="splash-image"
+                (error)="$event.target.src = '/characters/raf.png'" />
+            <div class="splash-vignette"></div>
+            <div class="splash-grid-overlay"></div>
+
+            <!-- Character Name Block -->
+            <div class="splash-name-block">
+                <span class="splash-label">OPERATIVE</span>
+                <h2 class="splash-character-name">{{ characterName() | uppercase }}</h2>
+            </div>
+
+            <!-- Corner accents -->
+            <div class="corner corner-tl"></div>
+            <div class="corner corner-tr"></div>
+            <div class="corner corner-bl"></div>
+            <div class="corner corner-br"></div>
+        </div>
+    </div>
+
+    <!-- Right: Summary Panel -->
+    <div class="summary-column">
+        <div class="summary-panel">
+
+            <!-- Title -->
+            <div class="summary-header">
+                <div class="header-decoration-left"></div>
+                <h1 class="summary-title">Defeated</h1>
+                <div class="header-decoration-right"></div>
+            </div>
+            <div class="title-underline"></div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card" style="animation-delay: 0.2s">
+                    <span class="material-symbols-outlined stat-icon">waves</span>
+                    <div class="stat-info">
+                        <span class="stat-label">WAVES CLEARED</span>
+                        <span class="stat-value cyan">{{ finalWave() }}</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="animation-delay: 0.4s">
+                    <span class="material-symbols-outlined stat-icon">target</span>
+                    <div class="stat-info">
+                        <span class="stat-label">SCORE</span>
+                        <span class="stat-value gold">{{ finalScore() | number }}</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="animation-delay: 0.6s">
+                    <span class="material-symbols-outlined stat-icon">skull</span>
+                    <div class="stat-info">
+                        <span class="stat-label">ENEMIES KILLED</span>
+                        <span class="stat-value red">{{ enemiesKilled() }}</span>
+                    </div>
+                </div>
+
+                <div class="stat-card" style="animation-delay: 0.8s">
+                    <span class="material-symbols-outlined stat-icon">timer</span>
+                    <div class="stat-info">
+                        <span class="stat-label">TIME SURVIVED</span>
+                        <span class="stat-value white">{{ formatTime(timeSurvivedSec()) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boon Used -->
+            @if (boonName()) {
+            <div class="section-block" style="animation-delay: 1s">
+                <div class="section-title-row">
+                    <span class="section-marker"></span>
+                    <h3 class="section-title">ACTIVE BOON</h3>
+                </div>
+                <div class="boon-display">
+                    <div class="boon-icon-wrap">
+                        <img [src]="boonIconUrl()" [alt]="boonName()" class="boon-img"
+                            (error)="$event.target.src = '/boons/generic-icon.png'" />
+                    </div>
+                    <span class="boon-name-text">{{ boonName() }}</span>
+                </div>
+            </div>
+            }
+
+            <!-- Items Collected -->
+            <div class="section-block" style="animation-delay: 1.2s">
+                <div class="section-title-row">
+                    <span class="section-marker"></span>
+                    <h3 class="section-title">ITEMS ACQUIRED</h3>
+                    <span class="item-count-badge">{{ collectedItems().length }}</span>
+                </div>
+
+                @if (collectedItems().length > 0) {
+                <div class="items-grid">
+                    @for (item of collectedItems(); track item.id) {
+                    <div class="item-slot" [title]="item.name">
+                        <img [src]="item.iconUrl" [alt]="item.name" class="item-icon"
+                            (error)="$event.target.src = '/items/optic-array-icon.png'" />
+                        @if (item.count > 1) {
+                        <span class="item-stack">x{{ item.count }}</span>
+                        }
+                        <span class="item-name-tooltip">{{ item.name }}</span>
+                    </div>
+                    }
+                </div>
+                } @else {
+                <div class="no-items-msg">
+                    <span class="material-symbols-outlined">inventory_2</span>
+                    <span>No items were acquired during this run</span>
+                </div>
+                }
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-bar" style="animation-delay: 1.4s">
+                <button class="btn-action btn-secondary-action" (click)="goToMain()" id="btn-go-main">
+                    <span class="material-symbols-outlined">home</span>
+                    <span class="btn-label">RETURN TO BASE</span>
+                </button>
+                <button class="btn-action btn-primary-action" (click)="playAgain()" id="btn-play-again">
+                    <span class="material-symbols-outlined">replay</span>
+                    <span class="btn-label">DEPLOY AGAIN</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="scanline-fx"></div>

@@ -14,12 +14,14 @@ import { GameComponent } from './game/game';
 import { Buildselector } from './buildselector/buildselector';
 import { authGuard } from './auth/auth.guard';
 import { publicGuard } from './auth/public.guard';
+import { Endgame } from './endgame/endgame';
 
 export const routes: Routes = [
     { path: '', redirectTo: 'login', pathMatch: 'full' },
     { path: 'main', component: MainComponent, canActivate: [authGuard] },
     { path: 'build-selector', component: Buildselector, canActivate: [authGuard] },
     { path: 'game', component: GameComponent, canActivate: [authGuard] },
+    { path: 'endgame', component: Endgame, canActivate: [authGuard] },
     { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
     { path: 'settings', component: SettingsComponent, canActivate: [authGuard] },
     { 

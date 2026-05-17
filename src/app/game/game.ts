@@ -1,4 +1,4 @@
-import { Component, OnDestroy, AfterViewInit, inject } from '@angular/core';
+import { Component, OnDestroy, AfterViewInit, inject, signal } from '@angular/core';
 
 import { Router } from '@angular/router';
 import * as Phaser from 'phaser';
@@ -40,6 +40,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   protected rewardPool = GameState.rewardPool;
   protected isRewardPending = GameState.isRewardPending;
   protected inventory = GameState.inventory;
+  protected isPaused = signal(false);
 
   private sanitizer = inject(DomSanitizer);
 
@@ -133,13 +134,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
 
     // Listen for events from Phaser
     this.game.events.on('game-over', (stats: GameEndStats) => {
-      const runId = GameState.runId();
-      if (runId) {
-        this.runService.endRun(runId, stats).subscribe({
-          next: () => console.log("✅ Partida finalizada y registrada en backend."),
-          error: (err) => console.error("❌ Error al finalizar partida en backend:", err)
-        });
-      }
+      this.handleGameOver(stats);
     });
 
     this.game.events.on('request-rewards', () => {
@@ -166,9 +161,11 @@ export class GameComponent implements AfterViewInit, OnDestroy {
       const shouldPause = forcePause !== undefined ? forcePause : !scene.scene.isPaused();
       if (shouldPause) {
         scene.scene.pause();
+        this.isPaused.set(true);
         console.log('Juego Pausado');
       } else {
         scene.scene.resume();
+        this.isPaused.set(false);
         console.log('Juego Reanudado');
       }
     }
@@ -201,6 +198,51 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     } else {
       this.GameState.selectedWeapon.set({ type, cost });
     }
+  }
+
+  showForfeitModal = signal(false);
+
+  exitGame() {
+    this.showForfeitModal.set(true);
+    this.togglePause(true);
+  }
+
+  confirmForfeit() {
+    this.showForfeitModal.set(false);
+    
+    // Calcular estadísticas actuales para el registro
+    const stats: GameEndStats = {
+      score: GameState.score(),
+      waveReached: GameState.wave(),
+      enemiesKilled: GameState.enemiesKilled(),
+      timeSurvivedSec: Math.floor((Date.now() - GameState.startTime()) / 1000)
+    };
+
+    console.log("🏳️ Forfeit confirmado. Registrando estadísticas:", stats);
+    this.handleGameOver(stats);
+  }
+
+  private handleGameOver(stats: GameEndStats) {
+    const runId = GameState.runId();
+    if (runId) {
+      this.runService.endRun(runId, stats).subscribe({
+        next: () => {
+          console.log("✅ Partida (Forfeit/Over) finalizada y registrada en backend.");
+          this.router.navigate(['/endgame']);
+        },
+        error: (err) => {
+          console.error("❌ Error al finalizar partida en backend:", err);
+          this.router.navigate(['/endgame']); // Navegar de todos modos
+        }
+      });
+    } else {
+      this.router.navigate(['/endgame']);
+    }
+  }
+
+  cancelForfeit() {
+    this.showForfeitModal.set(false);
+    this.togglePause(false);
   }
 
   requestRewardPool() {

@@ -40,7 +40,7 @@ export class Enemy extends GameObjects.Sprite {
         // Generar ID único para depuración (debug)
         this.id = Math.random().toString(36).substr(2, 9);
         this.follower = { t: 0, vec: new PhaserMath.Vector2() };
-        this.setDisplaySize(56, 56);
+        this.setDisplaySize(80, 80);
 
         // Stats serán cargados en setup()
         this.hpBar = scene.add.graphics();
@@ -51,14 +51,17 @@ export class Enemy extends GameObjects.Sprite {
         this.path = path;
 
         // Configurar Sprite y Stats
-        this.setTexture(stats.id);
+        const textureKey = stats.id + '_sheet';
+        this.setTexture(textureKey);
+        
         // Play animation if it exists
-        if (this.scene.anims.exists(stats.id + '_walk')) {
-            this.play(stats.id + '_walk');
+        const animKey = stats.id + '_walk';
+        if (this.scene.anims.exists(animKey)) {
+            this.play(animKey);
         }
         
         // Let's keep a consistent size for now, or you can add size to stats
-        this.setDisplaySize(64, 64); 
+        this.setDisplaySize(80, 80); 
 
         // Aplicar Stats
         this.damage = stats.damage;
@@ -77,6 +80,12 @@ export class Enemy extends GameObjects.Sprite {
 
     override update(time: number, delta: number) {
         if (!this.path) return;
+
+        // Compensar el timeScale global para que la animación sea constante relative a tiempo real
+        if (this.anims && this.anims.isPlaying) {
+            const globalTimeScale = this.scene.time.timeScale || 1;
+            this.anims.timeScale = 1 / globalTimeScale;
+        }
 
         // Optimización: NO redibujar la barra de vida cada frame.
         // Solo actualizar su posición para que siga al enemigo.
