@@ -46,15 +46,11 @@ export class DataManager {
         boon: null
     });
 
-    /**
-     * Initializes data by attempting to fetch from API, falling back to mock.
-     */
     static async loadData(): Promise<GameData> {
         try {
             const token = localStorage.getItem('auth_token');
             const headers: HeadersInit = token ? { 'Authorization': `Bearer ${token}` } : {};
 
-            // Fetch All (Global) AND Unlocks (IDs only)
             const [allCharRes, unlockedCharRes, enemiesRes, allWeaponsRes, unlockedWeaponsRes, allBoonsRes, unlockedBoonsRes] = await Promise.all([
                 fetch(`${environment.apiUrl}/characters`, { headers }),
                 fetch(`${environment.apiUrl}/player/unlocks/characters`, { headers }),
@@ -79,7 +75,6 @@ export class DataManager {
                 unlockedBoonsRes.json()
             ]);
 
-            // Extraction handling for Page/Content structure
             const charList = allChars.content || allChars;
             const unlockedCharIds = unlockedCharIdsObj.content || unlockedCharIdsObj;
             const enemyList = enemyListObj.content || enemyListObj;
@@ -90,10 +85,8 @@ export class DataManager {
 
             const newData: GameData = { character: { ...this.data().character }, enemies: [], weapons: [], boon: null };
 
-            // 1. Map Character (Filter by unlocked IDs)
             const unlockedChars = charList.filter((c: any) => unlockedCharIds.includes(c.id));
             
-            // Try to find the one from Build Selection, else first unlocked
             const savedBuild = localStorage.getItem(`last_build_${localStorage.getItem('username')}`);
             let selectedChar = null;
             if (savedBuild) {
@@ -116,7 +109,6 @@ export class DataManager {
                 };
             }
 
-            // 2. Map Enemies (Global)
             if (Array.isArray(enemyList)) {
                 enemyList.forEach((e: any) => {
                     const id = e.name.toLowerCase().replace(/ /g, '-');
@@ -132,10 +124,8 @@ export class DataManager {
                 });
             }
 
-            // 3. Map Weapons (Filter by unlocked IDs)
             const unlockedWeaponItems = weaponList.filter((w: any) => unlockedWeaponIds.includes(w.id));
             
-            // Prioritize weapons from Build Selector (if they are in the unlocked list)
             let selectedWeapons: any[] = [];
             if (savedBuild) {
                 const build = JSON.parse(savedBuild);
@@ -144,7 +134,6 @@ export class DataManager {
                 }
             }
             
-            // Ensure we have 3
             if (selectedWeapons.length < 3) {
                 const additional = unlockedWeaponItems.filter((uw: any) => !selectedWeapons.some((sw: any) => sw.id === uw.id));
                 selectedWeapons = [...selectedWeapons, ...additional].slice(0, 3);
@@ -165,7 +154,6 @@ export class DataManager {
             });
             newData.weapons.sort((a, b) => a.cost - b.cost);
 
-            // 4. Map Boon
             const unlockedBoons = boonList.filter((b: any) => unlockedBoonIds.includes(b.id));
             let selectedBoon = null;
             if (savedBuild) {
@@ -184,7 +172,6 @@ export class DataManager {
                     passiveValue: Number(selectedBoon.passiveValue || selectedBoon.passive_value || 0)
                 };
                 
-                // OPTIONAL: Apply boon passive to character stats if applicable
                 if (newData.boon.passiveType === 'hp_boost') {
                     newData.character.hp += newData.boon.passiveValue;
                 } else if (newData.boon.passiveType === 'dmg_boost') {

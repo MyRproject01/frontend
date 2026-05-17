@@ -41,8 +41,6 @@ export class CatalogService {
       .pipe(map(response => response.content || response as any));
   }
 
-  // --- PLAYER UNLOCKS ---
-  // Estos endpoints devuelven solo IDs, así que cruzamos con el catálogo global
   getUnlockedCharacters(): Observable<Character[]> {
     return forkJoin([
       this.getCharacters(),

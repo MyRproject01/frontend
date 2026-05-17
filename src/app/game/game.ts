@@ -1,5 +1,4 @@
 import { Component, OnDestroy, AfterViewInit, inject, signal, effect } from '@angular/core';
-
 import { Router } from '@angular/router';
 import * as Phaser from 'phaser';
 import { BootScene } from './scenes/boot.scene';
@@ -14,7 +13,6 @@ import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AudioService } from '../services/audio.service';
 
-
 @Component({
   selector: 'app-game',
   standalone: true,
@@ -25,11 +23,9 @@ import { AudioService } from '../services/audio.service';
 export class GameComponent implements AfterViewInit, OnDestroy {
   game: Phaser.Game | undefined;
 
-  // Exponer GameState y DataManager al template
   protected GameState = GameState;
   protected DataManager = DataManager;
 
-  // Atajos para Signals (evita errores de compilación en template)
   protected gold = GameState.gold;
   protected lives = GameState.lives;
   protected maxHealth = GameState.maxHealth;
@@ -69,15 +65,11 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    // Reset GameState to ensure clean start (Energy = 150, Score = 0, etc.)
     GameState.reset();
 
-    // Cargar datos ANTES de inicializar Phaser
     DataManager.loadData().then((data) => {
-      // 1. Obtener Boon SELECCIONADO por el usuario
       const selectedBoon = this.buildService.selectedBoon();
       
-      // 2. Si hay boon seleccionado, lo usamos. Si no, buscamos el primero desbloqueado como fallback
       if (selectedBoon) {
         GameState.selectedBoon.set(selectedBoon.name);
         this.startRun(data, selectedBoon.id);
@@ -150,7 +142,6 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.game = new Phaser.Game(config);
     (this.game as any).audioService = this.audioService;
 
-    // Listen for events from Phaser
     this.game.events.on('game-over', (stats: GameEndStats) => {
       this.handleGameOver(stats);
     });
@@ -228,7 +219,6 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   confirmForfeit() {
     this.showForfeitModal.set(false);
     
-    // Calcular estadísticas actuales para el registro
     const stats: GameEndStats = {
       score: GameState.score(),
       waveReached: GameState.wave(),
@@ -250,7 +240,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
         },
         error: (err) => {
           console.error("❌ Error al finalizar partida en backend:", err);
-          this.router.navigate(['/endgame']); // Navegar de todos modos
+          this.router.navigate(['/endgame']);
         }
       });
     } else {
@@ -275,7 +265,6 @@ export class GameComponent implements AfterViewInit, OnDestroy {
       next: (rewards) => {
         console.log("🎁 Pool de recompensas recibido del servidor:", rewards);
         if (rewards && rewards.length > 0) {
-          // Generar la URL del icono y descripción formateada
           const enrichedRewards = rewards.map(item => ({
             ...item,
             iconUrl: `/items/${item.name.toLowerCase().replace(/\s+/g, '-')}-icon.png`
@@ -296,7 +285,6 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     this.runService.chooseReward(runId, item.id).subscribe({
       next: () => {
         console.log(`🎁 Elegido: ${item.name}`);
-        // Añadir al inventario local
         GameState.inventory.update(inv => [...inv, item]);
         
         GameState.isRewardPending.set(false);

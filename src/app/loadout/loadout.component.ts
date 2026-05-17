@@ -16,7 +16,6 @@ export class LoadoutComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private selectionService = inject(BuildSelectionService);
 
-  // Detect if we came from build selector
   fromBuild = toSignal(
     this.route.queryParams.pipe(map(params => params['from'] === 'build'))
   );

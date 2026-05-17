@@ -7,43 +7,27 @@ import { GameState } from '../core/game-state.manager';
 import { DataManager } from '../core/data.manager';
 import { ItemEffects } from '../core/item-effects.manager';
 
-/**
- * Escena Principal (MainScene)
- * 
- * Contiene la lógica principal del juego:
- * - Dibujado del mapa y camino.
- * - Gestión de oleadas de enemigos.
- * - Colocación y lógica de personajes (defensores).
- * - Control de colisiones y eventos.
- */
 export class MainScene extends Phaser.Scene {
-    // --- VARIABLES DE CLASE ---
     graphics: Phaser.GameObjects.Graphics | undefined;
     path: Phaser.Curves.Path | undefined;
 
-    // Grupos de Objetos (Pooling para rendimiento)
     enemies: Phaser.GameObjects.Group | undefined;
     bullets: Phaser.GameObjects.Group | undefined;
-    weapons: Phaser.GameObjects.Group | undefined; // Grupo de torres (weapons)
+    weapons: Phaser.GameObjects.Group | undefined;
 
-    // Visualización de Zonas
     placementGraphics: Phaser.GameObjects.Graphics | undefined;
     private pathPoints: Phaser.Math.Vector2[] = [];
     private lastSelectedWeaponType: string | null = null;
     private lastGold: number = -1;
 
-    // Torre Fantasma (Previsualización)
     ghost: Phaser.GameObjects.Sprite | undefined;
-    ghostRange: Phaser.GameObjects.Arc | undefined; // Círculo de rango
+    ghostRange: Phaser.GameObjects.Arc | undefined;
 
-    // Referencia a nuestro Personaje ("Character")
     character: Character | undefined;
 
-    // Control de oleadas
     spawnTimer: number = 0;
-    spawnInterval: number = 1500; // 1.5 segundos fijo
+    spawnInterval: number = 1500;
 
-    // Lógica de Dificultad de Oleada
     currentWaveDifficulty: number = 0;
     remainingDifficulty: number = 0;
 
@@ -55,41 +39,32 @@ export class MainScene extends Phaser.Scene {
     }
 
     create() {
-        // --- CONFIGURACIÓN ESCENARIO ---
-        // this.add.image(800, 450, 'bg').setDisplaySize(1600, 900);
-
         this.graphics = this.add.graphics();
         this.placementGraphics = this.add.graphics();
         this.createPath();
 
-        // Grupos
         this.enemies = this.add.group({ classType: Enemy, runChildUpdate: true });
         this.bullets = this.add.group({ classType: Bullet, runChildUpdate: true });
         this.weapons = this.add.group({ runChildUpdate: true });
 
-        // Inicialización de Torre Fantasma (Oculta inicialmente)
         const firstWeapon = DataManager.data().weapons[0];
         const ghostKey = firstWeapon ? firstWeapon.id + '_icon' : '';
         this.ghost = this.add.sprite(0, 0, ghostKey).setAlpha(0.6).setVisible(false).setDisplaySize(64, 64);
         this.ghostRange = this.add.circle(0, 0, 200, 0x00ff00, 0.2).setVisible(false);
 
-        // Escucha de Entrada para Colocación
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             if (pointer.leftButtonDown()) {
                 this.tryPlaceWeapon(pointer.x, pointer.y);
             }
         });
 
-        // Animaciones de Enemigos
         this.createAnimations();
 
-        // Personaje (Defensor)
         const characterStats = DataManager.data().character;
         this.character = new Character(this, 1470, 140, characterStats.id + '_sheet', characterStats, this.bullets, this.enemies);
         this.character.setDisplaySize(110, 110);
         this.character.setVisible(true);
 
-        // Inicializar Escudo y Vida base desde estadísticas del personaje
         GameState.baseMaxShield.set(characterStats.def);
         GameState.baseMaxHealth.set(characterStats.hp);
         GameState.maxShield.set(characterStats.def);
@@ -99,7 +74,6 @@ export class MainScene extends Phaser.Scene {
 
         GameState.isWaveActive.set(false);
 
-        // Play background music
         if (this.cache.audio.exists('game-music') && !this.sound.get('game-music')) {
             let gameMusicVolume = 0.4;
             const audioService = (this.game as any).audioService;
@@ -111,14 +85,11 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    // Flag to prevent multiple Game Over triggers
     isGameOver: boolean = false;
 
     override update(time: number, delta: number) {
-        // Lógica de Game Over
         if (this.isGameOver) return;
 
-        // Sincronizar el volumen de la música con AudioService en tiempo real
         const audioService = (this.game as any).audioService;
         if (audioService && this.cache.audio.exists('game-music')) {
             const isMusicEnabled = audioService.musicEnabled();
@@ -130,34 +101,27 @@ export class MainScene extends Phaser.Scene {
         }
 
         if (GameState.lives() <= 0) {
-            // Pequeño retardo para que el jugador vea la barra de vida en 0
             this.time.delayedCall(500, () => {
                 this.handleGameOver();
             });
-            this.isGameOver = true; // Bloquear múltiples triggers
+            this.isGameOver = true;
             return;
         }
 
         if (this.character) this.character.update(time, delta);
 
-        // Lógica de Torres
         this.weapons?.getChildren().forEach((tower: any) => {
             if (tower.active) tower.update(time, delta);
         });
 
-        // Lógica de Zonas y Torre Fantasma
         this.handlePlacementUI();
         this.handleGhostTower();
 
-        // Lógica de Oleada
         if (GameState.isWaveActive()) {
             this.handleWaveLogic(delta);
         }
     }
 
-    /**
-     * Crea el camino (Path) que seguirán los enemigos.
-     */
     createPath() {
         this.path = this.add.path(300, 410);
         this.path.lineTo(480, 410);
@@ -171,10 +135,7 @@ export class MainScene extends Phaser.Scene {
         this.path.lineTo(1470, 590);
         this.path.lineTo(1470, 140);
 
-        // Cachear puntos del camino para colisiones rápidas
         this.pathPoints = this.path.getPoints(100);
-
-
     }
 
     createAnimations() {
@@ -194,14 +155,10 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    /**
-     * Maneja la pantalla y lógica de Game Over.
-     */
     handleGameOver() {
         this.isGameOver = true;
         this.physics.pause();
 
-        // Emitir evento de Game Over con estadísticas para el backend
         const stats = {
             score: GameState.score(),
             waveReached: GameState.wave(),
@@ -211,14 +168,10 @@ export class MainScene extends Phaser.Scene {
         this.game.events.emit('game-over', stats);
     }
 
-    /**
-     * Gestiona la actualización de la UI de posicionamiento (Zonas).
-     */
     handlePlacementUI() {
         const selected = GameState.selectedWeapon();
         const gold = GameState.gold();
 
-        // Redibujar solo si cambia el arma seleccionada o el oro (que afecta a la disponibilidad)
         if (selected?.type !== this.lastSelectedWeaponType || gold !== this.lastGold) {
             this.lastSelectedWeaponType = selected?.type || null;
             this.lastGold = gold;
@@ -226,21 +179,16 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    /**
-     * Dibuja las zonas habilitadas para colocar torres.
-     */
     drawPlacementZones() {
         if (!this.placementGraphics) return;
         this.placementGraphics.clear();
 
         const selected = GameState.selectedWeapon();
         if (!selected) {
-            // Asegurarnos de limpiar rastro si no hay nada seleccionado
             this.lastSelectedWeaponType = null;
             return;
         }
 
-        // Estilo de la zona
         this.placementGraphics.fillStyle(0x00ff00, 0.1);
         this.placementGraphics.lineStyle(1, 0x00ff00, 0.2);
 
@@ -248,7 +196,6 @@ export class MainScene extends Phaser.Scene {
         const width = Number(this.game.config.width);
         const height = Number(this.game.config.height);
 
-        // Iteramos por la rejilla para marcar slots libres
         for (let x = cellSize / 2; x < width; x += cellSize) {
             for (let y = cellSize / 2; y < height; y += cellSize) {
                 if (this.canPlaceWeapon(x, y, selected.cost, false)) {
@@ -259,27 +206,21 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    /**
-     * Maneja la lógica de la torre fantasma (previsualización de colocación).
-     */
     handleGhostTower() {
         const selected = GameState.selectedWeapon();
         if (selected && this.ghost && this.ghostRange) {
             const worldPoint = this.input.activePointer.position;
 
-            // Ajuste a Rejilla (64x64)
             const snapX = Math.floor(worldPoint.x / 64) * 64 + 32;
             const snapY = Math.floor(worldPoint.y / 64) * 64 + 32;
 
             this.ghost.setPosition(snapX, snapY).setVisible(true);
             this.ghostRange.setPosition(snapX, snapY).setVisible(true);
 
-            // Torre Fantasma genérica
             if (this.ghost?.texture.key !== selected.type + '_icon') {
                 this.ghost?.setTexture(selected.type + '_icon');
             }
 
-            // Validar Colocación
             const isValid = this.canPlaceWeapon(snapX, snapY, selected.cost);
             const tint = isValid ? 0x00ff00 : 0xff0000;
             const rangeColor = isValid ? 0x00ff00 : 0xff0000;
@@ -293,9 +234,6 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    /**
-     * Maneja la lógica de spawneo de enemigos durante una oleada.
-     */
     handleWaveLogic(delta: number) {
         const scaledDelta = delta * this.time.timeScale;
         this.spawnTimer += scaledDelta;
@@ -304,19 +242,15 @@ export class MainScene extends Phaser.Scene {
             this.spawnEnemy();
             this.spawnTimer -= this.spawnInterval;
         }
-        // Comprobar fin de oleada
         if (GameState.isWaveActive() && this.remainingDifficulty <= 0 && this.enemies?.countActive() === 0) {
             this.endWave();
         }
     }
 
     canPlaceWeapon(x: number, y: number, cost: number, checkGold: boolean = true): boolean {
-        // 1. Comprobar Oro
         if (checkGold && GameState.gold() < cost) return false;
 
-        // 2. Comprobar Colisión con Camino
-        // Usamos un radio de colisión de 40px para evitar que los cuadrados toquen el camino
-        const collisionRadiusSq = 1600; // 40^2 = 1600
+        const collisionRadiusSq = 1600;
 
         if (this.pathPoints && this.pathPoints.length > 0) {
             for (const point of this.pathPoints) {
@@ -327,23 +261,21 @@ export class MainScene extends Phaser.Scene {
             }
         }
 
-        // 3. Comprobar Superposición con otras Torres
         if (this.weapons) {
             const towers = this.weapons.getChildren();
             for (const tower of towers as any[]) {
                 const dx = x - tower.x;
                 const dy = y - tower.y;
                 const dSq = dx * dx + dy * dy;
-                if (dSq < 3600) return false; // 60^2 = 3600
+                if (dSq < 3600) return false;
             }
         }
 
-        // 4. Comprobar Superposición con el Personaje (Defensor final)
         if (this.character) {
             const dx = x - this.character.x;
             const dy = y - this.character.y;
             const dSq = dx * dx + dy * dy;
-            if (dSq < 5000) return false; // Evitar poner torres encima del personaje
+            if (dSq < 5000) return false;
         }
 
         return true;
@@ -353,24 +285,19 @@ export class MainScene extends Phaser.Scene {
         const selected = GameState.selectedWeapon();
         if (!selected) return;
 
-        // Ajuste a Rejilla
         const snapX = Math.floor(x / 64) * 64 + 32;
         const snapY = Math.floor(y / 64) * 64 + 32;
 
         if (this.canPlaceWeapon(snapX, snapY, selected.cost)) {
-            // Colocar torre
             console.log("Placing tower at", snapX, snapY);
 
-            // Deducir Oro
             GameState.updateGold(-selected.cost);
 
-            // Crear Fábrica de Torres
             const tower = new GenericWeapon(this, snapX, snapY, selected.type);
             if (tower) {
                 this.weapons?.add(tower);
             }
 
-            // Resetear Selección y Limpiar UI
             GameState.selectedWeapon.set(null);
             this.drawPlacementZones();
             console.log("Tower placed successfully");
@@ -381,21 +308,18 @@ export class MainScene extends Phaser.Scene {
         if (GameState.isWaveActive()) return;
 
         const wave = GameState.wave();
-        // Cálculo de dificultad: 10 * (1.5 ^ (wave - 1))
         this.currentWaveDifficulty = Math.floor(10 * Math.pow(1.5, wave - 1));
         this.remainingDifficulty = this.currentWaveDifficulty;
 
         GameState.isWaveActive.set(true);
-        this.spawnTimer = 0; // Resetear timer
+        this.spawnTimer = 0;
 
-        // Recalcular shield y health con multiplicadores de items
         const towerTypes = this.getUniqueTowerTypeCount();
         const newMaxShield = Math.floor(GameState.baseMaxShield() * ItemEffects.getMaxShieldMultiplier(towerTypes));
         const newMaxHealth = Math.floor(GameState.baseMaxHealth() * ItemEffects.getMaxHealthMultiplier(towerTypes));
         GameState.maxShield.set(newMaxShield);
         GameState.maxHealth.set(newMaxHealth);
 
-        // Ajustar vida actual si supera el nuevo máximo
         if (GameState.lives() > newMaxHealth) {
             GameState.lives.set(newMaxHealth);
         }
@@ -408,7 +332,6 @@ export class MainScene extends Phaser.Scene {
         const enemiesData = DataManager.data().enemies;
         if (!enemiesData || enemiesData.length === 0) return;
 
-        // Dificultad aleatoria 1-3, limitada por la dificultad restante
         const maxDif = Math.min(3, this.remainingDifficulty);
         if (maxDif < 1) return;
 
@@ -424,7 +347,6 @@ export class MainScene extends Phaser.Scene {
             enemy.setVisible(true);
             if (this.path) enemy.setup(this.path, enemyStats);
 
-            // Callbacks
             enemy.setOnDeath(() => {
                 GameState.updateGold(enemyStats.reward);
                 GameState.updateScore(enemyStats.reward * 10);
@@ -446,10 +368,8 @@ export class MainScene extends Phaser.Scene {
         const reward = this.currentWaveDifficulty * 10;
         GameState.updateGold(reward);
 
-        // Preparar siguiente
         GameState.nextWave();
 
-        // Solicitar recompensas solo en rondas impares (1, 3, 5, 7...)
         if (wave % 2 !== 0) {
             console.log(`Ronda ${wave} (impar) - Emitting request-rewards event...`);
             this.game.events.emit('request-rewards');
@@ -458,10 +378,6 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    /**
-     * Cuenta cuántos tipos de torres únicos hay en el mapa.
-     * Usado por Synergy Core para calcular bonificaciones.
-     */
     getUniqueTowerTypeCount(): number {
         if (!this.weapons) return 0;
         const types = new Set<string>();

@@ -11,5 +11,4 @@ export interface RegisterRequestDTO {
 
 export interface AuthResponse {
   token: string;
-  // Añade otros campos si tu backend devuelve más info, como los datos del usuario.
 }

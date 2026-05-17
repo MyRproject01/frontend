@@ -17,7 +17,6 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Container */
 .settings-container {
   height: 100vh;
   overflow: hidden;
@@ -27,7 +26,6 @@
   position: relative;
 }
 
-/* Back Button */
 .back-btn {
   position: fixed;
   top: 5.5rem;
@@ -61,7 +59,6 @@
   transform: translateX(-2px);
 }
 
-/* Main Canvas */
 .main-canvas {
   height: calc(100vh - 4.5rem);
   overflow: auto;
@@ -73,7 +70,6 @@
   margin: 0 auto;
 }
 
-/* Breadcrumbs */
 .breadcrumbs {
   display: flex;
   align-items: center;
@@ -94,7 +90,6 @@
   color: var(--cyan);
 }
 
-/* Page Header */
 .page-header {
   margin-bottom: 2.5rem;
   padding-bottom: 1.5rem;
@@ -126,7 +121,6 @@
   margin-top: 0.5rem;
 }
 
-/* Audio Panel */
 .audio-panel {
   background: rgba(15, 23, 42, 0.8);
   border: 2px solid rgba(34, 211, 238, 0.2);
@@ -154,7 +148,6 @@
   border-left: 2px solid var(--cyan);
 }
 
-/* Settings stack */
 .settings-stack {
   display: flex;
   flex-direction: column;
@@ -223,7 +216,6 @@
   color: rgba(34, 211, 238, 0.6);
 }
 
-/* Slider */
 .slider {
   -webkit-appearance: none;
   appearance: none;
@@ -264,7 +256,6 @@
   cursor: pointer;
 }
 
-/* Toggle */
 .toggle-group {
   display: flex;
   flex-direction: column;
@@ -318,7 +309,6 @@
   background: var(--zinc-500);
 }
 
-/* Muted state — dims the entire music row */
 .setting-row.muted .setting-label,
 .setting-row.muted .setting-value {
   color: var(--zinc-500) !important;
@@ -334,31 +324,6 @@
   color: var(--zinc-500);
 }
 
-/* Ambient row */
-.ambient-row {
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 0;
-  border-top: 1px solid rgba(34, 211, 238, 0.1);
-  border-bottom: 1px solid rgba(34, 211, 238, 0.1);
-}
-
-.ambient-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.ambient-desc {
-  font-family: var(--font-inter);
-  font-size: 0.625rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(185, 202, 203, 0.5);
-}
-
-/* Test Audio / Apply Button */
 .test-audio-wrapper {
   display: flex;
   justify-content: center;
@@ -415,7 +380,6 @@
   opacity: 0.08;
 }
 
-/* Apply status message */
 .apply-status {
   display: flex;
   align-items: center;
@@ -441,13 +405,11 @@
   font-size: 1rem;
 }
 
-
 @keyframes pulse-border {
   0%, 100% { box-shadow: 0 0 0 rgba(34, 211, 238, 0); }
   50% { box-shadow: 0 0 12px rgba(34, 211, 238, 0.3); }
 }
 
-/* Warning Panel */
 .warning-panel {
   margin-top: 2rem;
   padding: 1rem 1.25rem;
@@ -472,7 +434,6 @@
   color: rgba(239, 68, 68, 0.8);
 }
 
-/* Corner Data */
 .corner-data {
   position: fixed;
   bottom: 1rem;

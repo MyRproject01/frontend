@@ -42,7 +42,6 @@ export class CharactersComponent implements OnInit {
         const sortedData = [...data].sort((a, b) => b.id - a.id);
         this.characters.set(sortedData);
         
-        // Initial preview
         if (this.isFromBuild() && this.selectionService.pendingCharacter()) {
           this.previewCharacter.set(this.selectionService.pendingCharacter());
         } else if (this.buildService.selectedCharacter()) {
@@ -61,7 +60,6 @@ export class CharactersComponent implements OnInit {
   }
 
   selectCharacter(character: Character) {
-    // Force DOM destruction and recreation to re-trigger CSS animations
     this.animationState.set(false);
     this.previewCharacter.set(character);
     setTimeout(() => {

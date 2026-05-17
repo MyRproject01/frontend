@@ -13,19 +13,16 @@ import { AudioService } from '../../services/audio.service';
 export class SettingsComponent implements OnInit {
   private audioSvc = inject(AudioService);
 
-  // ─── Draft values (local — not applied until Apply is clicked) ─────────────
   draftMaster      = 75;
   draftMusic       = 50;
   draftMusicOn     = true;
   draftSfx         = 80;
   draftSfxOn       = true;
 
-  // ─── Apply button feedback ─────────────────────────────────────────────────
   applied = false;
   private applyTimer: any;
 
   ngOnInit() {
-    // Seed drafts from currently applied values
     this.draftMaster  = this.audioSvc.masterVolume();
     this.draftMusic   = this.audioSvc.musicVolume();
     this.draftMusicOn = this.audioSvc.musicEnabled();

@@ -1,12 +1,9 @@
 <div class="register-container">
-  <!-- CRT Scanline Overlay -->
   <div class="scanlines-overlay"></div>
 
-  <!-- Subtle Vignette -->
   <div class="vignette-overlay"></div>
 
   <main class="main-content">
-    <!-- Header Section -->
     <header class="header-section">
       <div class="header-title-container">
         <span class="material-symbols-outlined terminal-icon">terminal</span>
@@ -15,9 +12,7 @@
       <p class="header-subtitle">Awaiting Operator Designation...</p>
     </header>
 
-    <!-- Main Form Panel -->
     <form class="main-form-panel hull-plate" [formGroup]="registerForm" (ngSubmit)="onSubmit($event)">
-      <!-- Corner Accents -->
       <div class="corner-accent-tr"></div>
       <div class="corner-accent-bl"></div>
 
@@ -29,7 +24,6 @@
       }
 
       <div class="form-fields">
-        <!-- Field: Alias -->
         <div class="input-group">
           <label class="input-label" for="alias">
             <span>Nickname</span>
@@ -41,7 +35,6 @@
           </div>
         </div>
 
-        <!-- Field: Comms Channel (Email) -->
         <div class="input-group">
           <label class="input-label" for="email">
             <span>Email</span>
@@ -54,7 +47,6 @@
           </div>
         </div>
 
-        <!-- Field: Encryption -->
         <div class="input-group">
           <label class="input-label" for="password">
             <span>Password</span>
@@ -68,20 +60,6 @@
         </div>
       </div>
 
-      <!-- Safety Notice Panel -->
-      <!-- <div class="safety-notice-panel">
-        <div class="glitch-bg"></div>
-        <span class="material-symbols-outlined warning-icon">warning</span>
-        <div class="safety-text-container">
-          <h3 class="safety-title">Critical Safety Warning</h3>
-          <p class="safety-description">
-            Direct neural interfacing during uncalibrated enrollment carries a 14.3% risk of minor synaptic
-            fragmentation. Ensure cerebral shunts are engaged prior to initialization.
-          </p>
-        </div>
-      </div> -->
-
-      <!-- Submit Action -->
       <button class="submit-action btn-tactical" type="submit" [disabled]="isLoading() || registerForm.invalid">
         <span>{{ isLoading() ? 'INITIALIZING...' : 'Register' }}</span>
         <span class="material-symbols-outlined arrow-icon">{{ isLoading() ? 'sync' : 'arrow_forward' }}</span>
@@ -96,7 +74,6 @@
       </div>
     </form>
 
-    <!-- Footer status -->
     <div class="footer-status">
       <span>v.0.7.2_b</span>
       <span class="online-status">

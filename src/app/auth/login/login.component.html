@@ -1,20 +1,14 @@
 <div class="login-container">
-  <!-- Global Scanline Overlay -->
   <div class="scanlines-overlay"></div>
-  <!-- Background Atmospheric Noise -->
   <div class="bg-noise"></div>
 
-  <!-- Central Authentication Panel (Hull Plate) -->
   <div class="auth-panel">
-    <!-- Circuitry Borders & Wear Details -->
     <div class="circuit-border top-left-border"></div>
     <div class="circuit-border top-right-border"></div>
     <div class="circuit-border bottom-left-border"></div>
     <div class="circuit-border bottom-right-border"></div>
 
-    <!-- Panel Content -->
     <div class="panel-content">
-      <!-- Header Identity -->
       <div class="panel-header">
         <span class="material-symbols-outlined terminal-icon">terminal</span>
         <h1 class="system-title">ECHO</h1>
@@ -28,9 +22,7 @@
       </div>
       }
 
-      <!-- Authentication Form -->
       <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit($event)">
-        <!-- Input: Access Key -->
         <div class="input-group">
           <label class="input-label">
             <span>NickName</span>
@@ -42,7 +34,6 @@
           </div>
         </div>
 
-        <!-- Input: Encryption Phrase -->
         <div class="input-group">
           <label class="input-label">
             <span>Password</span>
@@ -54,7 +45,6 @@
           </div>
         </div>
 
-        <!-- Action Button -->
         <button type="submit" class="action-button clip-button" [disabled]="isLoading() || loginForm.invalid">
           <div class="button-content">
             <span class="material-symbols-outlined login-icon">{{ isLoading() ? 'sync' : 'login' }}</span>

@@ -1,7 +1,6 @@
 :host {
   display: block;
   
-  /* Colors */
   --surface-dim: #131314;
   --on-surface: #e5e2e3;
   --primary-container: #00f3ff;
@@ -17,13 +16,11 @@
   --surface-container-highest: #353436;
   --outline: #849495;
 
-  /* Fonts */
   --font-body-reg: 'Inter', sans-serif;
   --font-data-mono: 'Inter', sans-serif;
   --font-ui-label: 'Space Grotesk', sans-serif;
   --font-h1-bold: 'Space Grotesk', sans-serif;
 
-  /* Spacing */
   --margin: 24px;
 }
 

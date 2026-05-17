@@ -3,12 +3,9 @@
 </video>
 <div id="game-container"></div>
 
-<!-- HUD Overlay -->
 <div class="hud-container">
 
-    <!-- LEFT SIDEBAR HUD -->
     <div class="hud-sidebar-left">
-        <!-- 1. Identity Block (Avatar + Vertical Bars) -->
         <div class="identity-section">
             <div class="avatar-box">
                 <img [src]="'/characters/' + (DataManager.data().character.id) + '.png'" alt="Avatar" class="avatar-img">
@@ -34,7 +31,6 @@
             </div>
         </div>
 
-        <!-- Boon Display -->
         @if (getActiveBoonName()) {
         <div class="boon-display">
             <img [src]="getActiveBoonIcon()" [alt]="getActiveBoonName()" class="boon-img">
@@ -42,7 +38,6 @@
         </div>
         }
 
-        <!-- 2. Weapons Grid -->
         <div class="sidebar-weapons">
             @for (w of DataManager.data().weapons.slice(0, 3); track w.id) {
                 <div class="tower-slot-compact" 
@@ -55,13 +50,11 @@
             }
         </div>
 
-        <!-- 3. Currency -->
         <div class="currency-display">
             <span class="gold-icon">⚡</span>
             <span class="gold-value">{{ gold() }}</span>
         </div>
 
-        <!-- 4. Collected Items -->
         <div class="inventory-section">
             <div class="inventory-title">Items:</div>
             @if (getGroupedInventory().length > 0) {
@@ -83,7 +76,6 @@
 
         <div class="sidebar-spacer"></div>
 
-        <!-- 5. Game Stats (Bottom of Sidebar) -->
         <div class="game-info-blocks">
             <div class="info-block">
                 <span class="info-label">Wave {{ wave() }}</span>
@@ -97,7 +89,6 @@
         </div>
     </div>
 
-    <!-- BOTTOM RIGHT CONTROLS -->
     <div class="hud-controls-right">
         <button class="control-btn" (click)="togglePause()">
             <span class="material-symbols-outlined">{{ isPaused() ? 'play_arrow' : 'pause' }}</span>
@@ -114,7 +105,6 @@
         </button>
     </div>
 
-    <!-- Rewards Modal -->
     @if (isRewardPending()) {
     <div class="rewards-overlay">
         <div class="rewards-modal">
@@ -137,7 +127,6 @@
     </div>
     }
 
-    <!-- Forfeit Confirmation Modal -->
     @if (showForfeitModal()) {
     <div class="modal-overlay">
         <div class="custom-modal danger-theme">

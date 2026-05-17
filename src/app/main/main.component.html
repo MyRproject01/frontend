@@ -1,17 +1,11 @@
-
-
-<!-- Main Content Canvas -->
 <main class="main-content">
-    <!-- Decoration Circuitry -->
     <div class="circuit-line cl-1"></div>
     <div class="circuit-line cl-2"></div>
     <div class="circuit-line cl-3"></div>
     <div class="circuit-line cl-4"></div>
 
-    <!-- Central Area: Action Stack -->
     <div class="action-stack-container">
         <div class="action-stack">
-            <!-- Header Text -->
             <div class="header-text">
                 <h1 class="os-title">ECHO</h1>
                 <div class="awaiting-input">
@@ -21,15 +15,12 @@
                 </div>
             </div>
 
-            <!-- Buttons -->
             <div class="button-group">
-                <!-- PLAY Button -->
                 <button class="btn-play" routerLink="/build-selector">
                     <span class="btn-play-text">
                         <span class="material-symbols-outlined" data-icon="play_arrow">play_arrow</span>
                         PLAY
                     </span>
-                    <!-- Hover Glow Effect -->
                     <div class="btn-play-glow"></div>
                 </button>
 
@@ -57,7 +48,6 @@
         </div>
     </div>
 
-    <!-- Right Sidebar: Leaderboard -->
     <div class="leaderboard-sidebar">
         <div class="leaderboard-panel">
             <div class="leaderboard-header">
@@ -82,7 +72,6 @@
                 }
             </div>
 
-            <!-- Player entry (you) -->
             <div class="lb-footer">
                 @if (showUserFooter()) {
                     @if (userHighScore() !== null) {

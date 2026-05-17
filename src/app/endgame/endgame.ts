@@ -15,28 +15,22 @@ export class Endgame implements OnInit {
   private router = inject(Router);
   private buildService = inject(BuildService);
 
-  // Stats captured from GameState
   finalScore = signal(0);
   finalWave = signal(0);
   enemiesKilled = signal(0);
   timeSurvivedSec = signal(0);
 
-  // Character info
   characterName = signal('');
   characterSplashUrl = signal('');
 
-  // Items collected during the run
   collectedItems = signal<Array<{ id: number; name: string; iconUrl: string; count: number }>>([]);
 
-  // Boon used
   boonName = signal('');
   boonIconUrl = signal('');
 
-  // Animation control
   isRevealed = signal(false);
 
   ngOnInit() {
-    // Capture data from GameState before it resets
     this.finalScore.set(GameState.score());
     this.finalWave.set(GameState.wave());
     this.enemiesKilled.set(GameState.enemiesKilled());
@@ -46,7 +40,6 @@ export class Endgame implements OnInit {
       : 0;
     this.timeSurvivedSec.set(elapsed);
 
-    // Character splash
     const character = this.buildService.selectedCharacter();
     if (character) {
       this.characterName.set(character.name);
@@ -54,7 +47,6 @@ export class Endgame implements OnInit {
       this.characterSplashUrl.set(`/characters/${formatted}.png`);
     }
 
-    // Boon
     const boonNameVal = GameState.selectedBoon();
     if (boonNameVal) {
       this.boonName.set(boonNameVal);
@@ -62,7 +54,6 @@ export class Endgame implements OnInit {
       this.boonIconUrl.set(`/boons/${formatted}-icon.png`);
     }
 
-    // Grouped inventory items
     const inv = GameState.inventory();
     const map = new Map<number, { id: number; name: string; iconUrl: string; count: number }>();
     for (const item of inv) {
@@ -80,7 +71,6 @@ export class Endgame implements OnInit {
     }
     this.collectedItems.set(Array.from(map.values()));
 
-    // Trigger reveal animation after a short delay
     setTimeout(() => this.isRevealed.set(true), 100);
   }
 

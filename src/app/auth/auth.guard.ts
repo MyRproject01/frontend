@@ -10,6 +10,5 @@ export const authGuard = () => {
     return true;
   }
 
-  // Redirect to login page if not authenticated
   return router.parseUrl('/login');
 };

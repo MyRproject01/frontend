@@ -33,7 +33,6 @@ export class BoonsComponent implements OnInit {
         const sorted = data.sort((a: any, b: any) => a.id - b.id);
         this.boons.set(sorted);
         
-        // Initial preview
         if (this.isFromBuild() && this.selectionService.pendingBoon()) {
           this.selectedBoon.set(this.selectionService.pendingBoon());
         } else if (sorted.length > 0) {

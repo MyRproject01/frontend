@@ -33,7 +33,6 @@
         </button>
       }
 
-      <!-- Locked Slots -->
       <div class="unit-card unit-locked">
         <span class="material-symbols-outlined lock-icon">lock</span>
         <span class="lock-label">LOCKED // REACH 50K SCORE</span>
@@ -46,26 +45,20 @@
   </div>
 </section>
 
-<!-- ── CENTER PANEL: Preview ──────────────────── -->
 <section class="panel preview-panel">
-  <!-- Corner accents -->
   <div class="preview-corner corner-tl"></div>
   <div class="preview-corner corner-br"></div>
 
-  <!-- Full-body image -->
   <div class="preview-image"
     [style.background-image]="previewCharacter() ? 'url(' + getImageUrl(previewCharacter()!.name) + ')' : 'none'">
   </div>
 
-  <!-- Grid overlay -->
   <div class="preview-grid-overlay"></div>
 
-  <!-- Bottom name -->
   <div class="preview-name-block">
     <h1 class="preview-title">{{ previewCharacter() ? (previewCharacter()!.name | uppercase) : 'SELECT_UNIT' }}</h1>
   </div>
 
-  <!-- Reticle decoration -->
   <div class="reticle">
     <div class="reticle-tick rt-top"></div>
     <div class="reticle-tick rt-bottom"></div>
@@ -75,10 +68,8 @@
   </div>
 </section>
 
-<!-- ── RIGHT PANEL: Stats ─────────────────────── -->
 <section class="panel stats-panel">
 
-  <!-- Vitals -->
   <div class="module">
     <div class="module-header">
       <span class="material-symbols-outlined module-icon">insert_chart</span>
@@ -148,7 +139,6 @@
     }
   </div>
 
-  <!-- Archive Data -->
   <div class="module">
     <div class="module-header">
       <span class="material-symbols-outlined module-icon">folder_open</span>

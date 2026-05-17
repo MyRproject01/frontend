@@ -21,7 +21,6 @@ export class BuildService {
     if (token && user) {
       this.loadLastBuild(user);
     }
-    // If no session, wait until login
   }
 
   loadLastBuild(username: string) {

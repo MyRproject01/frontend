@@ -32,12 +32,10 @@
         </div>
       </section>
 
-      <!-- Right Panel: ITEM_INTEL -->
       <section class="panel intel-panel">
         <div class="corner-decoration"></div>
         
         <div class="intel-content">
-          <!-- Header -->
           <div class="intel-header">
             <h1 class="intel-title">{{ selectedItem() ? (selectedItem()!.name | uppercase) : 'SELECT_ITEM' }}</h1>
             <div class="intel-divider">
@@ -45,14 +43,12 @@
             </div>
           </div>
           
-          <!-- Item Visualizer -->
           <div class="visualizer-box">
             <img class="visualizer-image" 
                  [src]="selectedItem() ? getImageUrl(selectedItem()!.name) : ''"
                  [alt]="selectedItem()?.name || 'item'" />
           </div>
           
-          <!-- Archive Data -->
           <div class="intel-details">
             <div class="module">
               <div class="module-header">

@@ -39,7 +39,6 @@ export class WeaponsComponent implements OnInit {
       const sorted = [...data].sort((a, b) => (a.price || 0) - (b.price || 0));
       this.weapons.set(sorted);
       
-      // Initial preview
       if (this.isFromBuild() && this.selectionService.pendingWeapons().length > 0) {
         this.previewWeapon.set(this.selectionService.pendingWeapons()[0]);
       } else if (this.buildService.selectedWeapons().length > 0) {
@@ -89,7 +88,6 @@ export class WeaponsComponent implements OnInit {
   }
 
   confirmSelection() {
-    // This button might be redundant now but we can keep it as a "Add to build" shortcut
     this.toggleWeapon(this.previewWeapon(), true);
   }
 

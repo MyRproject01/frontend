@@ -23,7 +23,6 @@
   padding: 0;
 }
 
-/* ── Container ─────────────────────────────────────────── */
 .profile-container {
   min-height: 100vh;
   padding: 6rem 2rem 2rem;
@@ -35,7 +34,6 @@
   background: transparent;
 }
 
-/* Scanlines */
 .scanline-overlay {
   position: fixed;
   inset: 0;
@@ -45,7 +43,6 @@
   z-index: 50;
 }
 
-/* ── Back Button ────────────────────────────────────────── */
 .back-btn {
   position: fixed;
   top: 2rem;
@@ -79,7 +76,6 @@
   transform: translateX(-2px);
 }
 
-/* ── Profile Card ───────────────────────────────────────── */
 .profile-card {
   position: relative;
   width: min(1000px, 94vw);
@@ -96,7 +92,6 @@
     0 0 40px rgba(34, 211, 238, 0.07);
 }
 
-/* Corner accents */
 .corner {
   position: absolute;
   width: 1.25rem;
@@ -131,14 +126,12 @@
   border-right: 2px solid var(--cyan);
 }
 
-/* ── Identity Row ───────────────────────────────────────── */
 .identity-row {
   display: flex;
   gap: 2rem;
   align-items: flex-start;
 }
 
-/* Avatar */
 .avatar-block {
   flex-shrink: 0;
 }
@@ -158,37 +151,11 @@
   object-fit: cover;
 }
 
-.lvl-badge {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(9, 9, 11, 0.85);
-  color: var(--cyan);
-  font-family: var(--font-space);
-  font-size: 0.6rem;
-  font-weight: 900;
-  text-align: center;
-  padding: 0.2rem 0;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  border-top: 1px solid var(--cyan-dim);
-}
-
-/* Identity info */
 .identity-info {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-}
-
-.uid-badge {
-  font-family: var(--font-mono);
-  font-size: 0.55rem;
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  color: rgba(34, 211, 238, 0.35);
 }
 
 .operator-name {
@@ -232,82 +199,11 @@
   font-size: 1.1rem;
 }
 
-.operator-status {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--zinc-500);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.status-active {
-  color: var(--emerald);
-  animation: pulse-text 2s ease-in-out infinite;
-}
-
-@keyframes pulse-text {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.6;
-  }
-}
-
-/* XP Bar */
-.xp-block {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  margin-top: 0.25rem;
-}
-
-.xp-labels {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--zinc-500);
-}
-
-.xp-track {
-  height: 4px;
-  background: var(--zinc-800);
-  border: 1px solid var(--zinc-700);
-  position: relative;
-}
-
-.xp-fill {
-  height: 100%;
-  background: var(--cyan);
-  box-shadow: 0 0 8px var(--cyan);
-  position: relative;
-}
-
-.xp-fill::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 6px;
-  height: 12px;
-  background: var(--cyan);
-  box-shadow: 0 0 6px var(--cyan);
-}
-
-/* ── Divider ────────────────────────────────────────────── */
 .divider {
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--cyan-dim), transparent);
 }
 
-/* ── Stats Row ──────────────────────────────────────────── */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -352,75 +248,4 @@
   letter-spacing: 0.1em;
   color: var(--zinc-300);
   text-align: center;
-}
-
-/* ── Medals Row ─────────────────────────────────────────── */
-.medals-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.medals-title {
-  font-family: var(--font-space);
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--zinc-500);
-}
-
-.medals-list {
-  display: flex;
-  gap: 1.25rem;
-  align-items: center;
-}
-
-.medal {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: default;
-}
-
-.medal-icon {
-  width: 4.5rem;
-  height: 4.5rem;
-  border-radius: 50%;
-  border: 1px solid var(--cyan-dim);
-  background: rgba(34, 211, 238, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--cyan);
-  transition: background 0.15s, box-shadow 0.15s;
-}
-
-.medal-icon .material-symbols-outlined {
-  font-size: 1.5rem;
-}
-
-.medal:hover .medal-icon {
-  background: rgba(34, 211, 238, 0.18);
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.3);
-}
-
-.medal-icon.locked {
-  border-color: var(--zinc-700);
-  background: transparent;
-  color: var(--zinc-700);
-}
-
-.medal-lbl {
-  font-family: var(--font-mono);
-  font-size: 0.5rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--zinc-500);
-  text-align: center;
-}
-
-.medal-lbl.locked-lbl {
-  color: var(--zinc-700);
 }

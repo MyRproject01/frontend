@@ -1,13 +1,10 @@
 <div class="loadout-container">
-  <!-- Loadout Sidebar -->
   <nav class="loadout-sidebar">
-    <!-- Title -->
     <div class="sidebar-title">
       <span class="material-symbols-outlined">deployed_code</span>
       LOADOUT
     </div>
 
-    <!-- Back to Main / Selection Actions -->
     @if (!isSelectionActive) {
       <a class="sidebar-link sidebar-back" [routerLink]="returnUrl">
         <span class="material-symbols-outlined">arrow_back_ios</span>
@@ -26,7 +23,6 @@
 
     <div class="sidebar-divider"></div>
 
-    <!-- Nav items using routerLinkActive -->
     <a class="sidebar-link" routerLink="/loadout/characters" routerLinkActive="active" queryParamsHandling="merge">
       <span class="material-symbols-outlined">person_off</span>
       CHARACTERS
@@ -49,7 +45,6 @@
     </a>
   </nav>
 
-  <!-- Dynamic Content Area -->
   <div class="content-area">
     <main class="main-canvas">
       <router-outlet></router-outlet>

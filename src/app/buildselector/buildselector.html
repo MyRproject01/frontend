@@ -1,30 +1,19 @@
 <div class="scanline-overlay"></div>
 
-
-
-
-
-<!-- Back Button -->
 <button class="back-btn" routerLink="/main">
   <span class="material-symbols-outlined">arrow_back_ios</span>
   BACK TO MENU
 </button>
 
-<!-- Main Content -->
 <main class="app-main">
-  <!-- Left Section: Character Preview -->
   <section class="main-left preview-panel" routerLink="/loadout/characters" [queryParams]="{from: 'build'}" style="cursor: pointer;">
-    <!-- Corner accents -->
     <div class="preview-corner corner-tl"></div>
     <div class="preview-corner corner-br"></div>
 
-    <!-- Character Image -->
     <div class="preview-image" [style.background-image]="selectedCharacter() ? 'url(' + getImageUrl(selectedCharacter()!.name) + ')' : 'none'"></div>
 
-    <!-- Grid overlay -->
     <div class="preview-grid-overlay"></div>
 
-    <!-- Reticle decoration -->
     <div class="reticle">
       <div class="reticle-tick rt-top"></div>
       <div class="reticle-tick rt-bottom"></div>
@@ -33,16 +22,13 @@
       <div class="reticle-inner"></div>
     </div>
 
-    <!-- Character Name Block (Matching Characters Tab) -->
     <div class="preview-name-block" *ngIf="selectedCharacter()">
       <h1 class="preview-title">{{ selectedCharacter()!.name | uppercase }}</h1>
     </div>
   </section>
 
-  <!-- Right Section: Menu & Config -->
   <section class="main-right">
     <div class="config-scroll-area custom-scrollbar">
-      <!-- 0. Selected Boon -->
       <div class="config-section">
         <div class="section-header boon">
           <span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
@@ -66,7 +52,6 @@
         </div>
       </div>
 
-      <!-- 1. Selected Weapons -->
       <div class="config-section">
         <div class="section-header">
           <span class="material-symbols-outlined" data-icon="swords">swords</span>
@@ -88,7 +73,6 @@
         </div>
       </div>
 
-      <!-- 2. Game Mode Selection -->
       <div class="config-section">
         <div class="section-header operation">
           <span class="material-symbols-outlined" data-icon="stadia_controller">stadia_controller</span>
@@ -112,7 +96,6 @@
 
     </div>
 
-    <!-- Footer: Confirm Button -->
     <div class="confirm-footer">
       <div class="validation-message" *ngIf="selectedWeapons().length !== 3">
         <span class="material-symbols-outlined">warning</span>
@@ -125,7 +108,6 @@
   </section>
 </main>
 
-<!-- UI Noise Overlay -->
 <div class="noise-overlay">
   <svg viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <filter id="noiseFilter">

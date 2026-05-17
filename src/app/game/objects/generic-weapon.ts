@@ -12,7 +12,6 @@ export class GenericWeapon extends Weapon {
     private rampUpTimer: number = 1;
 
     constructor(scene: Scene, x: number, y: number, weaponId: string) {
-        // Determinamos la textura a usar. 
         const specialWeapons = ['pulse-turret', 'arc-railgun', 'plasma-cannon', 'neuro-laser-tower', 'quantum-obelisk'];
         const isSpecial = specialWeapons.includes(weaponId);
         
@@ -21,7 +20,6 @@ export class GenericWeapon extends Weapon {
         
         this.weaponId = weaponId;
         
-        // Buscar estadísticas en DataManager usando el weaponId
         const weapons = DataManager.data().weapons;
         const stats = weapons.find(w => w.id === weaponId);
         
@@ -31,7 +29,6 @@ export class GenericWeapon extends Weapon {
             this.cooldown = stats.cooldown;
         }
 
-        // Si es una torre con spritesheet, empezamos en el frame 0 (Down-Left)
         if (isSpecial) {
             this.setFrame(0);
         }
@@ -53,23 +50,18 @@ export class GenericWeapon extends Weapon {
         const target = this.findTarget(towerTypes);
 
         if (target) {
-            // Lógica de escalado de daño (Inferno Tower)
             if (this.currentTarget === target) {
-                // Sube de x1 a x5 en unos 3 segundos
                 this.rampUpTimer = Math.min(this.rampUpTimer + (delta / 1000) * 1.5, 5);
             } else {
                 this.rampUpTimer = 1;
                 this.currentTarget = target;
             }
 
-            // Aplicar daño por tick
             const finalDamage = (this.damage * this.rampUpTimer * (delta / 1000));
             target.takeDamage(finalDamage);
 
-            // Visual: Rayo rosa
             this.drawBeam(target, 0xff00ff, true);
             
-            // Actualizar dirección del sprite
             const angle = Phaser.Math.Angle.Between(this.x, this.y, target.x, target.y);
             this.setDiagonalFrame(angle);
         } else {
@@ -83,21 +75,17 @@ export class GenericWeapon extends Weapon {
         const mainScene = this.scene as any;
         const towerTypes = mainScene.getUniqueTowerTypeCount?.() || 0;
         
-        // Encontrar todos los enemigos en rango
         const targets = this.findAllTargetsInRange(towerTypes);
         
         if (targets.length > 0) {
-            // Daño compartido: se divide entre el número de enemigos
             const damagePerTarget = (this.damage * (delta / 1000)) / targets.length;
             
             targets.forEach(target => {
                 target.takeDamage(damagePerTarget);
             });
 
-            // Visual: Rayos azules múltiples
             this.drawMultiBeam(targets);
             
-            // Apuntar al más cercano solo visualmente
             const angle = Phaser.Math.Angle.Between(this.x, this.y, targets[0].x, targets[0].y);
             this.setDiagonalFrame(angle);
         } else {
@@ -122,7 +110,6 @@ export class GenericWeapon extends Weapon {
             }
         });
 
-        // Ordenar por cercanía
         return targets.sort((a, b) => {
             const distA = Phaser.Math.Distance.Squared(this.x, this.y, a.x, a.y);
             const distB = Phaser.Math.Distance.Squared(this.x, this.y, b.x, b.y);
@@ -157,7 +144,7 @@ export class GenericWeapon extends Weapon {
         this.beamGraphics.clear();
 
         targets.forEach(target => {
-            const color = 0x00ffff; // Azul Cian para el Obelisco
+            const color = 0x00ffff;
             const thickness = 3;
 
             this.beamGraphics!.lineStyle(thickness + 4, color, 0.2);
@@ -174,19 +161,18 @@ export class GenericWeapon extends Weapon {
     private setDiagonalFrame(angle: number) {
         const deg = Phaser.Math.RadToDeg(angle);
         if (deg >= 0 && deg < 90) {
-            this.setFrame(1); // Down-Right
+            this.setFrame(1);
         } else if (deg >= 90 && deg <= 180) {
-            this.setFrame(0); // Down-Left
+            this.setFrame(0);
         } else if (deg >= -90 && deg < 0) {
-            this.setFrame(3); // Up-Right
+            this.setFrame(3);
         } else {
-            this.setFrame(2); // Up-Left
+            this.setFrame(2);
         }
         this.setRotation(0);
     }
 
     fire(target: any, time: number) {
-        // El laser y el obelisco no usan la función fire tradicional de balas
         if (this.weaponId === 'neuro-laser-tower' || this.weaponId === 'quantum-obelisk') return;
 
         const angle = Phaser.Math.Angle.Between(this.x, this.y, target.x, target.y);

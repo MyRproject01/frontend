@@ -1,23 +1,19 @@
 <div class="settings-container">
 
-  <!-- Back Button -->
   <button class="back-btn" routerLink="/main">
     <span class="material-symbols-outlined">arrow_back_ios</span>
     BACK TO MAIN MENU
   </button>
 
-  <!-- Main Content -->
   <main class="main-canvas">
     <div class="content-wrapper">
 
-      <!-- Breadcrumbs -->
       <div class="breadcrumbs">
         <span>SYSTEM</span>
         <span class="material-symbols-outlined">chevron_right</span>
         <span class="active">AUDIO_MATRIX</span>
       </div>
 
-      <!-- Page Header -->
       <div class="page-header">
         <h1 class="page-title">
           <span class="material-symbols-outlined">volume_up</span>
@@ -26,15 +22,12 @@
         <p class="page-subtitle">CALIBRATING NEURAL AUDIO INTERFACE...</p>
       </div>
 
-      <!-- Audio Panel -->
       <div class="audio-panel">
-        <!-- Corner decorations -->
         <div class="corner corner-tr"></div>
         <div class="corner corner-bl"></div>
 
         <div class="settings-stack">
 
-          <!-- MASTER_VOLUME -->
           <div class="setting-row">
             <div class="setting-header">
               <label class="setting-label">
@@ -52,7 +45,6 @@
             />
           </div>
 
-          <!-- MUSIC_LEVEL -->
           <div class="setting-row setting-with-toggle" [class.muted]="!draftMusicOn">
             <div class="setting-main">
               <div class="setting-header">
@@ -77,7 +69,6 @@
             </div>
           </div>
 
-          <!-- SFX_LEVEL -->
           <div class="setting-row setting-with-toggle" [class.muted]="!draftSfxOn">
             <div class="setting-main">
               <div class="setting-header">
@@ -102,13 +93,11 @@
             </div>
           </div>
 
-          <!-- APPLIED STATUS -->
           <div class="apply-status" [class.visible]="applied">
             <span class="material-symbols-outlined">check_circle</span>
             SETTINGS APPLIED
           </div>
 
-          <!-- APPLY BUTTON -->
           <div class="test-audio-wrapper">
             <button class="test-btn" [class.applied]="applied" (click)="applySettings()">
               <div class="test-btn-glow"></div>
@@ -120,7 +109,6 @@
         </div>
       </div>
 
-      <!-- Warning -->
       <div class="warning-panel">
         <span class="material-symbols-outlined warn-icon">warning</span>
         <p class="warn-text">Warning: High intensity audio frequencies may interfere with neural link synchronization.
@@ -130,7 +118,6 @@
     </div>
   </main>
 
-  <!-- Corner Data -->
   <div class="corner-data">
     <p>PACKET_LOSS: 0.002%</p>
     <p>BUFFER_LATENCY: 12ms</p>

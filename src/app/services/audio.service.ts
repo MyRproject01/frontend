@@ -2,7 +2,6 @@ import { Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class AudioService {
-  // ─── Applied (live) state ──────────────────────────────────────────────────
   readonly masterVolume = signal<number>(75);
   readonly musicVolume  = signal<number>(50);
   readonly musicEnabled = signal<boolean>(true);
@@ -14,17 +13,11 @@ export class AudioService {
   private isMusicPausedExternally = false;
   private sfxAudio: HTMLAudioElement | null = null;
 
-  // ──────────────────────────────────────────────────────────────────────────
-  // Init — called once from app.ts after DOM is ready.
-  // Uses a waterfall of 5 strategies to unmute muted-autoplay audio ASAP.
-  // ──────────────────────────────────────────────────────────────────────────
   init() {
-    // Pre-load the SFX so the first click has no delay
     this.sfxAudio = new Audio('/soundeffect.mp3');
     this.sfxAudio.preload = 'auto';
     this.sfxAudio.volume  = this.effectiveSfxVolume();
 
-    // ── Unmute the background music ─────────────────────────────────────────
     const bgAudio = this.getBgAudio();
     if (!bgAudio) return;
 
@@ -44,7 +37,6 @@ export class AudioService {
       }
     };
 
-    // Best practice: wait for first user interaction to start audio
     const onInteraction = () => {
       ensurePlayingThenUnmute();
       document.removeEventListener('click',      onInteraction);
@@ -57,16 +49,13 @@ export class AudioService {
     document.addEventListener('touchstart', onInteraction, { once: true });
   }
 
-  // ─── Play SFX (called by the click directive) ──────────────────────────────
   playSfx() {
     if (!this.sfxEnabled()) return;
-    // Cloning allows overlapping rapid clicks
     const sfx = (this.sfxAudio as HTMLAudioElement).cloneNode() as HTMLAudioElement;
     sfx.volume = this.effectiveSfxVolume();
     sfx.play().catch(() => {});
   }
 
-  // ─── Apply a complete settings snapshot (called by Apply button) ──────────
   applySettings(
     master: number,
     music: number, musicOn: boolean,
@@ -78,7 +67,6 @@ export class AudioService {
     this.sfxVolume.set(sfx);
     this.sfxEnabled.set(sfxOn);
 
-    // Update background music
     const bgAudio = this.getBgAudio();
     if (bgAudio) {
       if (musicOn) {
@@ -90,13 +78,11 @@ export class AudioService {
       }
     }
 
-    // Update SFX pre-loaded audio volume for next plays
     if (this.sfxAudio) {
       this.sfxAudio.volume = this.effectiveSfxVolume();
     }
   }
 
-  // ─── Volume helpers ────────────────────────────────────────────────────────
   effectiveMusicVolume(): number {
     return (this.masterVolume() / 100) * (this.musicVolume() / 100);
   }
@@ -105,23 +91,15 @@ export class AudioService {
     return (this.masterVolume() / 100) * (this.sfxVolume() / 100);
   }
 
-  /**
-   * Toggles the background music playback.
-   * Useful for stopping music during specific routes (like the game) 
-   * without overriding the user's general preference.
-   */
   setMusicPlaying(play: boolean) {
     this.isMusicPausedExternally = !play;
     const bgAudio = this.getBgAudio();
     if (!bgAudio) return;
 
     if (play && this.musicEnabled()) {
-      // Ensure it is unmuted if we want to play it
       bgAudio.muted = false; 
       bgAudio.volume = this.effectiveMusicVolume();
       bgAudio.play().catch(() => {
-        // If play() fails (e.g. no interaction yet), 
-        // the init() listeners will catch it later.
       });
     } else {
       bgAudio.pause();

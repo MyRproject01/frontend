@@ -26,7 +26,7 @@ export class MainComponent implements OnInit {
         console.log('🏆 Leaderboard Data:', data);
         if (data && data.length > 0) {
           const sorted = [...data].sort((a, b) => b.highScore - a.highScore);
-          this.leaderboard.set(sorted.slice(0, 10)); // Top 10
+          this.leaderboard.set(sorted.slice(0, 10));
           this.maxScore.set(sorted[0].highScore || 1);
           this.calculateUserRank(sorted);
         }
@@ -48,7 +48,6 @@ export class MainComponent implements OnInit {
     const score = this.userHighScore();
     if (score === null || fullLeaderboard.length === 0) return;
     
-    // Si podemos encontrar la posición por puntuación (esto es aproximado si no tenemos el nombre de usuario exacto del JWT)
     const rankIndex = fullLeaderboard.findIndex(entry => entry.highScore <= score);
     if (rankIndex !== -1) {
       const rank = rankIndex + 1;

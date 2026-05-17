@@ -32,14 +32,12 @@
   height: 100%;
 }
 
-/* ── Panels ─────────────────────────────── */
 .panel {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-/* ── LEFT: ROSTER ──────────────────── */
 .roster-panel {
   flex: 7;
   gap: 1rem;
@@ -87,7 +85,6 @@
   gap: 0.75rem;
 }
 
-/* Slots */
 .boon-slot {
   aspect-ratio: 1;
   position: relative;
@@ -139,7 +136,6 @@
 }
 .active-badge { font-weight: 700; color: var(--cyan-bright); }
 
-/* ── RIGHT: INTEL ──────────────────── */
 .intel-panel {
   flex: 5;
   background: linear-gradient(135deg, #1c1b1c 0%, #131314 100%);
@@ -276,7 +272,6 @@
 .text-cyan { color: var(--cyan-bright) !important; }
 .text-cyan-dim { color: rgba(0, 243, 255, 0.7) !important; }
 
-/* ── Selection Footer ──────────────────── */
 .selection-footer {
   margin-top: auto;
   padding-top: 1.5rem;

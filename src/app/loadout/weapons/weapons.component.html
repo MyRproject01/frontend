@@ -34,12 +34,10 @@
   </div>
 </section>
 
-<!-- Right Column: Weapon Intel (matching enemies style) -->
 <section class="panel intel-panel">
   <div class="corner-decoration"></div>
 
   <div class="intel-content">
-    <!-- Header -->
     <div class="intel-header">
       <h1 class="intel-title">{{ previewWeapon() ? (previewWeapon()!.name | uppercase) : 'SELECT_WEAPON' }}</h1>
       <div class="intel-divider">
@@ -47,13 +45,11 @@
       </div>
     </div>
 
-    <!-- Weapon Visualizer -->
     <div class="visualizer-box">
       <img class="visualizer-image" [src]="previewWeapon() ? getImageUrl(previewWeapon()!.name) : ''"
         [alt]="previewWeapon()?.name || 'weapon'" />
     </div>
 
-    <!-- Stats Grid -->
     <div class="intel-details">
       @if (animationState()) {
       <div class="module">
@@ -62,7 +58,6 @@
           COMBAT_SPECS
         </div>
         <div class="stats-grid">
-          <!-- DAMAGE -->
           <div class="stat-bar-container">
             <div class="stat-labels">
               <span>DAMAGE</span>
@@ -75,7 +70,6 @@
             </div>
           </div>
 
-          <!-- ATTACK SPEED -->
           <div class="stat-bar-container">
             <div class="stat-labels">
               <span>ATTACK SPEED</span>
@@ -88,7 +82,6 @@
             </div>
           </div>
 
-          <!-- RANGE -->
           <div class="stat-bar-container">
             <div class="stat-labels">
               <span>RANGE</span>
@@ -104,7 +97,6 @@
       </div>
       }
 
-      <!-- Archive Data -->
       <div class="module">
         <div class="module-header">
           <span class="material-symbols-outlined module-icon">folder_open</span>
@@ -115,7 +107,6 @@
         </div>
       </div>
 
-      <!-- Selection Actions -->
       @if (isFromBuild()) {
         <div class="module selection-module">
           <div class="module-header">

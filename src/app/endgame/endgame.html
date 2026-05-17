@@ -4,7 +4,6 @@
 
 <div class="endgame-overlay" [class.revealed]="isRevealed()">
 
-    <!-- Left: Character Splash Art -->
     <div class="splash-column">
         <div class="splash-container">
             <img [src]="characterSplashUrl()" [alt]="characterName()" class="splash-image"
@@ -12,13 +11,11 @@
             <div class="splash-vignette"></div>
             <div class="splash-grid-overlay"></div>
 
-            <!-- Character Name Block -->
             <div class="splash-name-block">
                 <span class="splash-label">OPERATIVE</span>
                 <h2 class="splash-character-name">{{ characterName() | uppercase }}</h2>
             </div>
 
-            <!-- Corner accents -->
             <div class="corner corner-tl"></div>
             <div class="corner corner-tr"></div>
             <div class="corner corner-bl"></div>
@@ -26,11 +23,9 @@
         </div>
     </div>
 
-    <!-- Right: Summary Panel -->
     <div class="summary-column">
         <div class="summary-panel">
 
-            <!-- Title -->
             <div class="summary-header">
                 <div class="header-decoration-left"></div>
                 <h1 class="summary-title">Defeated</h1>
@@ -38,7 +33,6 @@
             </div>
             <div class="title-underline"></div>
 
-            <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card" style="animation-delay: 0.2s">
                     <span class="material-symbols-outlined stat-icon">waves</span>
@@ -73,7 +67,6 @@
                 </div>
             </div>
 
-            <!-- Boon Used -->
             @if (boonName()) {
             <div class="section-block" style="animation-delay: 1s">
                 <div class="section-title-row">
@@ -90,7 +83,6 @@
             </div>
             }
 
-            <!-- Items Collected -->
             <div class="section-block" style="animation-delay: 1.2s">
                 <div class="section-title-row">
                     <span class="section-marker"></span>
@@ -119,7 +111,6 @@
                 }
             </div>
 
-            <!-- Action Buttons -->
             <div class="action-bar" style="animation-delay: 1.4s">
                 <button class="btn-action btn-secondary-action" (click)="goToMain()" id="btn-go-main">
                     <span class="material-symbols-outlined">home</span>

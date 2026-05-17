@@ -35,12 +35,10 @@
   </div>
 </section>
 
-<!-- Right Panel: BOON_INTEL -->
 <section class="panel intel-panel">
   <div class="corner-decoration"></div>
   
   <div class="intel-content">
-    <!-- Header -->
     <div class="intel-header">
       <h1 class="intel-title">{{ selectedBoon() ? (selectedBoon()!.name | uppercase) : 'SELECT_BOON' }}</h1>
       <div class="intel-divider">
@@ -48,14 +46,12 @@
       </div>
     </div>
     
-    <!-- Boon Visualizer -->
     <div class="visualizer-box">
       <img class="visualizer-image" 
            [src]="selectedBoon() ? getImageUrl(selectedBoon()!.name) : ''"
            [alt]="selectedBoon()?.name || 'boon'" />
     </div>
     
-    <!-- Archive Data -->
     <div class="intel-details">
       <div class="module">
         <div class="module-header">

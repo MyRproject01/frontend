@@ -29,14 +29,12 @@
   padding: 0;
 }
 
-/* ── Panels ─────────────────────────────── */
 .panel {
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
-/* ── LEFT: ROSTER ───────────────────────── */
 .roster-panel {
   flex: 7;
   gap: 1rem;
@@ -86,7 +84,6 @@
   gap: 0.75rem;
 }
 
-/* Item Slots */
 .item-slot {
   aspect-ratio: 1;
   position: relative;
@@ -95,11 +92,6 @@
   justify-content: center;
   overflow: hidden;
   transition: all 0.2s;
-}
-
-.slot-icon {
-  font-size: 2.5rem;
-  z-index: 10;
 }
 
 .slot-image {
@@ -126,7 +118,6 @@
   z-index: 10;
 }
 
-/* Available */
 .available-slot {
   background: rgba(0, 243, 255, 0.05);
   border: 1px solid rgba(0, 243, 255, 0.3);
@@ -137,7 +128,6 @@
   background: rgba(0, 243, 255, 0.15);
 }
 
-/* Active */
 .active-slot {
   background: rgba(0, 243, 255, 0.1);
   border: 2px solid var(--cyan-bright);
@@ -150,25 +140,6 @@
   color: var(--cyan-bright);
 }
 
-/* Empty */
-.empty-slot {
-  background: rgba(24, 24, 27, 0.5);
-  border: 1px solid var(--zinc-800);
-}
-
-/* Locked */
-.locked-slot {
-  background: rgba(9, 9, 11, 0.8);
-  border: 1px solid var(--zinc-900);
-  color: var(--zinc-800);
-}
-
-.locked-slot .material-symbols-outlined {
-  font-size: 2rem;
-  color: var(--zinc-800);
-}
-
-/* ── RIGHT: INTEL ───────────────────────── */
 .intel-panel {
   flex: 5;
   background: linear-gradient(135deg, #1c1b1c 0%, #131314 100%);
@@ -193,18 +164,8 @@
   flex-direction: column;
 }
 
-/* Header */
 .intel-header {
   margin-bottom: 1.5rem;
-}
-
-.intel-status {
-  font-family: var(--font-space);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  color: var(--cyan-bright);
-  margin-bottom: 0.5rem;
 }
 
 .intel-title {
@@ -230,7 +191,6 @@
   background: var(--cyan-bright);
 }
 
-/* Visualizer */
 .visualizer-box {
   position: relative;
   width: 100%;
@@ -253,7 +213,6 @@
   object-fit: cover;
 }
 
-/* Details */
 .intel-details {
   flex: 1;
   display: flex;
@@ -262,7 +221,6 @@
   overflow-y: auto;
 }
 
-/* Module (Archive Data) */
 .module {
   display: flex;
   flex-direction: column;
@@ -297,7 +255,6 @@
   text-align: justify;
 }
 
-/* Stats Grid */
 .stats-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -418,7 +375,6 @@
   background: var(--surface-high, #2a2a2b);
 }
 
-/* Utils */
 .text-cyan {
   color: var(--cyan-bright) !important;
 }
@@ -431,7 +387,6 @@
   color: #52525b !important;
 }
 
-/* ── Selection Logic ────────────────────── */
 .in-build-slot {
   border: 1px solid #ffcc00 !important;
 }

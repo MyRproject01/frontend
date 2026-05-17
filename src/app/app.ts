@@ -33,7 +33,6 @@ export class App implements AfterViewInit {
       this.showVideo.set(!isGame);
       this.isInGame = isGame;
       
-      // Stop music if we are in the game, play it otherwise (respecting settings)
       this.audio.setMusicPlaying(!isGame);
 
       this.username.set(localStorage.getItem('username') || 'OPERATOR');
@@ -41,7 +40,6 @@ export class App implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    // Unmute and start playback immediately — no user interaction needed.
     this.audio.init();
   }
 

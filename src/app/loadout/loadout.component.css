@@ -2,7 +2,6 @@
   display: block;
 }
 
-/* ── Container ─────────────────────────── */
 .loadout-container {
   box-sizing: border-box;
   height: 100vh;
@@ -12,10 +11,8 @@
   display: flex;
   flex-direction: row;
   padding-top: 4.5rem;
-  /* topbar height */
 }
 
-/* ── Loadout Sidebar ───────────────────── */
 .loadout-sidebar {
   width: 22rem;
   flex-shrink: 0;
@@ -96,7 +93,7 @@
 }
 
 .sidebar-accept {
-  color: #4ade80; /* Green */
+  color: #4ade80;
 }
 
 .sidebar-accept:hover {
@@ -113,7 +110,6 @@
   border-left-color: #ff4444;
 }
 
-/* Make buttons look like links */
 button.sidebar-link {
   background: transparent;
   border-top: none;
@@ -129,7 +125,6 @@ button.sidebar-link {
   margin: 0.5rem 1.25rem;
 }
 
-/* ── Content Area ───────────────────────── */
 .content-area {
   flex: 1;
   overflow: hidden;
@@ -137,7 +132,6 @@ button.sidebar-link {
   flex-direction: column;
 }
 
-/* ── Main Canvas ────────────────────────── */
 .main-canvas {
   flex: 1;
   padding: 1rem;

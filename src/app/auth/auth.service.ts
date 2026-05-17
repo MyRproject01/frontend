@@ -19,7 +19,6 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/register`, data);
   }
 
-  // Puedes guardar el token en localStorage para mantener la sesión
   saveToken(token: string) {
     localStorage.setItem('auth_token', token);
   }
