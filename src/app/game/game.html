@@ -62,8 +62,9 @@
         </div>
 
         <!-- 4. Collected Items -->
-        @if (getGroupedInventory().length > 0) {
         <div class="inventory-section">
+            <div class="inventory-title">Items:</div>
+            @if (getGroupedInventory().length > 0) {
             <div class="inventory-grid">
                 @for (item of getGroupedInventory(); track item.id) {
                 <div class="inv-slot" [title]="item.name">
@@ -75,8 +76,10 @@
                 </div>
                 }
             </div>
+            } @else {
+            <div class="empty-inventory-text">NONE ACQUIRED</div>
+            }
         </div>
-        }
 
         <div class="sidebar-spacer"></div>
 
@@ -86,7 +89,7 @@
                 <span class="info-label">Wave {{ wave() }}</span>
             </div>
             <div class="info-block">
-                <span class="info-label">Pts: {{ score() }}</span>
+                <span class="info-label">Score: {{ score() }}</span>
             </div>
             <button class="forfeit-btn" (click)="exitGame()">
                 FORFEIT
@@ -102,6 +105,9 @@
         <button class="control-btn" (click)="toggleSpeed()">
             <span class="material-symbols-outlined">{{ isFastForward ? 'fast_forward' : 'speed' }}</span>
             <span class="speed-label">{{ isFastForward ? 'x2' : 'x1' }}</span>
+        </button>
+        <button class="control-btn auto-wave-btn" [class.active]="isAutoWave()" (click)="toggleAutoWave()" title="Auto-Wave">
+            <span class="material-symbols-outlined">sync</span>
         </button>
         <button class="control-btn play-btn" [disabled]="isWaveActive()" (click)="startWave()">
             <span class="material-symbols-outlined">skip_next</span>

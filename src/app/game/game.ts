@@ -1,4 +1,4 @@
-import { Component, OnDestroy, AfterViewInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, AfterViewInit, inject, signal, effect } from '@angular/core';
 
 import { Router } from '@angular/router';
 import * as Phaser from 'phaser';
@@ -42,6 +42,7 @@ export class GameComponent implements AfterViewInit, OnDestroy {
   protected isRewardPending = GameState.isRewardPending;
   protected inventory = GameState.inventory;
   protected isPaused = signal(false);
+  protected isAutoWave = signal(false);
 
   private sanitizer = inject(DomSanitizer);
   private audioService = inject(AudioService);
@@ -51,7 +52,21 @@ export class GameComponent implements AfterViewInit, OnDestroy {
     private runService: RunService,
     private catalogService: CatalogService,
     private buildService: BuildService
-  ) { }
+  ) {
+    effect(() => {
+      const isWaveActiveVal = this.isWaveActive();
+      const isRewardPendingVal = this.isRewardPending();
+      const isAutoWaveActive = this.isAutoWave();
+      
+      if (isAutoWaveActive && !isWaveActiveVal && !isRewardPendingVal) {
+        setTimeout(() => {
+          if (this.isAutoWave() && !this.isWaveActive() && !this.isRewardPending()) {
+            this.startWave();
+          }
+        }, 1000);
+      }
+    });
+  }
 
   ngAfterViewInit() {
     // Reset GameState to ensure clean start (Energy = 150, Score = 0, etc.)
@@ -345,5 +360,10 @@ export class GameComponent implements AfterViewInit, OnDestroy {
 
   getActiveBoonName(): string {
     return GameState.selectedBoon() || '';
+  }
+
+  toggleAutoWave() {
+    this.isAutoWave.update(v => !v);
+    console.log(`Auto-Wave toggled: ${this.isAutoWave()}`);
   }
 }
